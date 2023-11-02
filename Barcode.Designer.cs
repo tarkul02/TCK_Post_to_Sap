@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model '\\montha-1\TKC PROJECT\SAP Batch GR-TR\SAP Batch GR-TR\Barcode.edmx'. 
+﻿// T4 code generation is enabled for model '\\montha-1\TKC PROJECT\TCK_Post_to_Sap\TCK_Post_to_Sap\Barcode.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

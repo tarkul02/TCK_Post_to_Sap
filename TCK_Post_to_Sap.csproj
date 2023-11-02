@@ -7,7 +7,7 @@
     <ProjectGuid>{BA401D89-C8F6-41AD-B881-29E8A79ADAF7}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>SAP_Batch_GR_TR</RootNamespace>
-    <AssemblyName>SAP Batch GR-TR</AssemblyName>
+    <AssemblyName>TCK_Post_to_Sap</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
