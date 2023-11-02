@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BarcodeModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'Barcode.dbo.v_sap_batch_gr' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="v_sap_batch_gr">
+    <Key>
+      <PropertyRef Name="CustID" />
+      <PropertyRef Name="Plant" />
+      <PropertyRef Name="SLoc" />
+      <PropertyRef Name="MvmntType" />
+      <PropertyRef Name="Action" />
+    </Key>
+    <Property Name="MatNo" Type="nvarchar" MaxLength="4000" />
+    <Property Name="CustID" Type="varchar" MaxLength="4" Nullable="false" />
+    <Property Name="FacNo" Type="varchar" MaxLength="3" />
+    <Property Name="Plant" Type="varchar" MaxLength="4" Nullable="false" />
+    <Property Name="SLoc" Type="varchar" MaxLength="4" Nullable="false" />
+    <Property Name="MvmntType" Type="int" Nullable="false" />
+    <Property Name="PostDate" Type="varchar" MaxLength="8" />
+    <Property Name="PostTime" Type="varchar" MaxLength="5" />
+    <Property Name="QRQty" Type="int" />
+    <Property Name="HeaderText" Type="varchar" MaxLength="8000" />
+    <Property Name="Action" Type="int" Nullable="false" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'Barcode.dbo.v_SAP_Error_for_ReDo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityContainer Name="BarcodeModelStoreContainer">
+    <EntitySet Name="v_sap_batch_gr" EntityType="Self.v_sap_batch_gr" store:Type="Views" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [v_sap_batch_gr].[MatNo] AS [MatNo], 
+    [v_sap_batch_gr].[CustID] AS [CustID], 
+    [v_sap_batch_gr].[FacNo] AS [FacNo], 
+    [v_sap_batch_gr].[Plant] AS [Plant], 
+    [v_sap_batch_gr].[SLoc] AS [SLoc], 
+    [v_sap_batch_gr].[MvmntType] AS [MvmntType], 
+    [v_sap_batch_gr].[PostDate] AS [PostDate], 
+    [v_sap_batch_gr].[PostTime] AS [PostTime], 
+    [v_sap_batch_gr].[QRQty] AS [QRQty], 
+    [v_sap_batch_gr].[HeaderText] AS [HeaderText], 
+    [v_sap_batch_gr].[Action] AS [Action]
+    FROM [dbo].[v_sap_batch_gr] AS [v_sap_batch_gr]</DefiningQuery>
+    </EntitySet>
+  </EntityContainer>
+</Schema>

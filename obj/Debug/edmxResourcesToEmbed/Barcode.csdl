@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BarcodeModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="v_sap_batch_gr">
+    <Key>
+      <PropertyRef Name="CustID" />
+      <PropertyRef Name="Plant" />
+      <PropertyRef Name="SLoc" />
+      <PropertyRef Name="MvmntType" />
+      <PropertyRef Name="Action" />
+    </Key>
+    <Property Name="MatNo" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+    <Property Name="CustID" Type="String" MaxLength="4" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="FacNo" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+    <Property Name="Plant" Type="String" MaxLength="4" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SLoc" Type="String" MaxLength="4" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="MvmntType" Type="Int32" Nullable="false" />
+    <Property Name="PostDate" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+    <Property Name="PostTime" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+    <Property Name="QRQty" Type="Int32" />
+    <Property Name="HeaderText" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+    <Property Name="Action" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityContainer Name="BarcodeEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="v_sap_batch_gr" EntityType="Self.v_sap_batch_gr" />
+  </EntityContainer>
+</Schema>

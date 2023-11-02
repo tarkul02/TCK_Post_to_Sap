@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="BarcodeModelStoreContainer" CdmEntityContainer="BarcodeEntities">
+    <EntitySetMapping Name="v_sap_batch_gr">
+      <EntityTypeMapping TypeName="BarcodeModel.v_sap_batch_gr">
+        <MappingFragment StoreEntitySet="v_sap_batch_gr">
+          <ScalarProperty Name="MatNo" ColumnName="MatNo" />
+          <ScalarProperty Name="CustID" ColumnName="CustID" />
+          <ScalarProperty Name="FacNo" ColumnName="FacNo" />
+          <ScalarProperty Name="Plant" ColumnName="Plant" />
+          <ScalarProperty Name="SLoc" ColumnName="SLoc" />
+          <ScalarProperty Name="MvmntType" ColumnName="MvmntType" />
+          <ScalarProperty Name="PostDate" ColumnName="PostDate" />
+          <ScalarProperty Name="PostTime" ColumnName="PostTime" />
+          <ScalarProperty Name="QRQty" ColumnName="QRQty" />
+          <ScalarProperty Name="HeaderText" ColumnName="HeaderText" />
+          <ScalarProperty Name="Action" ColumnName="Action" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

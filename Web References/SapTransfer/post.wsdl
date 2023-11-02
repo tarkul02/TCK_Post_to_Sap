@@ -1,0 +1,2681 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s1="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:import namespace="urn:sap-com:document:sap:soap:functions:mc-style" />
+      <s:element name="TransferStock">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dt">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="DocNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferStockResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TransferStockResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Results">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="status" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="message2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="message3" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="TransferStock_521_PRD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dt">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="DocNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferStock_521_PRDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TransferStock_521_PRDResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferStockDataToSAP_311">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SlipNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="DataType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferStockDataToSAP_311Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TransferStockDataToSAP_311Result" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getMaterail">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Custpart" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getMaterailResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getMaterailResult" type="s1:Zsdcustpart" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReworkStockExcel">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="kb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="qty" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="storeloc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fac" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="plant" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReworkStockExcelResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReworkStockExcelResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReworkStock">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="kb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="qty" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="storeloc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fac" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="plant" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReworkStockResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReworkStockResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPOZTD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PO" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPOZTDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getPOZTDResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromTKC">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="slipno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pallet" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromTKCResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveFromTKCResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromTKCWithMenuID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="slipno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pallet" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="menuId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromTKCWithMenuIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveFromTKCWithMenuIDResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromTKC_311_PRD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="slipno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pallet" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="menuId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromTKC_311_PRDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveFromTKC_311_PRDResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferKLine">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="slipno" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferKLineResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TransferKLineResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferTitan">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dt">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="From" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="To" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferTitanResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TransferTitanResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDeliveryOrders">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="DO" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDeliveryOrdersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDeliveryOrdersResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmDO">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="DO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="StgeLoc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="User" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmDOResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConfirmDOResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMTBYSO">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="param" type="tns:ArrayOfT_SchOrdersPart_TEMP" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfT_SchOrdersPart_TEMP">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="T_SchOrdersPart_TEMP" nillable="true" type="tns:T_SchOrdersPart_TEMP" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="T_SchOrdersPart_TEMP">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CustID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OrdersNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PONo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PlantCode" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DueDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="Period" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DueTime" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PartNo" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="SentQty" nillable="true" type="s:short" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag01" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag02" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag03" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag04" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag05" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DataType" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Status" nillable="true" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ImportBy" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ImportDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="FirmOrder" nillable="true" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="Exported" nillable="true" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="InvcNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DataFileName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag06" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag07" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag08" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag09" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag10" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PackageCD" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateSalesOrderTMTBYSOResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderTMTBYSOResult" type="tns:ArrayOfZssoDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfZssoDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ZssoDetail" nillable="true" type="s1:ZssoDetail" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateSalesOrderTMTBYSO2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="param" type="tns:ArrayOfZssoDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMTBYSO2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderTMTBYSO2Result" type="tns:ArrayOfZssoDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMTgtopas">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Orders" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMTgtopasResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderTMTgtopasResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMT_TFP">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Orders" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMT_TFPResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderTMT_TFPResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderTMTgtopasAll">
+        <s:complexType />
+      </s:element>
+      <s:element name="CreateSalesOrderTMTgtopasAllResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderTMTgtopasAllResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreatePMORDER_WITH_GEN_TL">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MPdID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="step" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreatePMORDER_WITH_GEN_TLResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreatePMORDER_WITH_GEN_TLResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GenerateDeliveryTMT">
+        <s:complexType />
+      </s:element>
+      <s:element name="GenerateDeliveryTMTResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GenerateDeliveryTMTResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderNONTMTBYSO2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="param" type="tns:ArrayOfZssoDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderNONTMTBYSO2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderNONTMTBYSO2Result" type="tns:ArrayOfZssoDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderNONTMTBYSO">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="param" type="tns:ArrayOfT_SchOrdersPart_TEMP" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSalesOrderNONTMTBYSOResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSalesOrderNONTMTBYSOResult" type="tns:ArrayOfZssoDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="KDTransfer2">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SLIPNO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="USERID" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="KDTransfer2Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="KDTransfer2Result" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateDO_Gtopas1">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Lists" type="tns:ArrayOfZsmakeInvoice" />
+            <s:element minOccurs="0" maxOccurs="1" name="Invc" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfZsmakeInvoice">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ZsmakeInvoice" nillable="true" type="s1:ZsmakeInvoice" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateDO_Gtopas1Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateDO_Gtopas1Result" type="s1:ZMakeInvoiceGtopasResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateSO_PartSupply">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Lists" type="tns:ArrayOfT_SchOrdersPart" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfT_SchOrdersPart">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="T_SchOrdersPart" nillable="true" type="tns:T_SchOrdersPart" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="T_SchOrdersPart">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CustID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OrdersNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PONo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PlantCode" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DueDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="Period" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DueTime" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PartNo" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:long" />
+          <s:element minOccurs="1" maxOccurs="1" name="SentQty" nillable="true" type="s:short" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag01" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag02" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag03" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag04" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag05" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag06" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag07" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag08" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag09" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Flag10" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RefDocSAP" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateSO_PartSupplyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateSO_PartSupplyResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GETCUSTOMERPART">
+        <s:complexType />
+      </s:element>
+      <s:element name="GETCUSTOMERPARTResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ChangeSaleOrder">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SOLD_TO" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PURCH_NO_C" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="OLD_DUE_DATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="CUST_MAT35" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="DLV_DATE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="DLV_TIME" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeSaleOrderResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ChangeSaleOrderResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckMaster">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="kanban" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckMasterResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CheckMasterResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendLine">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="msg" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Master" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendLineResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="lineAddToken">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="msg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="lineAddTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="lineAddTokenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromPROGRAMMER">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="slipno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="pallet" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReceiveFromPROGRAMMERResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReceiveFromPROGRAMMERResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmDOBYPROGRAMMER">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConfirmDOBYPROGRAMMERResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConfirmDOBYPROGRAMMERResult" type="tns:Results" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_WITHMAT">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dt">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+            <s:element minOccurs="0" maxOccurs="1" name="PstngDate" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_WITHMATResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERGR_WITHMATResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ZTDREC">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="tkckb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fac" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="storeloc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="qty" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="amt" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ZTDRECResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ZTDRECResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_WITHMATZTD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="dt">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_WITHMATZTDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERGR_WITHMATZTDResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TransferStockOnHandPROGRAMMER">
+        <s:complexType />
+      </s:element>
+      <s:element name="TransferStockOnHandPROGRAMMERResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="AFTERGR_PROGRAMMER">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Kanban" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Custid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Strog" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_PROGRAMMERResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERGR_PROGRAMMERResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_PROGRAMMER_TEST">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Kanban" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Custid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Strog" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_PROGRAMMER_TESTResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERGR_PROGRAMMER_TESTResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ADDSTOCKBYEXCEL">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="partno" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Custid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Store" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="postdate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="headerText" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ADDSTOCKBYEXCELResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ADDSTOCKBYEXCELResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ADDSTOCKBYEXCEL_522">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="partno" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Custid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Store" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="postdate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="headerText" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ADDSTOCKBYEXCEL_522Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ADDSTOCKBYEXCEL_522Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_TEMP">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="msg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_TEMPResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AFTERGR_TEMPResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERTRANFER_311">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Kanban" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Qty" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Fromto" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ShipTo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERTRANFER_311Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERTRANFER_311Result" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERTRANFER_311PROGRAMMER">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Kanban" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Fromto" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ShipTo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERTRANFER_311PROGRAMMERResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERTRANFER_311PROGRAMMERResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERTRANFER_MOVEMENT">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Msg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERTRANFER_MOVEMENTResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AFTERTRANFER_MOVEMENTResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_D045">
+        <s:complexType />
+      </s:element>
+      <s:element name="AFTERGR_D045Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AFTERGR_D045Result" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTERGR_CAR">
+        <s:complexType />
+      </s:element>
+      <s:element name="AFTERGR_CARResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AFTERGR_CARResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AFTER_GR">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="zsgms" type="tns:ArrayOfZsgmDetail" />
+            <s:element minOccurs="0" maxOccurs="1" name="t_Barcodes" type="tns:ArrayOfT_barcode_trans" />
+            <s:element minOccurs="0" maxOccurs="1" name="Kanban" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfZsgmDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ZsgmDetail" nillable="true" type="s1:ZsgmDetail" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfT_barcode_trans">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="T_barcode_trans" nillable="true" type="tns:T_barcode_trans" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="T_barcode_trans">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ACTDATE" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="MENUID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="KANBANID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SEQ" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SHIFT" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LINE" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PTM" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CUSTPARTNO" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="QTY" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="OPERATORID1" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ACTTIME" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PALLETNO" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SHIPDATE" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="POSPRDDATE" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="DOCNO" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="PARTTYPE" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="IMPORTBY" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IMPORTDATE" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="SLIPNO" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ISSUEFROM" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OPERATORID2" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ISSUEDATE" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="ISSUETO" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="KANBANCLS" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="KANBANNO" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FILENAME" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CUSTID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ORDERNO" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FLAG01" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CUSTID2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="From_To" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Ship_To" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="REFDOCSAP" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CONFIRM_DATE" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="CONFIRM_BY" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CONFIRM_DOC" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="AFTER_GRResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AFTER_GRResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ScannerUpdate">
+        <s:complexType />
+      </s:element>
+      <s:element name="ScannerUpdateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ScannerUpdateResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ScannerConditon">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Program" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ScannerConditonResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ScannerConditonResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStockOnHand">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetStockOnHandResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetStockOnHandResult" type="tns:ArrayOfZsmard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfZsmard">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Zsmard" nillable="true" type="s1:Zsmard" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetStockOnHandTEST">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="KB" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStockOnHandTESTResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetStockOnHandTESTResult" type="tns:ArrayOfZsmard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStockOnLocation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Sloc" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStockOnLocationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetStockOnLocationResult" type="tns:ArrayOfZsmard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReChkMaster">
+        <s:complexType />
+      </s:element>
+      <s:element name="ReChkMasterResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ExchangeRate">
+        <s:complexType />
+      </s:element>
+      <s:element name="ExchangeRateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ExchangeRateResult" type="tns:ArrayOfDataDetail" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfDataDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="DataDetail" nillable="true" type="tns:DataDetail" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="DataDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="period" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="currency_id" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="currency_name_th" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="currency_name_eng" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="buying_sight" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="buying_transfer" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="selling" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="mid_rate" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style">
+      <s:complexType name="Zsdcustpart">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Mandt" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Kunnr" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Kunwe" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Custpartno" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Spart" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="FacNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Matnr" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="PackSize" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Custpart01" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Custpart02" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Zterm" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Kanban" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ZssoDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="DocType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="SalesOrg" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="DistrChan" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Division" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="SoldTo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Bname" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="PurchNoC" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="PurchNoS" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="PrcGroup2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="ShipTo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="DlvDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="PoSupplem" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="DlvTime" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="CustMat35" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="TargetQty" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="TargetQu" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="ShipPoint" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Plant" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="StoreLoc" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="RecArea" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag01" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag02" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag03" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag04" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag05" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag06" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag07" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag08" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag09" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag10" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag11" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag12" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag13" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag14" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag15" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag16" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag17" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag18" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag19" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Flag20" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ZsmakeInvoice">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="DoGroup" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Id" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="CustMat35" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="PurchNoC" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="StoreLoc" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="TargetQty" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="TargetQu" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="ImportBy" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="SoldTo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="DlvDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="ShipDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="CaseLabel" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="CarNo" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ZMakeInvoiceGtopasResponse">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="EBillingNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="EDeliveryOrder" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="EMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="ItMakeInvoice" type="s1:ArrayOfZsmakeInvoice" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfZsmakeInvoice">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" form="unqualified" name="item" type="s1:ZsmakeInvoice" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ZsgmDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Material" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Plant" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="StgeLoc" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Batch" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="MoveType" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="EntryQnt" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="EntryUom" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="ItemText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="GrRcpt" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="UnloadPt" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="FacNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="RefDocYr" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="RefDoc" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="RefDocIt" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="MovePlant" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="MoveStloc" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="MoveBatch" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="SoldTo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Custid" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Kanban" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Amount" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Zsmard">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Material" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Plant" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="StgeLoc" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Kanban" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="UrStock" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="IntfrStock" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="QiStock" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" form="unqualified" name="BlockStock" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" form="unqualified" name="Unit" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="TransferStockSoapIn">
+    <wsdl:part name="parameters" element="tns:TransferStock" />
+  </wsdl:message>
+  <wsdl:message name="TransferStockSoapOut">
+    <wsdl:part name="parameters" element="tns:TransferStockResponse" />
+  </wsdl:message>
+  <wsdl:message name="TransferStock_521_PRDSoapIn">
+    <wsdl:part name="parameters" element="tns:TransferStock_521_PRD" />
+  </wsdl:message>
+  <wsdl:message name="TransferStock_521_PRDSoapOut">
+    <wsdl:part name="parameters" element="tns:TransferStock_521_PRDResponse" />
+  </wsdl:message>
+  <wsdl:message name="TransferStockDataToSAP_311SoapIn">
+    <wsdl:part name="parameters" element="tns:TransferStockDataToSAP_311" />
+  </wsdl:message>
+  <wsdl:message name="TransferStockDataToSAP_311SoapOut">
+    <wsdl:part name="parameters" element="tns:TransferStockDataToSAP_311Response" />
+  </wsdl:message>
+  <wsdl:message name="getMaterailSoapIn">
+    <wsdl:part name="parameters" element="tns:getMaterail" />
+  </wsdl:message>
+  <wsdl:message name="getMaterailSoapOut">
+    <wsdl:part name="parameters" element="tns:getMaterailResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReworkStockExcelSoapIn">
+    <wsdl:part name="parameters" element="tns:ReworkStockExcel" />
+  </wsdl:message>
+  <wsdl:message name="ReworkStockExcelSoapOut">
+    <wsdl:part name="parameters" element="tns:ReworkStockExcelResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReworkStockSoapIn">
+    <wsdl:part name="parameters" element="tns:ReworkStock" />
+  </wsdl:message>
+  <wsdl:message name="ReworkStockSoapOut">
+    <wsdl:part name="parameters" element="tns:ReworkStockResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPOZTDSoapIn">
+    <wsdl:part name="parameters" element="tns:getPOZTD" />
+  </wsdl:message>
+  <wsdl:message name="getPOZTDSoapOut">
+    <wsdl:part name="parameters" element="tns:getPOZTDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromTKCSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveFromTKC" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromTKCSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveFromTKCResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromTKCWithMenuIDSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveFromTKCWithMenuID" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromTKCWithMenuIDSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveFromTKCWithMenuIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromTKC_311_PRDSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveFromTKC_311_PRD" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromTKC_311_PRDSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveFromTKC_311_PRDResponse" />
+  </wsdl:message>
+  <wsdl:message name="TransferKLineSoapIn">
+    <wsdl:part name="parameters" element="tns:TransferKLine" />
+  </wsdl:message>
+  <wsdl:message name="TransferKLineSoapOut">
+    <wsdl:part name="parameters" element="tns:TransferKLineResponse" />
+  </wsdl:message>
+  <wsdl:message name="TransferTitanSoapIn">
+    <wsdl:part name="parameters" element="tns:TransferTitan" />
+  </wsdl:message>
+  <wsdl:message name="TransferTitanSoapOut">
+    <wsdl:part name="parameters" element="tns:TransferTitanResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDeliveryOrdersSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDeliveryOrders" />
+  </wsdl:message>
+  <wsdl:message name="GetDeliveryOrdersSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDeliveryOrdersResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmDOSoapIn">
+    <wsdl:part name="parameters" element="tns:ConfirmDO" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmDOSoapOut">
+    <wsdl:part name="parameters" element="tns:ConfirmDOResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTBYSOSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTBYSO" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTBYSOSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTBYSOResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTBYSO2SoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTBYSO2" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTBYSO2SoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTBYSO2Response" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTgtopasSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTgtopas" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTgtopasSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTgtopasResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMT_TFPSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMT_TFP" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMT_TFPSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMT_TFPResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTgtopasAllSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTgtopasAll" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderTMTgtopasAllSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderTMTgtopasAllResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreatePMORDER_WITH_GEN_TLSoapIn">
+    <wsdl:part name="parameters" element="tns:CreatePMORDER_WITH_GEN_TL" />
+  </wsdl:message>
+  <wsdl:message name="CreatePMORDER_WITH_GEN_TLSoapOut">
+    <wsdl:part name="parameters" element="tns:CreatePMORDER_WITH_GEN_TLResponse" />
+  </wsdl:message>
+  <wsdl:message name="GenerateDeliveryTMTSoapIn">
+    <wsdl:part name="parameters" element="tns:GenerateDeliveryTMT" />
+  </wsdl:message>
+  <wsdl:message name="GenerateDeliveryTMTSoapOut">
+    <wsdl:part name="parameters" element="tns:GenerateDeliveryTMTResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderNONTMTBYSO2SoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderNONTMTBYSO2" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderNONTMTBYSO2SoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderNONTMTBYSO2Response" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderNONTMTBYSOSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderNONTMTBYSO" />
+  </wsdl:message>
+  <wsdl:message name="CreateSalesOrderNONTMTBYSOSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSalesOrderNONTMTBYSOResponse" />
+  </wsdl:message>
+  <wsdl:message name="KDTransfer2SoapIn">
+    <wsdl:part name="parameters" element="tns:KDTransfer2" />
+  </wsdl:message>
+  <wsdl:message name="KDTransfer2SoapOut">
+    <wsdl:part name="parameters" element="tns:KDTransfer2Response" />
+  </wsdl:message>
+  <wsdl:message name="CreateDO_Gtopas1SoapIn">
+    <wsdl:part name="parameters" element="tns:CreateDO_Gtopas1" />
+  </wsdl:message>
+  <wsdl:message name="CreateDO_Gtopas1SoapOut">
+    <wsdl:part name="parameters" element="tns:CreateDO_Gtopas1Response" />
+  </wsdl:message>
+  <wsdl:message name="CreateSO_PartSupplySoapIn">
+    <wsdl:part name="parameters" element="tns:CreateSO_PartSupply" />
+  </wsdl:message>
+  <wsdl:message name="CreateSO_PartSupplySoapOut">
+    <wsdl:part name="parameters" element="tns:CreateSO_PartSupplyResponse" />
+  </wsdl:message>
+  <wsdl:message name="GETCUSTOMERPARTSoapIn">
+    <wsdl:part name="parameters" element="tns:GETCUSTOMERPART" />
+  </wsdl:message>
+  <wsdl:message name="GETCUSTOMERPARTSoapOut">
+    <wsdl:part name="parameters" element="tns:GETCUSTOMERPARTResponse" />
+  </wsdl:message>
+  <wsdl:message name="ChangeSaleOrderSoapIn">
+    <wsdl:part name="parameters" element="tns:ChangeSaleOrder" />
+  </wsdl:message>
+  <wsdl:message name="ChangeSaleOrderSoapOut">
+    <wsdl:part name="parameters" element="tns:ChangeSaleOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="CheckMasterSoapIn">
+    <wsdl:part name="parameters" element="tns:CheckMaster" />
+  </wsdl:message>
+  <wsdl:message name="CheckMasterSoapOut">
+    <wsdl:part name="parameters" element="tns:CheckMasterResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendLineSoapIn">
+    <wsdl:part name="parameters" element="tns:SendLine" />
+  </wsdl:message>
+  <wsdl:message name="SendLineSoapOut">
+    <wsdl:part name="parameters" element="tns:SendLineResponse" />
+  </wsdl:message>
+  <wsdl:message name="lineAddTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:lineAddToken" />
+  </wsdl:message>
+  <wsdl:message name="lineAddTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:lineAddTokenResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromPROGRAMMERSoapIn">
+    <wsdl:part name="parameters" element="tns:ReceiveFromPROGRAMMER" />
+  </wsdl:message>
+  <wsdl:message name="ReceiveFromPROGRAMMERSoapOut">
+    <wsdl:part name="parameters" element="tns:ReceiveFromPROGRAMMERResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmDOBYPROGRAMMERSoapIn">
+    <wsdl:part name="parameters" element="tns:ConfirmDOBYPROGRAMMER" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmDOBYPROGRAMMERSoapOut">
+    <wsdl:part name="parameters" element="tns:ConfirmDOBYPROGRAMMERResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_WITHMATSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_WITHMAT" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_WITHMATSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_WITHMATResponse" />
+  </wsdl:message>
+  <wsdl:message name="ZTDRECSoapIn">
+    <wsdl:part name="parameters" element="tns:ZTDREC" />
+  </wsdl:message>
+  <wsdl:message name="ZTDRECSoapOut">
+    <wsdl:part name="parameters" element="tns:ZTDRECResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_WITHMATZTDSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_WITHMATZTD" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_WITHMATZTDSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_WITHMATZTDResponse" />
+  </wsdl:message>
+  <wsdl:message name="TransferStockOnHandPROGRAMMERSoapIn">
+    <wsdl:part name="parameters" element="tns:TransferStockOnHandPROGRAMMER" />
+  </wsdl:message>
+  <wsdl:message name="TransferStockOnHandPROGRAMMERSoapOut">
+    <wsdl:part name="parameters" element="tns:TransferStockOnHandPROGRAMMERResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_PROGRAMMERSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_PROGRAMMER" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_PROGRAMMERSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_PROGRAMMERResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_PROGRAMMER_TESTSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_PROGRAMMER_TEST" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_PROGRAMMER_TESTSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_PROGRAMMER_TESTResponse" />
+  </wsdl:message>
+  <wsdl:message name="ADDSTOCKBYEXCELSoapIn">
+    <wsdl:part name="parameters" element="tns:ADDSTOCKBYEXCEL" />
+  </wsdl:message>
+  <wsdl:message name="ADDSTOCKBYEXCELSoapOut">
+    <wsdl:part name="parameters" element="tns:ADDSTOCKBYEXCELResponse" />
+  </wsdl:message>
+  <wsdl:message name="ADDSTOCKBYEXCEL_522SoapIn">
+    <wsdl:part name="parameters" element="tns:ADDSTOCKBYEXCEL_522" />
+  </wsdl:message>
+  <wsdl:message name="ADDSTOCKBYEXCEL_522SoapOut">
+    <wsdl:part name="parameters" element="tns:ADDSTOCKBYEXCEL_522Response" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_TEMPSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_TEMP" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_TEMPSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_TEMPResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERTRANFER_311SoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERTRANFER_311" />
+  </wsdl:message>
+  <wsdl:message name="AFTERTRANFER_311SoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERTRANFER_311Response" />
+  </wsdl:message>
+  <wsdl:message name="AFTERTRANFER_311PROGRAMMERSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERTRANFER_311PROGRAMMER" />
+  </wsdl:message>
+  <wsdl:message name="AFTERTRANFER_311PROGRAMMERSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERTRANFER_311PROGRAMMERResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERTRANFER_MOVEMENTSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERTRANFER_MOVEMENT" />
+  </wsdl:message>
+  <wsdl:message name="AFTERTRANFER_MOVEMENTSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERTRANFER_MOVEMENTResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_D045SoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_D045" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_D045SoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_D045Response" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_CARSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTERGR_CAR" />
+  </wsdl:message>
+  <wsdl:message name="AFTERGR_CARSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTERGR_CARResponse" />
+  </wsdl:message>
+  <wsdl:message name="AFTER_GRSoapIn">
+    <wsdl:part name="parameters" element="tns:AFTER_GR" />
+  </wsdl:message>
+  <wsdl:message name="AFTER_GRSoapOut">
+    <wsdl:part name="parameters" element="tns:AFTER_GRResponse" />
+  </wsdl:message>
+  <wsdl:message name="ScannerUpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:ScannerUpdate" />
+  </wsdl:message>
+  <wsdl:message name="ScannerUpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:ScannerUpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ScannerConditonSoapIn">
+    <wsdl:part name="parameters" element="tns:ScannerConditon" />
+  </wsdl:message>
+  <wsdl:message name="ScannerConditonSoapOut">
+    <wsdl:part name="parameters" element="tns:ScannerConditonResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetStockOnHandSoapIn">
+    <wsdl:part name="parameters" element="tns:GetStockOnHand" />
+  </wsdl:message>
+  <wsdl:message name="GetStockOnHandSoapOut">
+    <wsdl:part name="parameters" element="tns:GetStockOnHandResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetStockOnHandTESTSoapIn">
+    <wsdl:part name="parameters" element="tns:GetStockOnHandTEST" />
+  </wsdl:message>
+  <wsdl:message name="GetStockOnHandTESTSoapOut">
+    <wsdl:part name="parameters" element="tns:GetStockOnHandTESTResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetStockOnLocationSoapIn">
+    <wsdl:part name="parameters" element="tns:GetStockOnLocation" />
+  </wsdl:message>
+  <wsdl:message name="GetStockOnLocationSoapOut">
+    <wsdl:part name="parameters" element="tns:GetStockOnLocationResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReChkMasterSoapIn">
+    <wsdl:part name="parameters" element="tns:ReChkMaster" />
+  </wsdl:message>
+  <wsdl:message name="ReChkMasterSoapOut">
+    <wsdl:part name="parameters" element="tns:ReChkMasterResponse" />
+  </wsdl:message>
+  <wsdl:message name="ExchangeRateSoapIn">
+    <wsdl:part name="parameters" element="tns:ExchangeRate" />
+  </wsdl:message>
+  <wsdl:message name="ExchangeRateSoapOut">
+    <wsdl:part name="parameters" element="tns:ExchangeRateResponse" />
+  </wsdl:message>
+  <wsdl:portType name="postSoap">
+    <wsdl:operation name="TransferStock">
+      <wsdl:input message="tns:TransferStockSoapIn" />
+      <wsdl:output message="tns:TransferStockSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferStock_521_PRD">
+      <wsdl:input message="tns:TransferStock_521_PRDSoapIn" />
+      <wsdl:output message="tns:TransferStock_521_PRDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferStockDataToSAP_311">
+      <wsdl:input message="tns:TransferStockDataToSAP_311SoapIn" />
+      <wsdl:output message="tns:TransferStockDataToSAP_311SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getMaterail">
+      <wsdl:input message="tns:getMaterailSoapIn" />
+      <wsdl:output message="tns:getMaterailSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReworkStockExcel">
+      <wsdl:input message="tns:ReworkStockExcelSoapIn" />
+      <wsdl:output message="tns:ReworkStockExcelSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReworkStock">
+      <wsdl:input message="tns:ReworkStockSoapIn" />
+      <wsdl:output message="tns:ReworkStockSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getPOZTD">
+      <wsdl:input message="tns:getPOZTDSoapIn" />
+      <wsdl:output message="tns:getPOZTDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKC">
+      <wsdl:input message="tns:ReceiveFromTKCSoapIn" />
+      <wsdl:output message="tns:ReceiveFromTKCSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKCWithMenuID">
+      <wsdl:input message="tns:ReceiveFromTKCWithMenuIDSoapIn" />
+      <wsdl:output message="tns:ReceiveFromTKCWithMenuIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKC_311_PRD">
+      <wsdl:input message="tns:ReceiveFromTKC_311_PRDSoapIn" />
+      <wsdl:output message="tns:ReceiveFromTKC_311_PRDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferKLine">
+      <wsdl:input message="tns:TransferKLineSoapIn" />
+      <wsdl:output message="tns:TransferKLineSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferTitan">
+      <wsdl:input message="tns:TransferTitanSoapIn" />
+      <wsdl:output message="tns:TransferTitanSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDeliveryOrders">
+      <wsdl:input message="tns:GetDeliveryOrdersSoapIn" />
+      <wsdl:output message="tns:GetDeliveryOrdersSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmDO">
+      <wsdl:input message="tns:ConfirmDOSoapIn" />
+      <wsdl:output message="tns:ConfirmDOSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTBYSO">
+      <wsdl:input message="tns:CreateSalesOrderTMTBYSOSoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderTMTBYSOSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTBYSO2">
+      <wsdl:input message="tns:CreateSalesOrderTMTBYSO2SoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderTMTBYSO2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTgtopas">
+      <wsdl:input message="tns:CreateSalesOrderTMTgtopasSoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderTMTgtopasSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMT_TFP">
+      <wsdl:input message="tns:CreateSalesOrderTMT_TFPSoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderTMT_TFPSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTgtopasAll">
+      <wsdl:input message="tns:CreateSalesOrderTMTgtopasAllSoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderTMTgtopasAllSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreatePMORDER_WITH_GEN_TL">
+      <wsdl:input message="tns:CreatePMORDER_WITH_GEN_TLSoapIn" />
+      <wsdl:output message="tns:CreatePMORDER_WITH_GEN_TLSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GenerateDeliveryTMT">
+      <wsdl:input message="tns:GenerateDeliveryTMTSoapIn" />
+      <wsdl:output message="tns:GenerateDeliveryTMTSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderNONTMTBYSO2">
+      <wsdl:input message="tns:CreateSalesOrderNONTMTBYSO2SoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderNONTMTBYSO2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderNONTMTBYSO">
+      <wsdl:input message="tns:CreateSalesOrderNONTMTBYSOSoapIn" />
+      <wsdl:output message="tns:CreateSalesOrderNONTMTBYSOSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="KDTransfer2">
+      <wsdl:input message="tns:KDTransfer2SoapIn" />
+      <wsdl:output message="tns:KDTransfer2SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateDO_Gtopas1">
+      <wsdl:input message="tns:CreateDO_Gtopas1SoapIn" />
+      <wsdl:output message="tns:CreateDO_Gtopas1SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSO_PartSupply">
+      <wsdl:input message="tns:CreateSO_PartSupplySoapIn" />
+      <wsdl:output message="tns:CreateSO_PartSupplySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GETCUSTOMERPART">
+      <wsdl:input message="tns:GETCUSTOMERPARTSoapIn" />
+      <wsdl:output message="tns:GETCUSTOMERPARTSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeSaleOrder">
+      <wsdl:input message="tns:ChangeSaleOrderSoapIn" />
+      <wsdl:output message="tns:ChangeSaleOrderSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckMaster">
+      <wsdl:input message="tns:CheckMasterSoapIn" />
+      <wsdl:output message="tns:CheckMasterSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendLine">
+      <wsdl:input message="tns:SendLineSoapIn" />
+      <wsdl:output message="tns:SendLineSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="lineAddToken">
+      <wsdl:input message="tns:lineAddTokenSoapIn" />
+      <wsdl:output message="tns:lineAddTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromPROGRAMMER">
+      <wsdl:input message="tns:ReceiveFromPROGRAMMERSoapIn" />
+      <wsdl:output message="tns:ReceiveFromPROGRAMMERSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmDOBYPROGRAMMER">
+      <wsdl:input message="tns:ConfirmDOBYPROGRAMMERSoapIn" />
+      <wsdl:output message="tns:ConfirmDOBYPROGRAMMERSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_WITHMAT">
+      <wsdl:input message="tns:AFTERGR_WITHMATSoapIn" />
+      <wsdl:output message="tns:AFTERGR_WITHMATSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ZTDREC">
+      <wsdl:input message="tns:ZTDRECSoapIn" />
+      <wsdl:output message="tns:ZTDRECSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_WITHMATZTD">
+      <wsdl:input message="tns:AFTERGR_WITHMATZTDSoapIn" />
+      <wsdl:output message="tns:AFTERGR_WITHMATZTDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TransferStockOnHandPROGRAMMER">
+      <wsdl:input message="tns:TransferStockOnHandPROGRAMMERSoapIn" />
+      <wsdl:output message="tns:TransferStockOnHandPROGRAMMERSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_PROGRAMMER">
+      <wsdl:input message="tns:AFTERGR_PROGRAMMERSoapIn" />
+      <wsdl:output message="tns:AFTERGR_PROGRAMMERSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_PROGRAMMER_TEST">
+      <wsdl:input message="tns:AFTERGR_PROGRAMMER_TESTSoapIn" />
+      <wsdl:output message="tns:AFTERGR_PROGRAMMER_TESTSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ADDSTOCKBYEXCEL">
+      <wsdl:input message="tns:ADDSTOCKBYEXCELSoapIn" />
+      <wsdl:output message="tns:ADDSTOCKBYEXCELSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ADDSTOCKBYEXCEL_522">
+      <wsdl:input message="tns:ADDSTOCKBYEXCEL_522SoapIn" />
+      <wsdl:output message="tns:ADDSTOCKBYEXCEL_522SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_TEMP">
+      <wsdl:input message="tns:AFTERGR_TEMPSoapIn" />
+      <wsdl:output message="tns:AFTERGR_TEMPSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_311">
+      <wsdl:input message="tns:AFTERTRANFER_311SoapIn" />
+      <wsdl:output message="tns:AFTERTRANFER_311SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_311PROGRAMMER">
+      <wsdl:input message="tns:AFTERTRANFER_311PROGRAMMERSoapIn" />
+      <wsdl:output message="tns:AFTERTRANFER_311PROGRAMMERSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_MOVEMENT">
+      <wsdl:input message="tns:AFTERTRANFER_MOVEMENTSoapIn" />
+      <wsdl:output message="tns:AFTERTRANFER_MOVEMENTSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_D045">
+      <wsdl:input message="tns:AFTERGR_D045SoapIn" />
+      <wsdl:output message="tns:AFTERGR_D045SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_CAR">
+      <wsdl:input message="tns:AFTERGR_CARSoapIn" />
+      <wsdl:output message="tns:AFTERGR_CARSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AFTER_GR">
+      <wsdl:input message="tns:AFTER_GRSoapIn" />
+      <wsdl:output message="tns:AFTER_GRSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ScannerUpdate">
+      <wsdl:input message="tns:ScannerUpdateSoapIn" />
+      <wsdl:output message="tns:ScannerUpdateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ScannerConditon">
+      <wsdl:input message="tns:ScannerConditonSoapIn" />
+      <wsdl:output message="tns:ScannerConditonSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnHand">
+      <wsdl:input message="tns:GetStockOnHandSoapIn" />
+      <wsdl:output message="tns:GetStockOnHandSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnHandTEST">
+      <wsdl:input message="tns:GetStockOnHandTESTSoapIn" />
+      <wsdl:output message="tns:GetStockOnHandTESTSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnLocation">
+      <wsdl:input message="tns:GetStockOnLocationSoapIn" />
+      <wsdl:output message="tns:GetStockOnLocationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReChkMaster">
+      <wsdl:input message="tns:ReChkMasterSoapIn" />
+      <wsdl:output message="tns:ReChkMasterSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ExchangeRate">
+      <wsdl:input message="tns:ExchangeRateSoapIn" />
+      <wsdl:output message="tns:ExchangeRateSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="postSoap" type="tns:postSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="TransferStock">
+      <soap:operation soapAction="http://tempuri.org/TransferStock" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferStock_521_PRD">
+      <soap:operation soapAction="http://tempuri.org/TransferStock_521_PRD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferStockDataToSAP_311">
+      <soap:operation soapAction="http://tempuri.org/TransferStockDataToSAP_311" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMaterail">
+      <soap:operation soapAction="http://tempuri.org/getMaterail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReworkStockExcel">
+      <soap:operation soapAction="http://tempuri.org/ReworkStockExcel" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReworkStock">
+      <soap:operation soapAction="http://tempuri.org/ReworkStock" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPOZTD">
+      <soap:operation soapAction="http://tempuri.org/getPOZTD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKC">
+      <soap:operation soapAction="http://tempuri.org/ReceiveFromTKC" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKCWithMenuID">
+      <soap:operation soapAction="http://tempuri.org/ReceiveFromTKCWithMenuID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKC_311_PRD">
+      <soap:operation soapAction="http://tempuri.org/ReceiveFromTKC_311_PRD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferKLine">
+      <soap:operation soapAction="http://tempuri.org/TransferKLine" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferTitan">
+      <soap:operation soapAction="http://tempuri.org/TransferTitan" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeliveryOrders">
+      <soap:operation soapAction="http://tempuri.org/GetDeliveryOrders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmDO">
+      <soap:operation soapAction="http://tempuri.org/ConfirmDO" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTBYSO">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderTMTBYSO" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTBYSO2">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderTMTBYSO2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTgtopas">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderTMTgtopas" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMT_TFP">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderTMT_TFP" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTgtopasAll">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderTMTgtopasAll" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreatePMORDER_WITH_GEN_TL">
+      <soap:operation soapAction="http://tempuri.org/CreatePMORDER_WITH_GEN_TL" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateDeliveryTMT">
+      <soap:operation soapAction="http://tempuri.org/GenerateDeliveryTMT" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderNONTMTBYSO2">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderNONTMTBYSO2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderNONTMTBYSO">
+      <soap:operation soapAction="http://tempuri.org/CreateSalesOrderNONTMTBYSO" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="KDTransfer2">
+      <soap:operation soapAction="http://tempuri.org/KDTransfer2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateDO_Gtopas1">
+      <soap:operation soapAction="http://tempuri.org/CreateDO_Gtopas1" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSO_PartSupply">
+      <soap:operation soapAction="http://tempuri.org/CreateSO_PartSupply" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GETCUSTOMERPART">
+      <soap:operation soapAction="http://tempuri.org/GETCUSTOMERPART" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeSaleOrder">
+      <soap:operation soapAction="http://tempuri.org/ChangeSaleOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckMaster">
+      <soap:operation soapAction="http://tempuri.org/CheckMaster" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendLine">
+      <soap:operation soapAction="http://tempuri.org/SendLine" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="lineAddToken">
+      <soap:operation soapAction="http://tempuri.org/lineAddToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromPROGRAMMER">
+      <soap:operation soapAction="http://tempuri.org/ReceiveFromPROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmDOBYPROGRAMMER">
+      <soap:operation soapAction="http://tempuri.org/ConfirmDOBYPROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_WITHMAT">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_WITHMAT" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZTDREC">
+      <soap:operation soapAction="http://tempuri.org/ZTDREC" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_WITHMATZTD">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_WITHMATZTD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferStockOnHandPROGRAMMER">
+      <soap:operation soapAction="http://tempuri.org/TransferStockOnHandPROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_PROGRAMMER">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_PROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_PROGRAMMER_TEST">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_PROGRAMMER_TEST" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ADDSTOCKBYEXCEL">
+      <soap:operation soapAction="http://tempuri.org/ADDSTOCKBYEXCEL" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ADDSTOCKBYEXCEL_522">
+      <soap:operation soapAction="http://tempuri.org/ADDSTOCKBYEXCEL_522" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_TEMP">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_TEMP" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_311">
+      <soap:operation soapAction="http://tempuri.org/AFTERTRANFER_311" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_311PROGRAMMER">
+      <soap:operation soapAction="http://tempuri.org/AFTERTRANFER_311PROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_MOVEMENT">
+      <soap:operation soapAction="http://tempuri.org/AFTERTRANFER_MOVEMENT" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_D045">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_D045" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_CAR">
+      <soap:operation soapAction="http://tempuri.org/AFTERGR_CAR" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTER_GR">
+      <soap:operation soapAction="http://tempuri.org/AFTER_GR" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ScannerUpdate">
+      <soap:operation soapAction="http://tempuri.org/ScannerUpdate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ScannerConditon">
+      <soap:operation soapAction="http://tempuri.org/ScannerConditon" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnHand">
+      <soap:operation soapAction="http://tempuri.org/GetStockOnHand" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnHandTEST">
+      <soap:operation soapAction="http://tempuri.org/GetStockOnHandTEST" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnLocation">
+      <soap:operation soapAction="http://tempuri.org/GetStockOnLocation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReChkMaster">
+      <soap:operation soapAction="http://tempuri.org/ReChkMaster" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExchangeRate">
+      <soap:operation soapAction="http://tempuri.org/ExchangeRate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="postSoap12" type="tns:postSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="TransferStock">
+      <soap12:operation soapAction="http://tempuri.org/TransferStock" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferStock_521_PRD">
+      <soap12:operation soapAction="http://tempuri.org/TransferStock_521_PRD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferStockDataToSAP_311">
+      <soap12:operation soapAction="http://tempuri.org/TransferStockDataToSAP_311" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMaterail">
+      <soap12:operation soapAction="http://tempuri.org/getMaterail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReworkStockExcel">
+      <soap12:operation soapAction="http://tempuri.org/ReworkStockExcel" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReworkStock">
+      <soap12:operation soapAction="http://tempuri.org/ReworkStock" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPOZTD">
+      <soap12:operation soapAction="http://tempuri.org/getPOZTD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKC">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveFromTKC" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKCWithMenuID">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveFromTKCWithMenuID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromTKC_311_PRD">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveFromTKC_311_PRD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferKLine">
+      <soap12:operation soapAction="http://tempuri.org/TransferKLine" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferTitan">
+      <soap12:operation soapAction="http://tempuri.org/TransferTitan" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeliveryOrders">
+      <soap12:operation soapAction="http://tempuri.org/GetDeliveryOrders" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmDO">
+      <soap12:operation soapAction="http://tempuri.org/ConfirmDO" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTBYSO">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderTMTBYSO" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTBYSO2">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderTMTBYSO2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTgtopas">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderTMTgtopas" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMT_TFP">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderTMT_TFP" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderTMTgtopasAll">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderTMTgtopasAll" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreatePMORDER_WITH_GEN_TL">
+      <soap12:operation soapAction="http://tempuri.org/CreatePMORDER_WITH_GEN_TL" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateDeliveryTMT">
+      <soap12:operation soapAction="http://tempuri.org/GenerateDeliveryTMT" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderNONTMTBYSO2">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderNONTMTBYSO2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSalesOrderNONTMTBYSO">
+      <soap12:operation soapAction="http://tempuri.org/CreateSalesOrderNONTMTBYSO" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="KDTransfer2">
+      <soap12:operation soapAction="http://tempuri.org/KDTransfer2" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateDO_Gtopas1">
+      <soap12:operation soapAction="http://tempuri.org/CreateDO_Gtopas1" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSO_PartSupply">
+      <soap12:operation soapAction="http://tempuri.org/CreateSO_PartSupply" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GETCUSTOMERPART">
+      <soap12:operation soapAction="http://tempuri.org/GETCUSTOMERPART" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeSaleOrder">
+      <soap12:operation soapAction="http://tempuri.org/ChangeSaleOrder" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckMaster">
+      <soap12:operation soapAction="http://tempuri.org/CheckMaster" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendLine">
+      <soap12:operation soapAction="http://tempuri.org/SendLine" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="lineAddToken">
+      <soap12:operation soapAction="http://tempuri.org/lineAddToken" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReceiveFromPROGRAMMER">
+      <soap12:operation soapAction="http://tempuri.org/ReceiveFromPROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmDOBYPROGRAMMER">
+      <soap12:operation soapAction="http://tempuri.org/ConfirmDOBYPROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_WITHMAT">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_WITHMAT" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZTDREC">
+      <soap12:operation soapAction="http://tempuri.org/ZTDREC" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_WITHMATZTD">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_WITHMATZTD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TransferStockOnHandPROGRAMMER">
+      <soap12:operation soapAction="http://tempuri.org/TransferStockOnHandPROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_PROGRAMMER">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_PROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_PROGRAMMER_TEST">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_PROGRAMMER_TEST" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ADDSTOCKBYEXCEL">
+      <soap12:operation soapAction="http://tempuri.org/ADDSTOCKBYEXCEL" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ADDSTOCKBYEXCEL_522">
+      <soap12:operation soapAction="http://tempuri.org/ADDSTOCKBYEXCEL_522" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_TEMP">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_TEMP" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_311">
+      <soap12:operation soapAction="http://tempuri.org/AFTERTRANFER_311" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_311PROGRAMMER">
+      <soap12:operation soapAction="http://tempuri.org/AFTERTRANFER_311PROGRAMMER" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERTRANFER_MOVEMENT">
+      <soap12:operation soapAction="http://tempuri.org/AFTERTRANFER_MOVEMENT" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_D045">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_D045" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTERGR_CAR">
+      <soap12:operation soapAction="http://tempuri.org/AFTERGR_CAR" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AFTER_GR">
+      <soap12:operation soapAction="http://tempuri.org/AFTER_GR" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ScannerUpdate">
+      <soap12:operation soapAction="http://tempuri.org/ScannerUpdate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ScannerConditon">
+      <soap12:operation soapAction="http://tempuri.org/ScannerConditon" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnHand">
+      <soap12:operation soapAction="http://tempuri.org/GetStockOnHand" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnHandTEST">
+      <soap12:operation soapAction="http://tempuri.org/GetStockOnHandTEST" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStockOnLocation">
+      <soap12:operation soapAction="http://tempuri.org/GetStockOnLocation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReChkMaster">
+      <soap12:operation soapAction="http://tempuri.org/ReChkMaster" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExchangeRate">
+      <soap12:operation soapAction="http://tempuri.org/ExchangeRate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="post">
+    <wsdl:port name="postSoap" binding="tns:postSoap">
+      <soap:address location="http://172.18.1.74:8888/WS/post.asmx" />
+    </wsdl:port>
+    <wsdl:port name="postSoap12" binding="tns:postSoap12">
+      <soap12:address location="http://172.18.1.74:8888/WS/post.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
