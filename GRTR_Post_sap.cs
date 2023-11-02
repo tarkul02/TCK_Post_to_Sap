@@ -24,7 +24,7 @@ namespace SAP_Batch_GR_TR
         }
         private void GRTRPost_sap(object sender, EventArgs e)
         {
-           // SendMail();
+
             GetAndUpdate_Batch_GR_TR_Log();
             Post_GR_to_Sap();
             Post_TR_to_Sap();
