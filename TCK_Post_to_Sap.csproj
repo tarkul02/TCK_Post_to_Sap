@@ -88,6 +88,7 @@
       <DependentUpon>Barcode.edmx</DependentUpon>
     </Compile>
     <Compile Include="Class\GetAndUpdate_LogDataValidate_GR_to_Sap.cs" />
+    <Compile Include="Class\GetAndUpdate_LogDataValidate_TR_to_Sap.cs" />
     <Compile Include="Class\LineNotify.cs" />
     <Compile Include="Class\SendMail.cs" />
     <Compile Include="GRTR_Post_sap.cs">
