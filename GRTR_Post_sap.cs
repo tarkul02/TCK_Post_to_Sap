@@ -12,7 +12,10 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Net.Mail;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
+    
 namespace SAP_Batch_GR_TR
 {
     public partial class GRTR_Post_sap : Form
@@ -24,7 +27,8 @@ namespace SAP_Batch_GR_TR
         }
         private void GRTRPost_sap(object sender, EventArgs e)
         {
-
+          
+            //LineNotify();
             GetAndUpdate_Batch_GR_TR_Log();
             Post_GR_to_Sap();
             Post_TR_to_Sap();
@@ -32,7 +36,44 @@ namespace SAP_Batch_GR_TR
             Application.Exit();
         }
 
-        private void SendMail()
+        
+        private async void LineNotify(string ValidateMessage)
+        {
+            string accessToken = "TaCIqrKiktdYILv8GEhlICwaMAWZJ5xUx7j22gnWVbw"; // Replace with your Line Notify access token
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string message = ValidateMessage;
+                    //string message = "Error_test";
+                    string url = $"https://notify-api.line.me/api/notify";
+
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+
+                    var content = new FormUrlEncodedContent(new[]
+                    {
+                    new KeyValuePair<string, string>("message", message),
+                    });
+
+                    var response = await client.PostAsync(url, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Line Notify message sent successfully!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to send Line Notify message. Status code: " + response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+
+        }
+            private void SendMail()
         {
             const string ToAddress = "Beerbeerlovemusic@gmail.com";
             const string FromAddress = "tarkulbeer@gmail.com";
@@ -125,16 +166,20 @@ namespace SAP_Batch_GR_TR
             }
         }
         
-        private void GetAndUpdate_LogDataValidate_GR_to_Sap(String partno, int qty, String custid, String FacNo, String Plant, String store, int MvmntType, String postdate, String PostTime, String headertext, int Action, string Type)
+        private string GetAndUpdate_LogDataValidate_GR_to_Sap(String partno, int qty, String custid, String FacNo, String Plant, String store, int MvmntType, String postdate, String PostTime, String headertext, int Action, string Type)
         {
+   
             string Message = "";
      
-            Message += partno.Length > 1 ? "MatNo ," : "".ToString().Trim();
-            Message += custid.Length > 1 ? "CustID ," : "".ToString().Trim();
+            Message += partno.Length > 1 ? partno+"," : "".ToString().Trim();
+            //Message += qty.Length > 1 ? "MatNo ," : "".ToString().Trim();
+            Message += custid.Length > 1 ? custid+" ," : "".ToString().Trim();
+            Message += store.Length > 1 ? store+"," : "".ToString().Trim();
+           // Message += postdate.Length > 1 ? "CustID ," : "".ToString().Trim();
+           // Message += headertext.Length > 1 ? "CustID ," : "".ToString().Trim();
 
             Message = Message.Substring(0, Message.Length - 1);
-            string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
-
+            string ValidateMessage = "\n( "+ partno +": "+ Message + ")";
             string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
             
 
@@ -169,11 +214,13 @@ namespace SAP_Batch_GR_TR
                 cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                 cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
                 conn.Open();
+               
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
 
 
             }
+            return ValidateMessage;
         }
 
         private void GetAndUpdate_LogDataValidate_TR_to_Sap(string Slipno, string Datatype, string Type)
@@ -181,7 +228,6 @@ namespace SAP_Batch_GR_TR
             string Message = "";
 
             Message += Slipno.Length > 1 ? "Slipno ," : "".ToString().Trim();
-
             Message = Message.Substring(0, Message.Length - 1);
             string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
 
@@ -245,6 +291,7 @@ namespace SAP_Batch_GR_TR
 
             if (GRdata.Rows.Count > 0)
             {
+                string ValidateMessage = "Error :";
                 foreach (DataRow item in GRdata.Rows)
                 {
 
@@ -262,10 +309,12 @@ namespace SAP_Batch_GR_TR
                     Action = Convert.ToInt32(item["Action"].ToString());
                     Type = "GR".ToString().Trim();
 
-                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
-                    
+                    string DataValidateMessage =  GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    ValidateMessage = ValidateMessage + DataValidateMessage;
+                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
+
                 }
+                LineNotify(ValidateMessage);
             }
             if (GRErrdata.Rows.Count > 0)
             {
