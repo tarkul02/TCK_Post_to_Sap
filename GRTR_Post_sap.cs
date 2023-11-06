@@ -20,92 +20,19 @@ namespace SAP_Batch_GR_TR
 {
     public partial class GRTR_Post_sap : Form
     {
-      
+
         public GRTR_Post_sap()
         {
             InitializeComponent();
         }
         private void GRTRPost_sap(object sender, EventArgs e)
         {
-          
-            //LineNotify();
+            
             GetAndUpdate_Batch_GR_TR_Log();
             Post_GR_to_Sap();
             Post_TR_to_Sap();
             End_update();
-            Application.Exit();
-        }
-
-        
-        private async void LineNotify(string ValidateMessage)
-        {
-            string accessToken = "TaCIqrKiktdYILv8GEhlICwaMAWZJ5xUx7j22gnWVbw"; // Replace with your Line Notify access token
-            using (HttpClient client = new HttpClient())
-            {
-                try
-                {
-                    string message = ValidateMessage;
-                    //string message = "Error_test";
-                    string url = $"https://notify-api.line.me/api/notify";
-
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
-                    var content = new FormUrlEncodedContent(new[]
-                    {
-                    new KeyValuePair<string, string>("message", message),
-                    });
-
-                    var response = await client.PostAsync(url, content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Console.WriteLine("Line Notify message sent successfully!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to send Line Notify message. Status code: " + response.StatusCode);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error: " + ex.Message);
-                }
-            }
-
-        }
-            private void SendMail()
-        {
-            const string ToAddress = "Beerbeerlovemusic@gmail.com";
-            const string FromAddress = "tarkulbeer@gmail.com";
-
-            const string GoogleAppPassword = "ajdw rtsh wcqu kooh";
-
-            const string EmailSubject = "Test email!!222333";
-            const string EmailBody = "<h1>Hi</h1>";
-
-            Console.WriteLine("Hello World!");
-            try
-            {
-                var smtpClient = new SmtpClient("smtp.gmail.com")
-                {
-                    Port = 587,
-                    Credentials = new NetworkCredential(FromAddress, GoogleAppPassword),
-                    EnableSsl = true,
-                };
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress(FromAddress),
-                    Subject = EmailSubject,
-                    Body = EmailBody,
-                    IsBodyHtml = true,
-                };
-                mailMessage.To.Add(ToAddress);
-
-                smtpClient.Send(mailMessage);
-            }
-            catch (Exception ex) { 
-                Console.WriteLine(ex);
-            }
+            GetErrorAndNotify();
         }
 
         string start_Time = "";
@@ -129,7 +56,7 @@ namespace SAP_Batch_GR_TR
 
             SqlConnection conn = new SqlConnection(connString);
             using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {            
+            {
                 cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
                 cmd.Parameters.AddWithValue("@GR_Re_NO", dt.Rows[0]["GR_Re_NO"].ToString());
                 cmd.Parameters.AddWithValue("@TR_NO", dt.Rows[0]["TR_NO"].ToString());
@@ -143,50 +70,38 @@ namespace SAP_Batch_GR_TR
             }
         }
 
-        
 
-        private void End_update()
-        {
-            var sql = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '"+ start_Time + "'";
-            
-            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
-            if (setting != null)
-            {
-                connString = setting.ConnectionString;
-            }
 
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@End_Time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                conn.Open();
-                int result = cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-        }
-        
+       
+
         private string GetAndUpdate_LogDataValidate_GR_to_Sap(String partno, int qty, String custid, String FacNo, String Plant, String store, int MvmntType, String postdate, String PostTime, String headertext, int Action, string Type)
         {
-   
-            string Message = "";
-     
-            Message += partno.Length > 1 ? partno+"," : "".ToString().Trim();
-            //Message += qty.Length > 1 ? "MatNo ," : "".ToString().Trim();
-            Message += custid.Length > 1 ? custid+" ," : "".ToString().Trim();
-            Message += store.Length > 1 ? store+"," : "".ToString().Trim();
-           // Message += postdate.Length > 1 ? "CustID ," : "".ToString().Trim();
-           // Message += headertext.Length > 1 ? "CustID ," : "".ToString().Trim();
 
-            Message = Message.Substring(0, Message.Length - 1);
-            string ValidateMessage = "\n( "+ partno +": "+ Message + ")";
-            string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
-            
+            string Message = "";
+            string qtyType = qty.GetType().ToString();
+            Message += partno.Length > 19 ? partno+"," : "".ToString().Trim();
+            Message += qtyType != "System.Int32" ? "QRQty Type ," : "".ToString().Trim(); ;
+            Message += qty.ToString().Length > 3 ? "QRQty ," : "".ToString().Trim();
+            Message += custid.Length > 13 ? "Custid ," : "".ToString().Trim();
+            Message += store.Length > 5 ? store + "," : "".ToString().Trim();
+            Message += postdate.Length > 9 ? "CustID ," : "".ToString().Trim();
+            Message += headertext.Length > 8001 ? "CustID ," : "".ToString().Trim();
+
+            string ValidateMessage = "";
+            if (Message != "") {
+                Message = Message.Substring(0, Message.Length - 1);
+                ValidateMessage = "\n( " + "Error " + partno + ": " + Message + ")";
+            }
+            else {
+                 ValidateMessage = "";
+            }
+            //string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
+
 
             var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] " +
-                "(MatNo, CustID, FacNo, Plant, SLoc, MvmntType, PostDate, PostTime, QRQty, HeaderText, Action ,Type ,Status, CreateDate ,ValidateMessage) " +
+                "(MatNo, CustID, FacNo, Plant, SLoc, MvmntType, PostDate, PostTime, QRQty, HeaderText, Action ,Type , CreateDate ,ValidateMessage) " +
                 "VALUES " +
-                "(@MatNo,@CustID,@FacNo,@Plant,@SLoc,@MvmntType,@PostDate,@PostTime,@QRQty,@HeaderText,@Action,@Type,@Status,@CreateDate  ,@ValidateMessage)";
+                "(@MatNo,@CustID,@FacNo,@Plant,@SLoc,@MvmntType,@PostDate,@PostTime,@QRQty,@HeaderText,@Action,@Type,@CreateDate  ,@ValidateMessage)";
 
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
@@ -194,7 +109,7 @@ namespace SAP_Batch_GR_TR
             {
                 connString = setting.ConnectionString;
             }
-     
+
             SqlConnection conn = new SqlConnection(connString);
             using (SqlCommand cmd = new SqlCommand(sql, conn))
             {
@@ -210,15 +125,13 @@ namespace SAP_Batch_GR_TR
                 cmd.Parameters.AddWithValue("@HeaderText", headertext);
                 cmd.Parameters.AddWithValue("@Action", Action);
                 cmd.Parameters.AddWithValue("@Type", Type);
-                cmd.Parameters.AddWithValue("@Status", Status);
+                //cmd.Parameters.AddWithValue("@Status", Status);
                 cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                 cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
                 conn.Open();
-               
+
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
-
-
             }
             return ValidateMessage;
         }
@@ -228,16 +141,25 @@ namespace SAP_Batch_GR_TR
             string Message = "";
 
             Message += Slipno.Length > 1 ? "Slipno ," : "".ToString().Trim();
-            Message = Message.Substring(0, Message.Length - 1);
-            string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
-
-            string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
-
+            Message += Datatype.Length > 1 ? "Datatype ," : "".ToString().Trim();
+            
+            // string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
+            //string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
+            string ValidateMessage = "";
+            if (Message != "")
+            {
+                Message = Message.Substring(0, Message.Length - 1);
+                ValidateMessage = "\n( " + "Error " + Slipno + ": " + Message + ")";
+            }
+            else
+            {
+                ValidateMessage = "";
+            }
 
             var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
-                "(SlipNo ,ValidateMessage ,Type ,Status, CreateDate ,Datatype) " +
+                "(SlipNo ,ValidateMessage ,Type, CreateDate ,Datatype) " +
                 "VALUES " +
-                "(@SlipNo ,@ValidateMessage ,@Type,@Status,@CreateDate ,@Datatype)";
+                "(@SlipNo ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
 
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
@@ -252,7 +174,7 @@ namespace SAP_Batch_GR_TR
                 cmd.Parameters.AddWithValue("@SlipNo", Slipno);
                 cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
                 cmd.Parameters.AddWithValue("@Type", Type);
-                cmd.Parameters.AddWithValue("@Status", Status);
+                //cmd.Parameters.AddWithValue("@Status", Status);
                 cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                 cmd.Parameters.AddWithValue("@Datatype", Datatype);
                 conn.Open();
@@ -281,7 +203,7 @@ namespace SAP_Batch_GR_TR
             DataTable GRdata = new DataTable();
             DataTable GRErrdata = new DataTable();
             var ws = new SapTransfer.post();
-            
+
 
 
             sql = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
@@ -291,7 +213,7 @@ namespace SAP_Batch_GR_TR
 
             if (GRdata.Rows.Count > 0)
             {
-                string ValidateMessage = "Error :";
+                //string ValidateMessage = "Error :";
                 foreach (DataRow item in GRdata.Rows)
                 {
 
@@ -309,12 +231,14 @@ namespace SAP_Batch_GR_TR
                     Action = Convert.ToInt32(item["Action"].ToString());
                     Type = "GR".ToString().Trim();
 
-                    string DataValidateMessage =  GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    ValidateMessage = ValidateMessage + DataValidateMessage;
+                    string DataValidateMessage = GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    //ValidateMessage = ValidateMessage + DataValidateMessage;
                     //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
 
                 }
-                LineNotify(ValidateMessage);
+
+                //Class.LineNotify lineNotify = new Class.LineNotify();
+                //lineNotify.FNLineNotify(ValidateMessage);
             }
             if (GRErrdata.Rows.Count > 0)
             {
@@ -335,7 +259,7 @@ namespace SAP_Batch_GR_TR
                     Type = "GR_redo".ToString().Trim();
 
                     GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
+                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
 
                 }
             }
@@ -345,7 +269,7 @@ namespace SAP_Batch_GR_TR
         }
 
 
-        private void Post_TR_to_Sap() 
+        private void Post_TR_to_Sap()
         {
             string sql = "";
             string Slipno = "";
@@ -369,7 +293,7 @@ namespace SAP_Batch_GR_TR
                     Datatype = "12";
                     Type = "TR";
                     GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                    var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
                 }
             }
 
@@ -380,10 +304,82 @@ namespace SAP_Batch_GR_TR
                     Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
                     Datatype = "13";
                     Type = "TR_redo";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype , Type);
-                    var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
+                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
                 }
             }
+        }
+
+        private void GetErrorAndNotify()
+        {
+            string sql = "";
+            string Datatype = "";
+            string Start_Time = "";
+            string End_Time = "";
+            string ErrorID = "";
+            DataTable GetRoundData = new DataTable();
+            DataTable GetRoundDataError = new DataTable();
+            
+            sql = "SELECT TOP 1 * FROM [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
+            GetRoundData = GetQuery(sql);
+
+            if (GetRoundData.Rows.Count > 0)
+            {
+                foreach (DataRow item in GetRoundData.Rows)
+                {
+
+                    Start_Time = item["Start_Time"].ToString().Trim(); ;
+                    End_Time = item["End_Time"].ToString().Trim(); ;
+                }
+            }
+
+            //sql = "SELECT * FROM [Barcode].[dbo].[T_LOG_STOCK_ERROR] WHERE UpdDate BETWEEN '"+ Start_Time + "'  AND '"+ End_Time+"'";
+            sql = "SELECT * FROM [Barcode].[dbo].[T_LOG_STOCK_ERROR] WHERE UpdDate BETWEEN '2023-10-20 15:30:20.100'  AND '2023-10-20 15:30:20.100'";
+            GetRoundDataError = GetQuery(sql);
+           
+            if (GetRoundDataError.Rows.Count > 0)
+            {
+                foreach (DataRow item in GetRoundDataError.Rows)
+                {
+
+                    ErrorID += item["ID"].ToString() + ", ";
+                }
+                if (ErrorID == "") {
+                    string ValidateMessage =  "Completed : \nรอบ\n " + Start_Time + " \n " + End_Time ;
+                    Class.LineNotify lineNotify = new Class.LineNotify();
+                    lineNotify.FNLineNotify(ValidateMessage);
+                }
+                else {
+                    string ValidateMessage = "Error : \nรอบ\n " + "2023-10-20 15:30:20.100" + " \n " + "2023-10-20 15:30:20.100" + "\n Error Item : ( " + ErrorID + " )";
+                    //string ValidateMessage = "Error : \nรอบ\n " + Start_Time +" \n "+  End_Time + "\n Error Item : ( "+ ErrorID + " )";
+                    Class.LineNotify lineNotify = new Class.LineNotify();
+                    lineNotify.FNLineNotify(ValidateMessage);
+                  
+                }
+            }
+        }
+
+        private void End_update()
+        {
+            var sql = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
+
+            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+            string connString = "";
+            if (setting != null)
+            {
+                connString = setting.ConnectionString;
+            }
+
+            SqlConnection conn = new SqlConnection(connString);
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@End_Time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                conn.Open();
+                int result = cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+
+      
         }
 
         public DataTable GetQuery(string sql)
@@ -406,9 +402,10 @@ namespace SAP_Batch_GR_TR
                 conn.Close();
                 da.Dispose();
             }
-            
+
             return dt;
         }
+       
 
     }
 }

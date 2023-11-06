@@ -5,20 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using System.Windows.Forms;
 
-namespace SAP_Batch_GR_TR.LineNotify
+namespace SAP_Batch_GR_TR.Class
 {
     class LineNotify
     {
 
-        public interface LineNotify2
+        internal void FNLineNotify(string ValidateMessage)
         {
-            void FNLineNotify(string ValidateMessage);
+            LineNotifyClass(ValidateMessage);
         }
-
-        public async void  FNLineNotify(string ValidateMessage)
+        public async void LineNotifyClass(string ValidateMessage)
         {
-            string accessToken = "TaCIqrKiktdYILv8GEhlICwaMAWZJ5xUx7j22gnWVbw"; // Replace with your Line Notify access token
+            string accessToken = "Hgzg7Idj9s0c7L3Rlloh5lr2wFtuJZYzTJxBo2aFQL4"; // Replace with your Line Notify access token
             using (HttpClient client = new HttpClient())
             {
                 try
@@ -39,6 +39,7 @@ namespace SAP_Batch_GR_TR.LineNotify
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("Line Notify message sent successfully!");
+                        Application.Exit();
                     }
                     else
                     {
@@ -52,5 +53,6 @@ namespace SAP_Batch_GR_TR.LineNotify
             }
 
         }
+
     }
 }

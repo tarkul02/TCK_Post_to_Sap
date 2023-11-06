@@ -5,7 +5,6 @@ C:\TKC\TCK_Post_to_Sap\bin\Debug\EntityFramework.dll
 C:\TKC\TCK_Post_to_Sap\bin\Debug\EntityFramework.SqlServer.dll
 C:\TKC\TCK_Post_to_Sap\bin\Debug\EntityFramework.xml
 C:\TKC\TCK_Post_to_Sap\bin\Debug\EntityFramework.SqlServer.xml
-C:\TKC\TCK_Post_to_Sap\obj\Debug\TCK_Post_to_Sap.csproj.AssemblyReference.cache
 C:\TKC\TCK_Post_to_Sap\obj\Debug\TCK_Post_to_Sap.csproj.CoreCompileInputs.cache
 C:\TKC\TCK_Post_to_Sap\obj\Debug\TCK_Post_to_Sap.csproj.CopyComplete
 C:\TKC\TCK_Post_to_Sap\obj\Debug\TCK_Post_to_Sap.exe
