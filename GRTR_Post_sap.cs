@@ -14,6 +14,8 @@ using System.Net.Mail;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using SAP_Batch_GR_TR;
+
 
     
 namespace SAP_Batch_GR_TR
@@ -25,13 +27,14 @@ namespace SAP_Batch_GR_TR
         {
             InitializeComponent();
         }
-        private void GRTRPost_sap(object sender, EventArgs e)
+        private async void GRTRPost_sap(object sender, EventArgs e)
         {
             
             GetAndUpdate_Batch_GR_TR_Log();
             Post_GR_to_Sap();
             Post_TR_to_Sap();
             End_update();
+            await Task.Delay(5000);
             GetErrorAndNotify();
         }
 
@@ -40,6 +43,7 @@ namespace SAP_Batch_GR_TR
         // บันทึกรอบเวลาการส่งข้อมูล
         private void GetAndUpdate_Batch_GR_TR_Log()
         {
+
             var sql = " select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A " +
                 "left join(select count(*) GR_Re_NO, Action from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action " +
                 "left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action " +
@@ -65,27 +69,136 @@ namespace SAP_Batch_GR_TR
                 conn.Open();
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
+            }
+        }
 
+        private void Post_GR_to_Sap()
+        {
+            string sql = "";
+            //GR
+            string partno = "";
+            int qty = 0;
+            string custid = "";
+            string FacNo = "";
+            string Plant = "";
+            string store = "";
+            int MvmntType = 0;
+            string postdate = "";
+            string PostTime = "";
+            string headertext = "";
+            int Action = 0;
+            string Type = "";
+            string Status = "";
+            DataTable GRdata = new DataTable();
+            DataTable GRErrdata = new DataTable();
+            var ws = new SapTransfer.post();
 
+            sql = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
+            GRdata = GetQuery(sql);
+            sql = "select * from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1";
+            GRErrdata = GetQuery(sql);
+
+            if (GRdata.Rows.Count > 0)
+            {
+                //string ValidateMessage = "Error :";
+                foreach (DataRow item in GRdata.Rows)
+                {
+
+                    partno = "IT|" + item["MatNo"].ToString().Trim();
+                    qty = Convert.ToInt32(item["QRQty"].ToString());
+                    custid = item["CustID"].ToString().Trim();
+                    FacNo = item["FacNo"].ToString().Trim();
+                    Plant = item["Plant"].ToString().Trim();
+                    store = item["SLoc"].ToString().Trim();
+                    MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
+                    postdate = item["PostDate"].ToString().Trim();
+                    PostTime = item["PostTime"].ToString().Trim();
+                    headertext = "IT|" + item["HeaderText"].ToString().Trim();
+                    Action = Convert.ToInt32(item["Action"].ToString());
+                    Type = "GR".ToString().Trim();
+
+                    string DataValidateMessage = GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
+                }
+            }
+            if (GRErrdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in GRErrdata.Rows)
+                {
+                    partno = "IT|" + item["MatNo"].ToString().Trim();
+                    qty = Convert.ToInt32(item["QRQty"].ToString());
+                    custid = item["CustID"].ToString().Trim();
+                    FacNo = item["FacNo"].ToString().Trim();
+                    Plant = item["Plant"].ToString().Trim();
+                    store = item["SLoc"].ToString().Trim();
+                    MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
+                    postdate = item["PostDate"].ToString().Trim();
+                    PostTime = item["PostTime"].ToString().Trim();
+                    headertext = "IT|" + item["HeaderText"].ToString().Trim();
+                    Action = Convert.ToInt32(item["Action"].ToString());
+                    Type = "GR_redo".ToString().Trim();
+
+                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
+
+                }
             }
         }
 
 
+        private void Post_TR_to_Sap()
+        {
+            string sql = "";
+            string Slipno = "";
+            string Datatype = "";
+            string Type = "";
+            DataTable TRdata = new DataTable();
+            DataTable TRErrdata = new DataTable();
 
-       
+            var ws = new SapTransfer.post();
 
+            sql = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+            TRdata = GetQuery(sql);
+            sql = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
+            TRErrdata = GetQuery(sql);
+
+            if (TRdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in TRdata.Rows)
+                {
+                    Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                    Datatype = "12";
+                    Type = "TR";
+                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
+                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                }
+            }
+
+            if (TRErrdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in TRErrdata.Rows)
+                {
+                    Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                    Datatype = "13";
+                    Type = "TR_redo";
+                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
+                    var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                }
+            }
+        }
         private string GetAndUpdate_LogDataValidate_GR_to_Sap(String partno, int qty, String custid, String FacNo, String Plant, String store, int MvmntType, String postdate, String PostTime, String headertext, int Action, string Type)
         {
 
             string Message = "";
-            string qtyType = qty.GetType().ToString();
-            Message += partno.Length > 19 ? partno+"," : "".ToString().Trim();
-            Message += qtyType != "System.Int32" ? "QRQty Type ," : "".ToString().Trim(); ;
-            Message += qty.ToString().Length > 3 ? "QRQty ," : "".ToString().Trim();
+            string qtyType = qty.ToString();
+            //DateTime dateTime = DateTime.Parse(postdate);
+
+            Message += partno.Length  == 17 ? partno+"," : "".ToString().Trim();
+            Message += qtyType.Length > 4 ? "QRQty ," : "".ToString().Trim();
             Message += custid.Length > 13 ? "Custid ," : "".ToString().Trim();
             Message += store.Length > 5 ? store + "," : "".ToString().Trim();
-            Message += postdate.Length > 9 ? "CustID ," : "".ToString().Trim();
-            Message += headertext.Length > 8001 ? "CustID ," : "".ToString().Trim();
+            Message += postdate.Length == 8 ? "Postdate ," : "".ToString().Trim();
+            Message += headertext.Length == 25 ? "headertext ," : "".ToString().Trim();
 
             string ValidateMessage = "";
             if (Message != "") {
@@ -96,7 +209,6 @@ namespace SAP_Batch_GR_TR
                  ValidateMessage = "";
             }
             //string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
-
 
             var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] " +
                 "(MatNo, CustID, FacNo, Plant, SLoc, MvmntType, PostDate, PostTime, QRQty, HeaderText, Action ,Type , CreateDate ,ValidateMessage) " +
@@ -140,9 +252,8 @@ namespace SAP_Batch_GR_TR
         {
             string Message = "";
 
-            Message += Slipno.Length > 1 ? "Slipno ," : "".ToString().Trim();
-            Message += Datatype.Length > 1 ? "Datatype ," : "".ToString().Trim();
-            
+            Message += Slipno.Length == 17 ? "Slipno ," : "".ToString().Trim();
+            Message += Datatype.Length == 2 ? "Datatype ," : "".ToString().Trim();
             // string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
             //string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
             string ValidateMessage = "";
@@ -180,133 +291,6 @@ namespace SAP_Batch_GR_TR
                 conn.Open();
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
-            }
-
-        }
-        private void Post_GR_to_Sap()
-        {
-            string sql = "";
-            //GR
-            string partno = "";
-            int qty = 0;
-            string custid = "";
-            string FacNo = "";
-            string Plant = "";
-            string store = "";
-            int MvmntType = 0;
-            string postdate = "";
-            string PostTime = "";
-            string headertext = "";
-            int Action = 0;
-            string Type = "";
-            string Status = "";
-            DataTable GRdata = new DataTable();
-            DataTable GRErrdata = new DataTable();
-            var ws = new SapTransfer.post();
-
-
-
-            sql = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
-            GRdata = GetQuery(sql);
-            sql = "select * from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1";
-            GRErrdata = GetQuery(sql);
-
-            if (GRdata.Rows.Count > 0)
-            {
-                //string ValidateMessage = "Error :";
-                foreach (DataRow item in GRdata.Rows)
-                {
-
-
-                    partno = item["MatNo"].ToString().Trim();
-                    qty = Convert.ToInt32(item["QRQty"].ToString());
-                    custid = item["CustID"].ToString().Trim();
-                    FacNo = item["FacNo"].ToString().Trim();
-                    Plant = item["Plant"].ToString().Trim();
-                    store = item["SLoc"].ToString().Trim();
-                    MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
-                    postdate = item["PostDate"].ToString().Trim();
-                    PostTime = item["PostTime"].ToString().Trim();
-                    headertext = "IT|" + item["HeaderText"].ToString().Trim();
-                    Action = Convert.ToInt32(item["Action"].ToString());
-                    Type = "GR".ToString().Trim();
-
-                    string DataValidateMessage = GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    //ValidateMessage = ValidateMessage + DataValidateMessage;
-                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
-
-                }
-
-                //Class.LineNotify lineNotify = new Class.LineNotify();
-                //lineNotify.FNLineNotify(ValidateMessage);
-            }
-            if (GRErrdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in GRErrdata.Rows)
-                {
-
-                    partno = item["MatNo"].ToString().Trim();
-                    qty = Convert.ToInt32(item["QRQty"].ToString());
-                    custid = item["CustID"].ToString().Trim();
-                    FacNo = item["FacNo"].ToString().Trim();
-                    Plant = item["Plant"].ToString().Trim();
-                    store = item["SLoc"].ToString().Trim();
-                    MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
-                    postdate = item["PostDate"].ToString().Trim();
-                    PostTime = item["PostTime"].ToString().Trim();
-                    headertext = "IT|" + item["HeaderText"].ToString().Trim();
-                    Action = Convert.ToInt32(item["Action"].ToString());
-                    Type = "GR_redo".ToString().Trim();
-
-                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
-
-                }
-            }
-
-
-
-        }
-
-
-        private void Post_TR_to_Sap()
-        {
-            string sql = "";
-            string Slipno = "";
-            string Datatype = "";
-            string Type = "";
-            DataTable TRdata = new DataTable();
-            DataTable TRErrdata = new DataTable();
-
-            var ws = new SapTransfer.post();
-
-            sql = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
-            TRdata = GetQuery(sql);
-            sql = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
-            TRErrdata = GetQuery(sql);
-
-            if (TRdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in TRdata.Rows)
-                {
-                    Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                    Datatype = "12";
-                    Type = "TR";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
-                }
-            }
-
-            if (TRErrdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in TRErrdata.Rows)
-                {
-                    Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                    Datatype = "13";
-                    Type = "TR_redo";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
-                }
             }
         }
 
@@ -378,8 +362,6 @@ namespace SAP_Batch_GR_TR
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
             }
-
-      
         }
 
         public DataTable GetQuery(string sql)
@@ -402,10 +384,7 @@ namespace SAP_Batch_GR_TR
                 conn.Close();
                 da.Dispose();
             }
-
             return dt;
         }
-       
-
     }
 }
