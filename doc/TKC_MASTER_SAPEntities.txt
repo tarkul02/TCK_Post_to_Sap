@@ -1,0 +1,43 @@
+public partial class TKC_MASTER_SAPEntities : DbContext
+    {
+        public TKC_MASTER_SAPEntities()
+            : base("name=TKC_MASTER_SAPEntities")
+        {
+        }
+    
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            throw new UnintentionalCodeFirstException();
+        }
+    
+        public virtual DbSet<T_LOCATION_SAP> T_LOCATION_SAP { get; set; }
+        public virtual DbSet<T_MS_ScannerList> T_MS_ScannerList { get; set; }
+        public virtual DbSet<T_UPLOAD_SO_TO_SAP> T_UPLOAD_SO_TO_SAP { get; set; }
+        public virtual DbSet<T_CUST_SOLD_TO> T_CUST_SOLD_TO { get; set; }
+        public virtual DbSet<T_LOG_POST_GR> T_LOG_POST_GR { get; set; }
+        public virtual DbSet<T_PO_GTOPAS_FOR_SO> T_PO_GTOPAS_FOR_SO { get; set; }
+        public virtual DbSet<V_Gtopas_FOR_SO> V_Gtopas_FOR_SO { get; set; }
+        public virtual DbSet<T_CUST_SHIP_TO_BY_CUSTID> T_CUST_SHIP_TO_BY_CUSTID { get; set; }
+        public virtual DbSet<T_ITEM_MS> T_ITEM_MS { get; set; }
+    
+        public virtual int spUpdInvNoGtopas(string dO_Group, string cAR_No, string dO_No, Nullable<System.DateTime> shipDate)
+        {
+            var dO_GroupParameter = dO_Group != null ?
+                new ObjectParameter("DO_Group", dO_Group) :
+                new ObjectParameter("DO_Group", typeof(string));
+    
+            var cAR_NoParameter = cAR_No != null ?
+                new ObjectParameter("CAR_No", cAR_No) :
+                new ObjectParameter("CAR_No", typeof(string));
+    
+            var dO_NoParameter = dO_No != null ?
+                new ObjectParameter("DO_No", dO_No) :
+                new ObjectParameter("DO_No", typeof(string));
+    
+            var shipDateParameter = shipDate.HasValue ?
+                new ObjectParameter("ShipDate", shipDate) :
+                new ObjectParameter("ShipDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("spUpdInvNoGtopas", dO_GroupParameter, cAR_NoParameter, dO_NoParameter, shipDateParameter);
+        }
+    }

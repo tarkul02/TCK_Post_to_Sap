@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 
-
 namespace SAP_Batch_GR_TR
 {
     class Program

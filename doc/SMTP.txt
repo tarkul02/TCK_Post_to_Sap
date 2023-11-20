@@ -1,0 +1,7 @@
+                Dim SmtpServer As New SmtpClient()
+                Dim mail As New MailMessage()
+                SmtpServer.Credentials = New Net.NetworkCredential("prones", "zaq1@wsx")
+                SmtpServer.Port = 25
+                SmtpServer.Host = "172.18.1.2"
+                mail = New MailMessage()
+                mail.From = New MailAddress("prones_g@tkoito.co.th")

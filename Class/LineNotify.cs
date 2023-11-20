@@ -39,7 +39,7 @@ namespace SAP_Batch_GR_TR.Class
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("Line Notify message sent successfully!");
-                        Application.Exit();
+                        //Application.Exit();
                     }
                     else
                     {
