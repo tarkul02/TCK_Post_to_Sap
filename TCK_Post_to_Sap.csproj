@@ -104,14 +104,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Barcode.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Class\servicePostSapGI.cs" />
+    <Compile Include="Class\Z_CONFIRM_PICKING_GOODS_ISSUE.cs" />
+    <Compile Include="Class\servicePostSapGR.cs" />
     <Compile Include="Class\LineNotify.cs" />
     <Compile Include="Class\DEV_Z_GOODSMVT_CREATE1.cs" />
+    <Compile Include="Class\servicePostSapTR.cs" />
     <Compile Include="GRTR_Post_sap.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GRTR_Post_sap.Designer.cs">
       <DependentUpon>GRTR_Post_sap.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Results.cs" />
+    <Compile Include="Models\T_LOCATION_SAP.cs" />
+    <Compile Include="Models\T_barcode_trans.cs" />
+    <Compile Include="Models\T_LOG_ADD_STOCK.cs" />
+    <Compile Include="Models\T_LOG_GR_STOCK.cs" />
+    <Compile Include="Models\T_LOG_STOCK_ERROR.cs" />
+    <Compile Include="Models\T_TR_TO_SAP_MASTER.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

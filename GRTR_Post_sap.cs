@@ -18,6 +18,7 @@ using System.IO;
 using OfficeOpenXml;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using DEV_Z_GOODSMVT_CREATE1.Class;
+using SAP_Batch_GR_TR.SapTransfer;
 
 namespace SAP_Batch_GR_TR
 {
@@ -30,21 +31,24 @@ namespace SAP_Batch_GR_TR
         }
         private void GRTRPost_sap(object sender, EventArgs e)
         {
-            Console.WriteLine("start GetAndUpdate_Batch_GR_TR_Log");
-            GetAndUpdate_Batch_GR_TR_Log();
-            Console.WriteLine("end GetAndUpdate_Batch_GR_TR_Log");
-            Console.WriteLine("start Post_GR_to_Sap");
-            Post_GR_to_Sap();
-            Console.WriteLine("end Post_GR_to_Sap");
+            //Console.WriteLine("start GetAndUpdate_Batch_GR_TR_Log");
+            //GetAndUpdate_Batch_GR_TR_Log();
+            //Console.WriteLine("end GetAndUpdate_Batch_GR_TR_Log");
+            //Console.WriteLine("start Post_GR_to_Sap");
+            //Post_GR_to_Sap();
+            //Console.WriteLine("end Post_GR_to_Sap");
             Console.WriteLine("start Post_TR_to_Sap");
             Post_TR_to_Sap();
             Console.WriteLine("end Post_TR_to_Sap");
-            Console.WriteLine("start End_update");
-            End_update();
-            Console.WriteLine("end End_update");
-            Console.WriteLine("start GetErrorAndNotify");
-            GetErrorAndNotify();
-            Console.WriteLine("end GetErrorAndNotify");
+            Console.WriteLine("start Post_GI_Sap");
+            Post_GI_Sap();
+            Console.WriteLine("end Post_GI_Sap");
+            //Console.WriteLine("start End_update");
+            //End_update();
+            //Console.WriteLine("end End_update");
+            //Console.WriteLine("start GetErrorAndNotify");
+            //GetErrorAndNotify();
+            //Console.WriteLine("end GetErrorAndNotify");
             //Application.Exit();
         }
 
@@ -59,7 +63,8 @@ namespace SAP_Batch_GR_TR
                 "left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action " +
                 "left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action";
             Console.WriteLine("call database");
-            var dt = GetQuery(sql);
+            Class.Condb Condb = new Class.Condb();
+            var dt = Condb.GetQuery(sql);
             Console.WriteLine("call database seccess");
             start_Time = dt.Rows[0]["Start_Time"].ToString();
             Console.WriteLine("call database seccess");
@@ -104,18 +109,19 @@ namespace SAP_Batch_GR_TR
             string Status = "";
             DataTable GRdata = new DataTable();
             DataTable GRErrdata = new DataTable();
-            var ws = new SAP_Batch_GR_TR.SapTransfer.post();
+            Class.servicePostSapGR sendSapGR = new Class.servicePostSapGR();
 
+            Class.Condb Condb = new Class.Condb();
             sql = "select * from [Barcode_DEV].[dbo].[testGR] where Action = 1";
-            GRdata = GetQuery(sql);
+            GRdata = Condb.GetQuery(sql);
             sql = "select * from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1";
-            GRErrdata = GetQuery(sql);
+            GRErrdata = Condb.GetQuery(sql);
 
             if (GRdata.Rows.Count > 0)
             {
                 foreach (DataRow item in GRdata.Rows)
                 {
-                    partno = "IT|" + item["MatNo"].ToString().Trim();
+                    partno = item["MatNo"].ToString().Trim();
                     qty = Convert.ToInt32(item["QRQty"].ToString());
                     custid = item["CustID"].ToString().Trim();
                     FacNo = item["FacNo"].ToString().Trim();
@@ -127,17 +133,16 @@ namespace SAP_Batch_GR_TR
                     headertext = "IT|" + item["HeaderText"].ToString().Trim();
                     Action = Convert.ToInt32(item["Action"].ToString());
                     Type = "GR".ToString().Trim();
-
-                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
-                    //TestsendSap(partno, qty, custid, store, postdate, headertext);
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext);
                 }
             }
             if (GRErrdata.Rows.Count > 0)
             {
                 foreach (DataRow item in GRErrdata.Rows)
                 {
-                    partno = "IT|" + item["MatNo"].ToString().Trim();
+                    partno = item["MatNo"].ToString().Trim();
                     qty = Convert.ToInt32(item["QRQty"].ToString());
                     custid = item["CustID"].ToString().Trim();
                     FacNo = item["FacNo"].ToString().Trim();
@@ -149,12 +154,13 @@ namespace SAP_Batch_GR_TR
                     headertext = "IT|" + item["HeaderText"].ToString().Trim();
                     Action = Convert.ToInt32(item["Action"].ToString());
                     Type = "GR_redo".ToString().Trim();
-
-                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    //var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext);
                 }
             }
         }
+
 
 
         private void Post_TR_to_Sap()
@@ -165,12 +171,13 @@ namespace SAP_Batch_GR_TR
             string Type = "";
             DataTable TRdata = new DataTable();
             DataTable TRErrdata = new DataTable();
-            var ws = new SapTransfer.post();
-            //sql = "select count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+            Class.servicePostSapTR sendSapTR = new Class.servicePostSapTR();
+            Class.Condb Condb = new Class.Condb();
+            //sql = "select TOP  count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
             sql = "select * from [Barcode_DEV].[dbo].[testTR] where 1 = 1";
-            TRdata = GetQuery(sql);
+            TRdata = Condb.GetQuery(sql);
             sql = "select count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
-            TRErrdata = GetQuery(sql);
+            TRErrdata = Condb.GetQuery(sql);
 
             if (TRdata.Rows.Count > 0)
             {
@@ -179,8 +186,9 @@ namespace SAP_Batch_GR_TR
                     Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
                     Datatype = "12";
                     Type = "TR";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
+                    //sendSapTR.PostSapTRClass(Slipno, Datatype, Type);
                 }
             }
 
@@ -191,130 +199,26 @@ namespace SAP_Batch_GR_TR
                     Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
                     Datatype = "13";
                     Type = "TR_redo";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                    //var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
+                    //sendSapTR.PostSapTRClass(Slipno, Datatype, Type);
                 }
             }
         }
-        private string GetAndUpdate_LogDataValidate_GR_to_Sap(String partno, int qty, String custid, String FacNo, String Plant, String store, int MvmntType, String postdate, String PostTime, String headertext, int Action, string Type)
+        private void Post_GI_Sap()
         {
-            string Message = "";
-            string qtyType = qty.ToString();
-            string checkdate = "";
-            DateTime now = DateTime.Now;
-            string datenow = now.ToString("yyyy-MM-dd HH:mm:ss:fff");
-            int checkYear = now.Year ;
-            string lowYear = (checkYear - 1).ToString();
-            string checkMonth = now.Month.ToString();
-            string checkDay = now.Day.ToString();
-
-            if (datenow.Substring(5, 10) == "-01-01")
-            {
-                checkdate += postdate.Length == 8 ? "" : "error";
-                checkdate += postdate.Substring(0, 4) == lowYear ? "" : "error";
-            }
-            else {
-                checkdate += postdate.Length == 8 ? "" : "error";
-                checkdate += postdate.Substring(0, 4) == checkYear.ToString() ? "" : "error";
-            }
-
-            Message += partno.Length  == 17 ? "" : "partno ,".ToString().Trim();
-            Message += qtyType.Length < 4 ? "" : "QRQty ,".ToString().Trim();
-            Message += custid.Length == 4 ? "" : "Custid ,".ToString().Trim();
-            Message += store.Length < 5 ? "" : "store ,".ToString().Trim();
-            Message += checkdate.Length > 0 ? "Postdate ," : "".ToString().Trim();
-            Message += headertext.Length == 18 ? "" : "headertext ,".ToString().Trim();
-
-            string ValidateMessage = "";
-            if (Message != "") {
-                Message = Message.Substring(0, Message.Length - 1);
-                ValidateMessage = "Error : ( "+ Message + ")";
-            }
-            else {
-                 ValidateMessage = "";
-            }
-
-            var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_GR_to_Sap] " +
-                "(MatNo, CustID, FacNo, Plant, SLoc, MvmntType, PostDate, PostTime, QRQty, HeaderText, Action ,Type , CreateDate ,ValidateMessage) " +
-                "VALUES " +
-                "(@MatNo,@CustID,@FacNo,@Plant,@SLoc,@MvmntType,@PostDate,@PostTime,@QRQty,@HeaderText,@Action,@Type,@CreateDate  ,@ValidateMessage)";
-
-            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
-            if (setting != null)
-            {
-                connString = setting.ConnectionString;
-            }
-
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@MatNo", partno);
-                cmd.Parameters.AddWithValue("@CustID", custid);
-                cmd.Parameters.AddWithValue("@FacNo", FacNo);
-                cmd.Parameters.AddWithValue("@Plant", Plant);
-                cmd.Parameters.AddWithValue("@SLoc", store);
-                cmd.Parameters.AddWithValue("@MvmntType", MvmntType);
-                cmd.Parameters.AddWithValue("@PostDate", postdate);
-                cmd.Parameters.AddWithValue("@PostTime", PostTime);
-                cmd.Parameters.AddWithValue("@QRQty", qty);
-                cmd.Parameters.AddWithValue("@HeaderText", headertext);
-                cmd.Parameters.AddWithValue("@Action", Action);
-                cmd.Parameters.AddWithValue("@Type", Type);
-                //cmd.Parameters.AddWithValue("@Status", Status);
-                cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
-                conn.Open();
-
-                int result = cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            return ValidateMessage;
+            Class.servicePostSapGI sendSapGI = new Class.servicePostSapGI();
+            string OrderNo = "3100002116";
+            string Type = "";
+            string checkPoAndDO = OrderNo.Substring(0,2);
+            Type = checkPoAndDO == "31" ? "DO" : "PO";
+            string PoAndDo = OrderNo;
+            sendSapGI.PostSapGIClass(PoAndDo , Type);
         }
 
-        private void GetAndUpdate_LogDataValidate_TR_to_Sap(string Slipno, string Datatype, string Type)
-        {
-            string Message = "";
-            Message += Slipno.Length == 17 ? "" : "Slipno ,".ToString().Trim();
-            Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
-            string ValidateMessage = "";
-            if (Message != "")
-            {
-                Message = Message.Substring(0, Message.Length - 1);
-                ValidateMessage = "Error : ( " + Message + ")";
-            }
-            else
-            {
-                ValidateMessage = "";
-            }
+       
 
-            var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
-                "(SlipNo ,ValidateMessage ,Type, CreateDate ,Datatype) " +
-                "VALUES " +
-                "(@SlipNo ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
-
-            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
-            if (setting != null)
-            {
-                connString = setting.ConnectionString;
-            }
-
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@SlipNo", Slipno);
-                cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
-                cmd.Parameters.AddWithValue("@Type", Type);
-                //cmd.Parameters.AddWithValue("@Status", Status);
-                cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                cmd.Parameters.AddWithValue("@Datatype", Datatype);
-                conn.Open();
-                int result = cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-        }
-
+       
         private void GetErrorAndNotify()
         {
             DataTable GetDataErrorGR = new DataTable();
@@ -322,7 +226,7 @@ namespace SAP_Batch_GR_TR
             DataTable GetDataErrorGRrow = new DataTable();
             DataTable GetDataErrorTRrow= new DataTable();
             string checkTime = DateTime.Now.ToString("HH:mm");
-          
+            Class.Condb Condb = new Class.Condb();
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
             if (setting != null)
@@ -330,13 +234,13 @@ namespace SAP_Batch_GR_TR
                 connString = setting.ConnectionString;
             }
             string sql1 = "select id as No , RefDocNo as DocNo , EMessage from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1";
-            GetDataErrorGR = GetQuery(sql1);
+            GetDataErrorGR = Condb.GetQuery(sql1);
             string sql2 = "select id as No , RefDocNo as DocNo , EMessage  from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1";
-            GetDataErrorTR = GetQuery(sql2);
+            GetDataErrorTR = Condb.GetQuery(sql2);
             string sqllineGR = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1";
-            GetDataErrorGRrow = GetQuery(sqllineGR);
+            GetDataErrorGRrow = Condb.GetQuery(sqllineGR);
             string sqllineTR = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1";
-            GetDataErrorTRrow = GetQuery(sqllineTR);
+            GetDataErrorTRrow = Condb.GetQuery(sqllineTR);
 
             string checkdata1 = GetDataErrorGRrow.Rows[0]["totalSum"].ToString();
             string checkdata2 = GetDataErrorTRrow.Rows[0]["totalSum"].ToString();
@@ -452,6 +356,8 @@ namespace SAP_Batch_GR_TR
             }
         }
 
+
+
         private void End_update()
         {
             var sql = "UPDATE [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
@@ -471,29 +377,6 @@ namespace SAP_Batch_GR_TR
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
             }
-        }
-
-        public DataTable GetQuery(string sql)
-        {
-            var dt = new DataTable();
-
-            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
-            if (setting != null)
-            {
-                connString = setting.ConnectionString;
-            }
-
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-            {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
-                da.Dispose();
-            }
-            return dt;
         }
 
         public void TestsendSap(string partno, int qty, string custid, string store, string  postdate, string headertext)
@@ -581,7 +464,7 @@ namespace SAP_Batch_GR_TR
             ws_fn_partosap.IsHeader = ws_fn_head;
             ws_fn_partosap.ItDetail = result.ToArray();
             ws_fn_partosap.IGoodsmvtCode = GmCode;;
-            //ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+            ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
             //Console.WriteLine("ws_res: " + ws_res);
         }
 

@@ -9,7 +9,10 @@
 
 namespace SAP_Batch_GR_TR
 {
+    using SAP_Batch_GR_TR.Class;
+    using SAP_Batch_GR_TR.Models;
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
@@ -26,5 +29,9 @@ namespace SAP_Batch_GR_TR
         }
     
         public virtual DbSet<v_sap_batch_gr> v_sap_batch_gr { get; set; }
+        public virtual DbSet<T_LOG_GR_STOCK> T_LOG_GR_STOCK { get;  set; }
+        public virtual DbSet<T_LOG_STOCK_ERROR> T_LOG_STOCK_ERROR { get; set; }
+        public virtual DbSet<T_LOCATION_SAP> T_LOCATION_SAP { get; set; }
+        public virtual DbSet<T_LOG_ADD_STOCK> T_LOG_ADD_STOCK { get; set; }
     }
 }

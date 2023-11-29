@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Services;
+using System.Diagnostics;
+using System.Web.Services.Protocols;
+using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace DEV_Z_GOODSMVT_CREATE1.Class
 {
-    using System;
-    using System.Web.Services;
-    using System.Diagnostics;
-    using System.Web.Services.Protocols;
-    using System.Xml.Serialization;
-    using System.ComponentModel;
-
 
     /// <remarks/>
     // CODEGEN: The optional WSDL extension element 'Policy' from namespace 'http://schemas.xmlsoap.org/ws/2004/09/policy' was not handled.
@@ -28,24 +26,10 @@ namespace DEV_Z_GOODSMVT_CREATE1.Class
         private bool useDefaultCredentialsSetExplicitly;
 
         /// <remarks/>
-        /// 
-        //[global::System.Configuration.ApplicationScopedSettingAttribute()]
-        //[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        //[global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        //[global::System.Configuration.DefaultSettingValueAttribute("http://172.18.1.35:8000/sap/bc/srt/rfc/sap/z_goodsmvt_create1/400/z_goodsmvt_create1_srv/z_goodsmvt_create1_bnd")]
-        //public string WebServices_DEV_Z_GOODSMVT_CREATE1_Z_GOODSMVT_CREATE1_SRV
-        //{
-        //    get
-        //    {
-        //        Console.WriteLine("DefaultSettingValueAttribute");
-        //        Console.WriteLine((string)("WebServices_DEV_Z_GOODSMVT_CREATE1_Z_GOODSMVT_CREATE1_SRV"));
-        //        return ((string)("WebServices_DEV_Z_GOODSMVT_CREATE1_Z_GOODSMVT_CREATE1_SRV"));
-        //    }
-        //}
-
         public Z_GOODSMVT_CREATE1_SRV()
         {
-
+            //this.Url = global::WebServices.Properties.Settings.Default.WebServices_PRD_Z_GOODSMVT_CREATE1_Z_GOODSMVT_CREATE1_SRV;
+            //this.Url ="http://tkcprdci:8000/sap/bc/srt/rfc/sap/z_goodsmvt_create1/900/z_goodsmvt_create1_srv/z_goodsmvt_create1_bnd"
             this.Url = "http://172.18.1.35:8000/sap/bc/srt/rfc/sap/z_goodsmvt_create1/400/z_goodsmvt_create1_srv/z_goodsmvt_create1_bnd";
             if ((this.IsLocalFileSystemWebService(this.Url) == true))
             {
@@ -96,50 +80,37 @@ namespace DEV_Z_GOODSMVT_CREATE1.Class
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:Z_GOODSMVT_CREATE1:ZGoodsmvtCrea" +
             "te1Request", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZGoodsmvtCreate1Response", Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")]
-        //public ZGoodsmvtCreate1Response ZGoodsmvtCreate1([System.Xml.Serialization.XmlElementAttribute("ZGoodsmvtCreate1", Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")] ZGoodsmvtCreate1 ZGoodsmvtCreate11)
-        //{
-        public void ZGoodsmvtCreate1([System.Xml.Serialization.XmlElementAttribute("ZGoodsmvtCreate1", Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")] ZGoodsmvtCreate1 ZGoodsmvtCreate11)
+        public ZGoodsmvtCreate1Response ZGoodsmvtCreate1([System.Xml.Serialization.XmlElementAttribute("ZGoodsmvtCreate1", Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")] ZGoodsmvtCreate1 ZGoodsmvtCreate11)
         {
-            Console.WriteLine("ZGoodsmvtCreate1 start");
             object[] results = this.Invoke("ZGoodsmvtCreate1", new object[] {
-                        ZGoodsmvtCreate11});
-            Console.WriteLine("ws_res results: " + results);
-            // return ((ZGoodsmvtCreate1Response)(results[0]));
+                    ZGoodsmvtCreate11});
+            return ((ZGoodsmvtCreate1Response)(results[0]));
         }
 
         /// <remarks/>
         public void ZGoodsmvtCreate1Async(ZGoodsmvtCreate1 ZGoodsmvtCreate11)
         {
-            Console.WriteLine("start ZGoodsmvtCreate1Async");
             this.ZGoodsmvtCreate1Async(ZGoodsmvtCreate11, null);
-            Console.WriteLine("end ZGoodsmvtCreate1Async");
         }
 
         /// <remarks/>
         public void ZGoodsmvtCreate1Async(ZGoodsmvtCreate1 ZGoodsmvtCreate11, object userState)
         {
-            Console.WriteLine("start ZGoodsmvtCreate1Async");
             if ((this.ZGoodsmvtCreate1OperationCompleted == null))
             {
-                Console.WriteLine("start if ZGoodsmvtCreate1Async");
                 this.ZGoodsmvtCreate1OperationCompleted = new System.Threading.SendOrPostCallback(this.OnZGoodsmvtCreate1OperationCompleted);
             }
-            Console.WriteLine("end ZGoodsmvtCreate1Async");
             this.InvokeAsync("ZGoodsmvtCreate1", new object[] {
-                        ZGoodsmvtCreate11}, this.ZGoodsmvtCreate1OperationCompleted, userState);
-            Console.WriteLine("start InvokeAsync");
+                    ZGoodsmvtCreate11}, this.ZGoodsmvtCreate1OperationCompleted, userState);
         }
 
         private void OnZGoodsmvtCreate1OperationCompleted(object arg)
         {
-            Console.WriteLine("start OnZGoodsmvtCreate1OperationCompleted");
             if ((this.ZGoodsmvtCreate1Completed != null))
             {
-                Console.WriteLine("start if OnZGoodsmvtCreate1OperationCompleted");
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZGoodsmvtCreate1Completed(this, new ZGoodsmvtCreate1CompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
-            Console.WriteLine("end if OnZGoodsmvtCreate1OperationCompleted");
         }
 
         /// <remarks/>
@@ -150,8 +121,6 @@ namespace DEV_Z_GOODSMVT_CREATE1.Class
 
         private bool IsLocalFileSystemWebService(string url)
         {
-            Console.WriteLine("start wsUri IsLocalFileSystemWebService");
-
             if (((url == null)
                         || (url == string.Empty)))
             {
@@ -866,4 +835,5 @@ namespace DEV_Z_GOODSMVT_CREATE1.Class
             }
         }
     }
+    
 }
