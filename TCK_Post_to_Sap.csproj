@@ -104,12 +104,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Barcode.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Class\servicePostSapGI.cs" />
-    <Compile Include="Class\Z_CONFIRM_PICKING_GOODS_ISSUE.cs" />
-    <Compile Include="Class\servicePostSapGR.cs" />
+    <Compile Include="Class\Validate_GRTR.cs" />
+    <Compile Include="Class\Condb.cs" />
+    <Compile Include="Class\ServicePostSapGI.cs" />
+    <Compile Include="Class\SapApiGI.cs" />
+    <Compile Include="Class\ServicePostSapGR.cs" />
     <Compile Include="Class\LineNotify.cs" />
-    <Compile Include="Class\DEV_Z_GOODSMVT_CREATE1.cs" />
-    <Compile Include="Class\servicePostSapTR.cs" />
+    <Compile Include="Class\SapApiGRAndTR.cs" />
+    <Compile Include="Class\ServicePostSapTR.cs" />
     <Compile Include="GRTR_Post_sap.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,11 +135,6 @@
     <Compile Include="v_sap_batch_gr.cs">
       <DependentUpon>Barcode.tt</DependentUpon>
     </Compile>
-    <Compile Include="Web References\SapTransfer\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -153,51 +150,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Web References\SapTransfer\DataDetail.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\post.wsdl" />
-    <None Include="Web References\SapTransfer\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\SapTransfer\Results.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\ZMakeInvoiceGtopasResponse.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\Zsdcustpart.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\Zsmard.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\ZssoDetail.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://172.18.1.74:8888/WS/post.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\SapTransfer\</RelPath>
-      <UpdateFromURL>http://172.18.1.74:8888/WS/post.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>SAP_Batch_GR_TR_SapTransfer_post</CachedSettingsPropName>
-    </WebReferenceUrl>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Web References\SapTransfer\post.disco" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Barcode.Context.tt">

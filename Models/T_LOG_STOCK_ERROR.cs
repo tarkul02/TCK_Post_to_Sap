@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SAP_Batch_GR_TR.Models
+namespace PostSap_GR_TR.Models
 {
     public class T_LOG_STOCK_ERROR
     {

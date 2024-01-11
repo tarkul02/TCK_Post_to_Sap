@@ -16,4 +16,3 @@ C:\TKC\TCK_Post_to_Sap\bin\Debug\Microsoft.IO.RecyclableMemoryStream.dll
 C:\TKC\TCK_Post_to_Sap\bin\Debug\System.ComponentModel.Annotations.dll
 C:\TKC\TCK_Post_to_Sap\bin\Debug\EPPlus.xml
 C:\TKC\TCK_Post_to_Sap\bin\Debug\Microsoft.IO.RecyclableMemoryStream.xml
-C:\TKC\TCK_Post_to_Sap\obj\Debug\TCK_Post_to_Sap.csproj.AssemblyReference.cache

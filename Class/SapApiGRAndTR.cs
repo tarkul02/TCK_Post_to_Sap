@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Services;
-using System.Diagnostics;
-using System.Web.Services.Protocols;
-using System.Xml.Serialization;
-using System.ComponentModel;
-
-namespace DEV_Z_GOODSMVT_CREATE1.Class
+﻿namespace SapApiGRAndTR.Class
 {
 
     /// <remarks/>

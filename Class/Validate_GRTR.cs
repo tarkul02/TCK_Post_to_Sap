@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SAP_Batch_GR_TR.Class
+namespace PostSap_GR_TR.Class
 {
     class Validate_GRTR
     {
@@ -90,7 +90,7 @@ namespace SAP_Batch_GR_TR.Class
             return ValidateMessage;
         }
 
-        public void GetAndUpdate_LogDataValidate_TR_to_Sap(string Slipno, string Datatype, string Type)
+        public void GetAndUpdate_LogDataValidate_TR_to_Sap(string checkSlipno, string Datatype, string Type)
         {
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
@@ -100,22 +100,19 @@ namespace SAP_Batch_GR_TR.Class
             }
 
             SqlConnection conn = new SqlConnection(connString);
-
             DataTable getdata_tr_and_trredo = new DataTable();
             string sqlSelecttable = Datatype == "12" ? "[Barcode_dev].[dbo].[v_sap_batch_tr]" : "[Barcode_dev].[dbo].[v_sap_batch_tr_redo]";
-            string sqlcheckmaster = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + Slipno + "' and MAT_TYPE <> 'ZRM'";
+            string sqlcheckmaster = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + checkSlipno + "' and MAT_TYPE <> 'ZRM'";
             Class.Condb Condb = new Class.Condb();
             getdata_tr_and_trredo = Condb.GetQuery(sqlcheckmaster);
-
             string Message = "";
-            Message += Slipno.Length == 17 ? "" : "Slipno ,".ToString().Trim();
+            Message += checkSlipno.Length == 14 ? "" : "Slipno ,".ToString().Trim();
             Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
             string ValidateMessage = "";
-
             var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
-              "(SlipNo ,ValidateMessage ,Type, CreateDate ,Datatype) " +
+              "(PlantFrom ,StorageFrom ,PlantTo ,StorageTo  ,Kanban , MvmntQty,SlipNo ,Mat_Type ,ValidateMessage ,Type, CreateDate ,Datatype) " +
               "VALUES " +
-              "(@SlipNo ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
+              "(@PlantFrom , @StorageFrom , @PlantTo , @StorageTo  ,@Kanban ,@MvmntQty ,@SlipNo ,@Mat_Type ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
             if (getdata_tr_and_trredo.Rows.Count > 0)
             {
                 foreach (DataRow dataRow in getdata_tr_and_trredo.Rows)
@@ -132,16 +129,15 @@ namespace SAP_Batch_GR_TR.Class
 
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
-                       
                         cmd.Parameters.AddWithValue("@PlantFrom", dataRow["PlantFrom"].ToString().Trim());
                         cmd.Parameters.AddWithValue("@StorageFrom", dataRow["StorageFrom"].ToString().Trim());
                         cmd.Parameters.AddWithValue("@PlantTo", dataRow["PlantTo"].ToString().Trim());
                         cmd.Parameters.AddWithValue("@StorageTo", dataRow["StorageTo"].ToString().Trim());
-                        cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
-                        cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
+                        //cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
+                        //cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
                         cmd.Parameters.AddWithValue("@Kanban", dataRow["Kanban"].ToString().Trim());
                         cmd.Parameters.AddWithValue("@MvmntQty", Convert.ToInt32(dataRow["MvmntQty"].ToString().Trim()));
-                        cmd.Parameters.AddWithValue("@SlipNo", Slipno);
+                        cmd.Parameters.AddWithValue("@SlipNo", checkSlipno);
                         cmd.Parameters.AddWithValue("@Mat_Type", dataRow["Mat_Type"].ToString().Trim());
                         cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
                         cmd.Parameters.AddWithValue("@Type", Type);
@@ -154,7 +150,69 @@ namespace SAP_Batch_GR_TR.Class
                     }
                 }
             }
-        }
+            else
+            {
+                if (Message != "")
+                {
+                    Message = Message.Substring(0, Message.Length - 1);
+                    ValidateMessage = "Error : ( " + Message + ")";
+                }
+                else
+                {
+                    ValidateMessage = "";
+                }
 
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@PlantFrom", "");
+                    cmd.Parameters.AddWithValue("@StorageFrom", "");
+                    cmd.Parameters.AddWithValue("@PlantTo", "");
+                    cmd.Parameters.AddWithValue("@StorageTo", "");
+                    //cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
+                    //cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
+                    cmd.Parameters.AddWithValue("@Kanban", "");
+                    cmd.Parameters.AddWithValue("@MvmntQty", "");
+                    cmd.Parameters.AddWithValue("@SlipNo", checkSlipno);
+                    cmd.Parameters.AddWithValue("@Mat_Type", "");
+                    cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
+                    cmd.Parameters.AddWithValue("@Type", Type);
+                    //cmd.Parameters.AddWithValue("@Status", Status);
+                    cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                    cmd.Parameters.AddWithValue("@Datatype", Datatype);
+                    conn.Open();
+                    int result = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+        }
+        public void GetAndUpdate_saveLogData_GI_to_Sap(string OrderNo, string checkPoAndDO, string Type)
+        {
+            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+            string connString = "";
+            if (setting != null)
+            {
+                connString = setting.ConnectionString;
+            }
+
+            SqlConnection conn = new SqlConnection(connString);
+            DataTable getdata_GI_and_GIredo = new DataTable();
+            Class.Condb Condb = new Class.Condb();
+            var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_GI_to_Sap] " +
+              "(OrderNo ,ValidateMessage ,Type, CreateDate ,Datatype) " +
+              "VALUES " +
+              "(@OrderNo ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
+           
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@OrderNo", OrderNo);
+                    cmd.Parameters.AddWithValue("@Type", Type);
+                    cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                    cmd.Parameters.AddWithValue("@Datatype", checkPoAndDO);
+                    cmd.Parameters.AddWithValue("@ValidateMessage", "");
+                    conn.Open();
+                    int result = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+        }
     }
 }

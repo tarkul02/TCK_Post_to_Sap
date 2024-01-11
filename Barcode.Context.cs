@@ -7,15 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SAP_Batch_GR_TR
+namespace PostSap_GR_TR
 {
-    using SAP_Batch_GR_TR.Class;
-    using SAP_Batch_GR_TR.Models;
-    using System;
-    using System.Collections.Generic;
+    using PostSap_GR_TR.Class;
+    using PostSap_GR_TR.Models;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    
+
     public partial class BarcodeEntities : DbContext
     {
         public BarcodeEntities()

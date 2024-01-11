@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DEV_Z_GOODSMVT_CREATE1.Class;
+using SapApiGRAndTR.Class;
 using SAP_Batch_GR_TR.Models;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
+using PostSap_GR_TR.Models;
 
-namespace SAP_Batch_GR_TR.Class
+namespace PostSap_GR_TR.Class
 {
-    class servicePostSapTR
+    class ServicePostSapTR
     {
         public void PostSapTRClass(string SlipNo, string DataType ,string Type)
         {
@@ -67,13 +66,6 @@ namespace SAP_Batch_GR_TR.Class
                 {
                     foreach (DataRow dataRow in getdata_tr_and_trredo.Rows)
                     {
-                        Console.WriteLine("PlantFrom :" + dataRow["PlantFrom"].ToString());
-                        Console.WriteLine("StorageFrom :" + dataRow["StorageFrom"].ToString());
-                        Console.WriteLine("DUMMYBATCH : DUMMYBATCH");
-                        Console.WriteLine("MvmntQty :" + Convert.ToInt32(2));
-                        Console.WriteLine("PlantTo :" + dataRow["PlantTo"].ToString());
-                        Console.WriteLine("StorageTo :" + dataRow["StorageTo"].ToString());
-                        Console.WriteLine("Kanban :" + dataRow["Kanban"].ToString());
                         ZsgmDetail1 tmp = new ZsgmDetail1();
                         if (getpostdate == false)
                         {
@@ -144,7 +136,6 @@ namespace SAP_Batch_GR_TR.Class
                     ws_fn_partosap.IGoodsmvtCode = GmCode;
                     //ส่งไปให้ SAP
                     ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
-                    Console.WriteLine("post sap successfully!");
                     BarcodeEntities UpdateBarcode = new BarcodeEntities();
                     List<T_LOG_GR_STOCK> Log_Gr = new List<T_LOG_GR_STOCK>();
                     List<T_LOG_STOCK_ERROR> Log_Error = new List<T_LOG_STOCK_ERROR>();
@@ -165,30 +156,26 @@ namespace SAP_Batch_GR_TR.Class
 
                     string dataUpdateList = "UPDATE [Barcode_dev].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
                     DataTable UpdateList = new DataTable();
-                    Console.WriteLine("update T_barcode_trans sap message");
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
 
                         if (ws_res.EMessage.Contains("was create"))
                         {
-                            //Console.WriteLine("update T_barcode_trans sap message 1");
                             cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
                             cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
                         }
                         else
                         {
-                            //Console.WriteLine("update T_barcode_trans sap message 2");
                             cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
                         }
                     }
-                    Console.WriteLine("save data");
+
                     if (ws_res.ItDetail.Count() > 0)
                     {
                         foreach (var item in ws_res.ItDetail)
                         {
                             if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                             {
-                                Console.WriteLine("save data success");
                                 using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
                                 {
                                     cmd.Parameters.AddWithValue("@Batch", item.Batch);
@@ -213,7 +200,6 @@ namespace SAP_Batch_GR_TR.Class
                             }
                             else
                             {
-                                Console.WriteLine("save data error");
                                 if (item.Error != "")
                                 {
                                     using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))

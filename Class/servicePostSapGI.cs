@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Z_CONFIRM_PICKING_GOODS_ISSUE.Class;
+using SapApiGI.Class;
 using SAP_Batch_GR_TR.Models;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
+using PostSap_GR_TR.Models;
 
-namespace SAP_Batch_GR_TR.Class
+namespace PostSap_GR_TR.Class
 {
-    class servicePostSapGI
+    class ServicePostSapGI
     {
         public DataTable GetQuery(string sql)
         {
@@ -42,13 +41,13 @@ namespace SAP_Batch_GR_TR.Class
             var ws_res = new ZConfirmPickingGoodsIssueResponse();
             var ws_fn_head = new Bapi2017GmHeadRet();
             var ws_fn_det = new ZsgmDetail1();
-            var RefdocNo = "GI-" + DateTime.Now.ToString("yyMMddHHmm");
+            var RefdocNo = "GI-"+ PoAndDo;
             Results res = new Results();
 
             List<ZsgmDetail1> Detail_GI = new List<ZsgmDetail1>();
             string DoNumber = "";
             string PoNumber = "";
-            if (PoAndDo.Length > 0 || Type == "DO")
+            if (PoAndDo.Length > 0 && Type == "DO")
             {
                  DoNumber = PoAndDo;
                
@@ -98,11 +97,8 @@ namespace SAP_Batch_GR_TR.Class
             ws_fn_partosap.ItDetail = result.ToArray();
             ws_fn_partosap.IStgeLoc = "";
             //ส่งไปให้ SAP
-            Console.WriteLine("post sap!");
             ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
 
-
-            Console.WriteLine("post sap successfully!");
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
             if (setting != null)
@@ -110,10 +106,24 @@ namespace SAP_Batch_GR_TR.Class
                 connString = setting.ConnectionString;
             }
 
-            Console.WriteLine("Error: " + ws_res.EMessage);
-            Console.WriteLine("Error: " + ws_res.EMaterailDoc.MatDoc);
-
             SqlConnection conn = new SqlConnection(connString);
+
+            string dataUpdateList = "UPDATE [Barcode_dev].[dbo].[T_barcode_trans] where ORDERNO = '" + PoAndDo + "'";
+            DataTable UpdateList = new DataTable();
+            using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+            {
+
+                if (ws_res.EMessage.Contains("was create"))
+                {
+                    cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                    cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                }
+            }
+
             var Log_Gr = new List<T_LOG_GR_STOCK>();
             var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
@@ -130,15 +140,12 @@ namespace SAP_Batch_GR_TR.Class
             + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
             DataTable insertDataErrorLogGT = new DataTable();
-            Console.WriteLine("start save db");
 
             if (!string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
             {
 
                 using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
                 {
-                    Console.WriteLine("success");
-                    Console.WriteLine("Save T_LOG_GR_STOCK successfully!");
                     cmd.Parameters.AddWithValue("@Batch", "");
                     cmd.Parameters.AddWithValue("@EntryQnt", 0);
                     cmd.Parameters.AddWithValue("@EntryUom", "");
@@ -162,8 +169,6 @@ namespace SAP_Batch_GR_TR.Class
             }
             else// case error
             {
-                Console.WriteLine("ERROR!");
-                Console.WriteLine("Save T_LOG_STOCK_ERROR successfully!");
                 using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
                 {
                     cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);

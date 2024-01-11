@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DEV_Z_GOODSMVT_CREATE1.Class;
+using SapApiGRAndTR.Class;
 using SAP_Batch_GR_TR.Models;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
+using PostSap_GR_TR.Models;
 
-namespace SAP_Batch_GR_TR.Class
+namespace PostSap_GR_TR.Class
 {
-    class servicePostSapGR
+    class ServicePostSapGR
     {
         public void PostSapGRClass(string partno, int Qty, string Custid, string Store, string postdate, string headerText)  //List<ZsgmDetail> zsgms, List<T_barcode_trans> t_Barcodes, string Kanban
         {
@@ -108,7 +107,6 @@ namespace SAP_Batch_GR_TR.Class
                 ws_fn_partosap.IGoodsmvtCode = GmCode;
                 //ส่งไปให้ SAP
                 //ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
-                Console.WriteLine("post sap successfully!");
                 var Log_Gr = new List<T_LOG_GR_STOCK>();
                 var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
@@ -125,7 +123,6 @@ namespace SAP_Batch_GR_TR.Class
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
                 DataTable insertDataErrorLogGT = new DataTable();
-                Console.WriteLine("start save db");
                 if (ws_res.ItDetail.Count() > 0)
                 {
                     foreach (var item in ws_res.ItDetail)
@@ -135,8 +132,6 @@ namespace SAP_Batch_GR_TR.Class
 
                             using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
                             {
-                                Console.WriteLine("success");
-                                Console.WriteLine("Save T_LOG_GR_STOCK successfully!");
                                 cmd.Parameters.AddWithValue("@Batch", item.Batch);
                                 cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
                                 cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
@@ -175,8 +170,6 @@ namespace SAP_Batch_GR_TR.Class
                         }
                         else// case error
                         {
-                            Console.WriteLine("ERROR!");
-                            Console.WriteLine("Save T_LOG_STOCK_ERROR successfully!");
                             using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
                             {
                                 cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo + "|" + UserID);
