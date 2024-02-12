@@ -1,70 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Net.Mail;
 using System.Net;
 
-namespace SAP_Batch_GR_TR
+using System.IO;
+using OfficeOpenXml;
+using LicenseContext = OfficeOpenXml.LicenseContext;
+
+namespace PostSap_GR_TR
 {
     public partial class GRTR_Post_sap : Form
     {
-      
         public GRTR_Post_sap()
         {
             InitializeComponent();
         }
         private void GRTRPost_sap(object sender, EventArgs e)
         {
-           // SendMail();
             GetAndUpdate_Batch_GR_TR_Log();
             Post_GR_to_Sap();
             Post_TR_to_Sap();
+            Post_GI_Sap();
             End_update();
-            Application.Exit();
-        }
-
-        private void SendMail()
-        {
-            const string ToAddress = "Beerbeerlovemusic@gmail.com";
-            const string FromAddress = "tarkulbeer@gmail.com";
-
-            const string GoogleAppPassword = "ajdw rtsh wcqu kooh";
-
-            const string EmailSubject = "Test email!!222333";
-            const string EmailBody = "<h1>Hi</h1>";
-
-            Console.WriteLine("Hello World!");
-            try
-            {
-                var smtpClient = new SmtpClient("smtp.gmail.com")
-                {
-                    Port = 587,
-                    Credentials = new NetworkCredential(FromAddress, GoogleAppPassword),
-                    EnableSsl = true,
-                };
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress(FromAddress),
-                    Subject = EmailSubject,
-                    Body = EmailBody,
-                    IsBodyHtml = true,
-                };
-                mailMessage.To.Add(ToAddress);
-
-                smtpClient.Send(mailMessage);
-            }
-            catch (Exception ex) { 
-                Console.WriteLine(ex);
-            }
+            GetErrorAndNotify();
+            //Application.Exit();
         }
 
         string start_Time = "";
@@ -72,13 +34,23 @@ namespace SAP_Batch_GR_TR
         // บันทึกรอบเวลาการส่งข้อมูล
         private void GetAndUpdate_Batch_GR_TR_Log()
         {
-            var sql = " select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A " +
-                "left join(select count(*) GR_Re_NO, Action from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action " +
-                "left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action " +
-                "left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action";
-            var dt = GetQuery(sql);
+            Console.WriteLine("\nstart batch run time ");
+            Console.WriteLine("#################################################### \n");
+
+            //var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A " +
+            //    "left join(select count(*) GR_Re_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action " +
+            //    "left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action " +
+            //    "left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action";
+            var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
+                " left join(select count(*) GR_Re_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
+                " left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
+                " left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
+                " left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
+                " left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
+            Class.Condb Condb = new Class.Condb();
+            var dt = Condb.GetQuery(sql);
             start_Time = dt.Rows[0]["Start_Time"].ToString();
-            sql = "INSERT INTO [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time)";
+            sql = "INSERT INTO [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
             if (setting != null)
@@ -88,26 +60,177 @@ namespace SAP_Batch_GR_TR
 
             SqlConnection conn = new SqlConnection(connString);
             using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {            
+            {
                 cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
                 cmd.Parameters.AddWithValue("@GR_Re_NO", dt.Rows[0]["GR_Re_NO"].ToString());
                 cmd.Parameters.AddWithValue("@TR_NO", dt.Rows[0]["TR_NO"].ToString());
                 cmd.Parameters.AddWithValue("@TR_Re_NO", dt.Rows[0]["TR_Re_NO"].ToString());
+                cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
+                cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
                 cmd.Parameters.AddWithValue("@Start_Time", dt.Rows[0]["Start_Time"].ToString());
                 conn.Open();
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
-
-
             }
         }
 
-        
+        private void Post_GR_to_Sap()
+        {
+            Console.WriteLine("      Process GR");
+            Console.WriteLine("      #################################################### \n");
+            Console.WriteLine("      start Process GR");
+            _ = new DataTable();
+            _ = new Class.ServicePostSapGR();
+            Class.Condb Condb = new Class.Condb();
+            string sqlGetGR = "select * from [Barcode_DEV].[dbo].[testGR] where Action = '1'";
+            string sqlGetGR_redo = "select * from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1";
+            DataTable GRdata = Condb.GetQuery(sqlGetGR);
+            DataTable GRErrdata = Condb.GetQuery(sqlGetGR_redo);
+            Class.ServicePostSapGR sendSapGR = new Class.ServicePostSapGR();
+            if (GRdata.Rows.Count > 0)
+            {
+                Console.WriteLine("      start Process GR");
+                foreach (DataRow item in GRdata.Rows)
+                {
+                    string partno = item["MatNo"].ToString().Trim();
+                    int qty = Convert.ToInt32(item["QRQty"].ToString());
+                    string custid = item["CustID"].ToString().Trim();
+                    string FacNo = item["FacNo"].ToString().Trim();
+                    string Plant = item["Plant"].ToString().Trim();
+                    string store = item["SLoc"].ToString().Trim();
+                    int MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
+                    string postdate = item["PostDate"].ToString().Trim();
+                    string PostTime = item["PostTime"].ToString().Trim();
+                    string headertext = "IT|" + item["HeaderText"].ToString().Trim();
+                    int Action = Convert.ToInt32(item["Action"].ToString());
+                    string Type = "GR".ToString().Trim();
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext);
+                }
+            }
+            if (GRErrdata.Rows.Count > 0)
+            {
+                Console.WriteLine("      start Process GR2");
+                foreach (DataRow item in GRErrdata.Rows)
+                {
+                    string partno = item["MatNo"].ToString().Trim();
+                    int qty = Convert.ToInt32(item["QRQty"].ToString());
+                    string custid = item["CustID"].ToString().Trim();
+                    string FacNo = item["FacNo"].ToString().Trim();
+                    string Plant = item["Plant"].ToString().Trim();
+                    string store = item["SLoc"].ToString().Trim();
+                    int MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
+                    string postdate = item["PostDate"].ToString().Trim();
+                    string PostTime = item["PostTime"].ToString().Trim();
+                    string headertext = "IT|" + item["HeaderText"].ToString().Trim();
+                    int Action = Convert.ToInt32(item["Action"].ToString());
+                    string Type = "GR_redo".ToString().Trim();
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                    sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext);
+                }
+            }
+            Console.WriteLine("      End Process GR \n");
+        }
+
+        private void Post_TR_to_Sap()
+        {
+            Console.WriteLine("      Process TR");
+            Console.WriteLine("      #################################################### \n");
+            Console.WriteLine("      Start Process TR");
+            _ = new DataTable();
+            _ = new Class.ServicePostSapTR();
+            Class.Condb Condb = new Class.Condb();
+            //string sqlGetTR = "select TOP  count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+            string sqlGetTR = "select * from [Barcode_DEV].[dbo].[testTR] where 1 = 1";
+            DataTable TRdata = Condb.GetQuery(sqlGetTR);
+            string sqlGetTR_redo = "select count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
+            DataTable TRErrdata = Condb.GetQuery(sqlGetTR_redo);
+            Class.ServicePostSapTR sendSapTR = new Class.ServicePostSapTR();
+            if (TRdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in TRdata.Rows)
+                {
+                    string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                    string Datatype = "12";
+                    string Type = "TR";
+                    string checkSlipno = item["SLIPNO"].ToString().Trim();
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
+                    sendSapTR.PostSapTRClass(Slipno, Datatype, Type);
+                }
+            }
+
+            if (TRErrdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in TRErrdata.Rows)
+                {
+                    string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                    string Datatype = "13";
+                    string Type = "TR_redo";
+                    string checkSlipno = item["SLIPNO"].ToString().Trim();
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
+                    sendSapTR.PostSapTRClass(Slipno, Datatype, Type);
+                }
+            }
+            Console.WriteLine("      End Process TR \n");
+        }
+        private void Post_GI_Sap()
+        {
+            Console.WriteLine("      Process GI");
+            Console.WriteLine("      #################################################### \n");
+            Console.WriteLine("      Start Process GI");
+            _ = new DataTable();
+            _ = new Class.ServicePostSapGI();
+            Class.Condb Condb = new Class.Condb();
+            //sql = "select TOP  count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+            //string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO FROM Barcode_dev.dbo.v_sap_batch_gi where Action = 1 group by ORDERNO";
+            string sqlGetGI = "SELECT * FROM [Barcode_DEV].[dbo].[testGI] where 1=1";
+            DataTable GIdata = Condb.GetQuery(sqlGetGI);
+            string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO FROM Barcode_dev.dbo.v_sap_batch_gi_redo where Action = 1 group by RefDocNo ,ORDERNO";
+            DataTable GIErrdata = Condb.GetQuery(sqlGetGI_redo);
+            Class.ServicePostSapGI sendSapGI = new Class.ServicePostSapGI();
+            if (GIdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in GIdata.Rows)
+                {
+                    string OrderNo = item["ORDERNO"].ToString().Trim();
+                    string PoAndDo = item["ORDERNO"].ToString().Trim();
+                    string Type = "GI";
+                    string checkPoAndDO = OrderNo.Substring(0, 2);
+                    checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                    string DOandPO = checkPoAndDO;
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
+                    sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
+                }
+            }
+
+            if (GIErrdata.Rows.Count > 0)
+            {
+                foreach (DataRow item in GIErrdata.Rows)
+                {
+                    string OrderNo = item["ORDERNO"].ToString().Trim();
+                    string PoAndDo = item["ORDERNO"].ToString().Trim();
+                    string Type = "GI_redo";
+                    string checkPoAndDO = OrderNo.Substring(0, 2);
+                    checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                    string DOandPO = checkPoAndDO;
+                    Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                    Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
+                    sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
+                }
+            }
+            Console.WriteLine("      End Process GI \n");
+            Console.WriteLine("      #################################################### \n");
+        }
 
         private void End_update()
         {
-            var sql = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '"+ start_Time + "'";
-            
+            var sql = "UPDATE [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
+
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
             if (setting != null)
@@ -123,243 +246,188 @@ namespace SAP_Batch_GR_TR
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
             }
+            Console.WriteLine("#################################################### ");
+            Console.WriteLine("End batch run time");
+            Console.WriteLine("successfully\n");
+            Console.WriteLine("#################################################### \n");
         }
-        
-        private void GetAndUpdate_LogDataValidate_GR_to_Sap(String partno, int qty, String custid, String FacNo, String Plant, String store, int MvmntType, String postdate, String PostTime, String headertext, int Action, string Type)
+
+        private void GetErrorAndNotify()
         {
-            string Message = "";
-     
-            Message += partno.Length > 1 ? "MatNo ," : "".ToString().Trim();
-            Message += custid.Length > 1 ? "CustID ," : "".ToString().Trim();
-
-            Message = Message.Substring(0, Message.Length - 1);
-            string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
-
-            string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
-            
-
-            var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] " +
-                "(MatNo, CustID, FacNo, Plant, SLoc, MvmntType, PostDate, PostTime, QRQty, HeaderText, Action ,Type ,Status, CreateDate ,ValidateMessage) " +
-                "VALUES " +
-                "(@MatNo,@CustID,@FacNo,@Plant,@SLoc,@MvmntType,@PostDate,@PostTime,@QRQty,@HeaderText,@Action,@Type,@Status,@CreateDate  ,@ValidateMessage)";
-
+            Console.WriteLine("Process Notify");
+            Console.WriteLine("#################################################### \n");
+            _ = new DataTable();
+            string checkTime = DateTime.Now.ToString("HH:mm");
+            Class.Condb Condb = new Class.Condb();
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
             if (setting != null)
             {
-                connString = setting.ConnectionString;
+                _ = setting.ConnectionString;
             }
-     
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@MatNo", partno);
-                cmd.Parameters.AddWithValue("@CustID", custid);
-                cmd.Parameters.AddWithValue("@FacNo", FacNo);
-                cmd.Parameters.AddWithValue("@Plant", Plant);
-                cmd.Parameters.AddWithValue("@SLoc", store);
-                cmd.Parameters.AddWithValue("@MvmntType", MvmntType);
-                cmd.Parameters.AddWithValue("@PostDate", postdate);
-                cmd.Parameters.AddWithValue("@PostTime", PostTime);
-                cmd.Parameters.AddWithValue("@QRQty", qty);
-                cmd.Parameters.AddWithValue("@HeaderText", headertext);
-                cmd.Parameters.AddWithValue("@Action", Action);
-                cmd.Parameters.AddWithValue("@Type", Type);
-                cmd.Parameters.AddWithValue("@Status", Status);
-                cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
-                conn.Open();
-                int result = cmd.ExecuteNonQuery();
-                conn.Close();
+            string sqlemailGR = "select  RefDocNo as DocNo , EMessage from [Barcode_DEV].[dbo].[v_get_dataNotify_gr] where 1 = 1";
+            string sqlemailTR = "select  RefDocNo as DocNo , EMessage  from [Barcode_DEV].[dbo].[v_get_dataNotify_tr] where 1 = 1";
+            string sqlemailGI = "select  RefDocNo as DocNo , EMessage  from [Barcode_DEV].[dbo].[v_get_dataNotify_gi] where 1 = 1";
+            string sqllineGR = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_get_dataNotify_gr] where 1 = 1";
+            string sqllineTR = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_get_dataNotify_tr] where 1 = 1";
+            string sqllineGI = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_get_dataNotify_gi] where 1 = 1";
 
+            DataTable GetDataErrorGR = Condb.GetQuery(sqlemailGR);
+            DataTable GetDataErrorTR = Condb.GetQuery(sqlemailTR);
+            DataTable GetDataErrorGI = Condb.GetQuery(sqlemailGI);
+            DataTable GetDataErrorGRrow = Condb.GetQuery(sqllineGR);
+            DataTable GetDataErrorTRrow = Condb.GetQuery(sqllineTR);
+            DataTable GetDataErrorGIrow = Condb.GetQuery(sqllineGI);
 
-            }
-        }
+            string checkdata1 = GetDataErrorGRrow.Rows[0]["totalSum"].ToString();
+            string checkdata2 = GetDataErrorTRrow.Rows[0]["totalSum"].ToString();
+            string checkdata3 = GetDataErrorGIrow.Rows[0]["totalSum"].ToString();
+            string MessagelistGR = int.Parse(checkdata1) > 0 ? "GR Error : " + checkdata1 + " Item" : "";
+            string MessagelistTR = int.Parse(checkdata2) > 0 ? "TR Error : " + checkdata2 + " Item" : "";
+            string MessagelistGI = int.Parse(checkdata3) > 0 ? "GI Error : " + checkdata3 + " Item" : "";
+            string ValidateMessage = "Error  \nrun time =  " + checkTime + "\n" + MessagelistGR + "\n" + MessagelistTR + "\n" + MessagelistGI;
 
-        private void GetAndUpdate_LogDataValidate_TR_to_Sap(string Slipno, string Datatype, string Type)
-        {
-            string Message = "";
-
-            Message += Slipno.Length > 1 ? "Slipno ," : "".ToString().Trim();
-
-            Message = Message.Substring(0, Message.Length - 1);
-            string ValidateMessage = "Error : ( " + Message + ")".ToString().Trim();
-
-            string Status = Message.Length > 0 ? "inprogress" : "Error".ToString().Trim();
-
-
-            var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
-                "(SlipNo ,ValidateMessage ,Type ,Status, CreateDate ,Datatype) " +
-                "VALUES " +
-                "(@SlipNo ,@ValidateMessage ,@Type,@Status,@CreateDate ,@Datatype)";
-
-            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
-            if (setting != null)
-            {
-                connString = setting.ConnectionString;
-            }
-
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@SlipNo", Slipno);
-                cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
-                cmd.Parameters.AddWithValue("@Type", Type);
-                cmd.Parameters.AddWithValue("@Status", Status);
-                cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                cmd.Parameters.AddWithValue("@Datatype", Datatype);
-                conn.Open();
-                int result = cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-
-        }
-        private void Post_GR_to_Sap()
-        {
-            string sql = "";
-            //GR
-            string partno = "";
-            int qty = 0;
-            string custid = "";
-            string FacNo = "";
-            string Plant = "";
-            string store = "";
-            int MvmntType = 0;
-            string postdate = "";
-            string PostTime = "";
-            string headertext = "";
-            int Action = 0;
-            string Type = "";
-            string Status = "";
-            DataTable GRdata = new DataTable();
-            DataTable GRErrdata = new DataTable();
-            var ws = new SapTransfer.post();
-            
-
-
-            sql = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
-            GRdata = GetQuery(sql);
-            sql = "select * from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1";
-            GRErrdata = GetQuery(sql);
-
-            if (GRdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in GRdata.Rows)
+            //if (checkTime == "08:00" || checkTime == "20:00")
+            //{
+            Console.WriteLine("Start sent LineNotify ");
+            // start line notify 
+            if (int.Parse(checkdata1) > 0 || int.Parse(checkdata2) > 0 || int.Parse(checkdata3) > 0)
                 {
+                    Class.LineNotify lineNotify = new Class.LineNotify();
+                    lineNotify.FNLineNotify(ValidateMessage);
+                }
+                // end line notify
+                // start cerate file and send mail
+                if (GetDataErrorGR.Rows.Count > 0 || GetDataErrorTR.Rows.Count > 0 || GetDataErrorGI.Rows.Count > 0)
+                {
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    DateTime now = DateTime.Now;
+                    string filename = now.ToString("yyyy-MM-dd HH:mm:ss:fff");
 
+                    string[] words = filename.Split(' ');
+                    string[] text1 = words[0].Split('-');
+                    string[] text2 = words[1].Split(':');
+                    string lastfilename = text1[0] +"_"+ text1[1] + "_" + text1[2] + "_" + text2[0];
+                    string Fordername = text1[0] + "_" + text1[1] + "_" + text1[2] + "_" + text2[0];
+                    string folderPath = @"C:\testTKC\temp\" + Fordername;
+                    using (var package = new ExcelPackage())
+                    {
 
-                    partno = item["MatNo"].ToString().Trim();
-                    qty = Convert.ToInt32(item["QRQty"].ToString());
-                    custid = item["CustID"].ToString().Trim();
-                    FacNo = item["FacNo"].ToString().Trim();
-                    Plant = item["Plant"].ToString().Trim();
-                    store = item["SLoc"].ToString().Trim();
-                    MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
-                    postdate = item["PostDate"].ToString().Trim();
-                    PostTime = item["PostTime"].ToString().Trim();
-                    headertext = "IT|" + item["HeaderText"].ToString().Trim();
-                    Action = Convert.ToInt32(item["Action"].ToString());
-                    Type = "GR".ToString().Trim();
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Data");
 
-                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
+                        // Write column headers
+                        if (GetDataErrorGR.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < GetDataErrorGR.Columns.Count; i++)
+                            {
+                                worksheet.Cells[1, i + 1].Value = GetDataErrorGR.Columns[i].ColumnName;
+                            }
+
+                            // Write data to Excel file
+                            for (int row = 0; row < GetDataErrorGR.Rows.Count; row++)
+                            {
+                                for (int column = 0; column < GetDataErrorGR.Columns.Count; column++)
+                                {
+                                    worksheet.Cells[row + 2, column + 1].Value = GetDataErrorGR.Rows[row][column];
+                                }
+                            }
                     
+                            //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
+                            Directory.CreateDirectory(folderPath);
+                            FileInfo excelFileGR = new FileInfo(folderPath+"\\GR" + lastfilename + ".xlsx");
+                            package.SaveAs(excelFileGR);
+                        }
+
+                        if (GetDataErrorTR.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < GetDataErrorTR.Columns.Count; i++)
+                            {
+                                worksheet.Cells[1, i + 1].Value = GetDataErrorTR.Columns[i].ColumnName;
+                            }
+
+                            // Write data to Excel file
+                            for (int row = 0; row < GetDataErrorTR.Rows.Count; row++)
+                            {
+                                for (int column = 0; column < GetDataErrorTR.Columns.Count; column++)
+                                {
+                                    worksheet.Cells[row + 2, column + 1].Value = GetDataErrorTR.Rows[row][column];
+                                }
+                            }
+
+                        
+                            //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
+                            Directory.CreateDirectory(folderPath);
+                            FileInfo excelFileGR = new FileInfo(folderPath + "\\TR" + lastfilename + ".xlsx");
+                            package.SaveAs(excelFileGR);
+                        }
+
+                        if (GetDataErrorGI.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < GetDataErrorGI.Columns.Count; i++)
+                            {
+                                worksheet.Cells[1, i + 1].Value = GetDataErrorGI.Columns[i].ColumnName;
+                            }
+
+                            // Write data to Excel file
+                            for (int row = 0; row < GetDataErrorGI.Rows.Count; row++)
+                            {
+                                for (int column = 0; column < GetDataErrorGI.Columns.Count; column++)
+                                {
+                                    worksheet.Cells[row + 2, column + 1].Value = GetDataErrorGI.Rows[row][column];
+                                }
+                            }
+
+
+                            //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
+                            Directory.CreateDirectory(folderPath);
+                            FileInfo excelFileGR = new FileInfo(folderPath + "\\GI" + lastfilename + ".xlsx");
+                            package.SaveAs(excelFileGR);
+                        }
+                    }
+                Console.WriteLine("Start sent Email \n");
+                ////// Email settings
+                string senderEmail = "prones_g@tkoito.co.th";
+                    string receiverEmail = "tarkulbeer@gmail.com";
+                    //string receiverEmail = "tniyom@tkoito.co.th";
+                    string subject = "Excel File Attachment Error";
+                    string body = "Please Check your data in Excel file attached. \n" + ValidateMessage;
+
+                    // Email configuration
+                    MailMessage mail = new MailMessage(senderEmail, receiverEmail, subject, body);
+                    SmtpClient client = new SmtpClient("172.18.1.2");
+                    client.Port = 25; // Set the port according to your email provider
+                    client.Credentials = new NetworkCredential("5000166", "cde3@wsxzaq1");
+                    client.EnableSsl = false; 
+                    // Enable SSL
+                    //Attach the Excel file
+                    // Attachment attachment1 = new Attachment(@"C:\TKC\TCK_Post_to_Sap\temp\GR" + lastfilename + ".xlsx");
+                    // Attachment attachment2 = new Attachment(@"C:\TKC\TCK_Post_to_Sap\temp\TR" + lastfilename + ".xlsx");
+                if (GetDataErrorGR.Rows.Count > 0) {
+                    Attachment attachment1 = new Attachment(folderPath + "\\GR" + lastfilename + ".xlsx");
+                    mail.Attachments.Add(attachment1);
                 }
-            }
-            if (GRErrdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in GRErrdata.Rows)
+                if (GetDataErrorTR.Rows.Count > 0)
                 {
-
-                    partno = item["MatNo"].ToString().Trim();
-                    qty = Convert.ToInt32(item["QRQty"].ToString());
-                    custid = item["CustID"].ToString().Trim();
-                    FacNo = item["FacNo"].ToString().Trim();
-                    Plant = item["Plant"].ToString().Trim();
-                    store = item["SLoc"].ToString().Trim();
-                    MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
-                    postdate = item["PostDate"].ToString().Trim();
-                    PostTime = item["PostTime"].ToString().Trim();
-                    headertext = "IT|" + item["HeaderText"].ToString().Trim();
-                    Action = Convert.ToInt32(item["Action"].ToString());
-                    Type = "GR_redo".ToString().Trim();
-
-                    GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                    var res = ws.ADDSTOCKBYEXCEL(partno, qty, custid, store, postdate, headertext);
-
+                    Attachment attachment2 = new Attachment(folderPath + "\\TR" + lastfilename + ".xlsx");
+                    mail.Attachments.Add(attachment2);
                 }
-            }
-
-
-
-        }
-
-
-        private void Post_TR_to_Sap() 
-        {
-            string sql = "";
-            string Slipno = "";
-            string Datatype = "";
-            string Type = "";
-            DataTable TRdata = new DataTable();
-            DataTable TRErrdata = new DataTable();
-
-            var ws = new SapTransfer.post();
-
-            sql = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
-            TRdata = GetQuery(sql);
-            sql = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
-            TRErrdata = GetQuery(sql);
-
-            if (TRdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in TRdata.Rows)
+                if (GetDataErrorGI.Rows.Count > 0)
                 {
-                    Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                    Datatype = "12";
-                    Type = "TR";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                    var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                    Attachment attachment3 = new Attachment(folderPath + "\\GI" + lastfilename + ".xlsx");
+                    mail.Attachments.Add(attachment3);
                 }
-            }
-
-            if (TRErrdata.Rows.Count > 0)
-            {
-                foreach (DataRow item in TRErrdata.Rows)
-                {
-                    Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                    Datatype = "13";
-                    Type = "TR_redo";
-                    GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype , Type);
-                    var res = ws.TransferStockDataToSAP_311(Slipno, Datatype);
+                    // Send the email
+                    try
+                    {
+                        client.Send(mail);
+                        Console.WriteLine("Email sent successfully!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
                 }
-            }
+            // end cerate file and send mail
+            //}
         }
-
-        public DataTable GetQuery(string sql)
-        {
-            var dt = new DataTable();
-
-            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-            string connString = "";
-            if (setting != null)
-            {
-                connString = setting.ConnectionString;
-            }
-
-            SqlConnection conn = new SqlConnection(connString);
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-            {
-                conn.Open();
-                da.Fill(dt);
-                conn.Close();
-                da.Dispose();
-            }
-            
-            return dt;
-        }
-
     }
 }

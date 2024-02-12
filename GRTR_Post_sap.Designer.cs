@@ -1,5 +1,5 @@
 ﻿
-namespace SAP_Batch_GR_TR
+namespace PostSap_GR_TR
 {
     partial class GRTR_Post_sap
     {

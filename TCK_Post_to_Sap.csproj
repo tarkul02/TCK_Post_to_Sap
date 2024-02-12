@@ -54,7 +54,23 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=7.0.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>packages\EPPlus.7.0.1\lib\net462\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>packages\EPPlus.Interfaces.6.1.1\lib\net462\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.IO.RecyclableMemoryStream.1.4.1\lib\net46\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -62,6 +78,7 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -87,13 +104,27 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Barcode.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Class\SendMail.cs" />
+    <Compile Include="Class\Validate_GRTR.cs" />
+    <Compile Include="Class\Condb.cs" />
+    <Compile Include="Class\ServicePostSapGI.cs" />
+    <Compile Include="Class\SapApiGI.cs" />
+    <Compile Include="Class\ServicePostSapGR.cs" />
+    <Compile Include="Class\LineNotify.cs" />
+    <Compile Include="Class\SapApiGRAndTR.cs" />
+    <Compile Include="Class\ServicePostSapTR.cs" />
     <Compile Include="GRTR_Post_sap.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GRTR_Post_sap.Designer.cs">
       <DependentUpon>GRTR_Post_sap.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Results.cs" />
+    <Compile Include="Models\T_LOCATION_SAP.cs" />
+    <Compile Include="Models\T_barcode_trans.cs" />
+    <Compile Include="Models\T_LOG_ADD_STOCK.cs" />
+    <Compile Include="Models\T_LOG_GR_STOCK.cs" />
+    <Compile Include="Models\T_LOG_STOCK_ERROR.cs" />
+    <Compile Include="Models\T_TR_TO_SAP_MASTER.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -103,11 +134,6 @@
     </Compile>
     <Compile Include="v_sap_batch_gr.cs">
       <DependentUpon>Barcode.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Web References\SapTransfer\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -124,51 +150,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Web References\SapTransfer\DataDetail.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\post.wsdl" />
-    <None Include="Web References\SapTransfer\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\SapTransfer\Results.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\ZMakeInvoiceGtopasResponse.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\Zsdcustpart.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\Zsmard.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SapTransfer\ZssoDetail.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://172.18.1.74:8888/WS/post.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\SapTransfer\</RelPath>
-      <UpdateFromURL>http://172.18.1.74:8888/WS/post.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>SAP_Batch_GR_TR_SapTransfer_post</CachedSettingsPropName>
-    </WebReferenceUrl>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Web References\SapTransfer\post.disco" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Barcode.Context.tt">

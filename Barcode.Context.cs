@@ -7,12 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SAP_Batch_GR_TR
+namespace PostSap_GR_TR
 {
-    using System;
+    using PostSap_GR_TR.Class;
+    using PostSap_GR_TR.Models;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    
+
     public partial class BarcodeEntities : DbContext
     {
         public BarcodeEntities()
@@ -26,5 +27,9 @@ namespace SAP_Batch_GR_TR
         }
     
         public virtual DbSet<v_sap_batch_gr> v_sap_batch_gr { get; set; }
+        public virtual DbSet<T_LOG_GR_STOCK> T_LOG_GR_STOCK { get;  set; }
+        public virtual DbSet<T_LOG_STOCK_ERROR> T_LOG_STOCK_ERROR { get; set; }
+        public virtual DbSet<T_LOCATION_SAP> T_LOCATION_SAP { get; set; }
+        public virtual DbSet<T_LOG_ADD_STOCK> T_LOG_ADD_STOCK { get; set; }
     }
 }

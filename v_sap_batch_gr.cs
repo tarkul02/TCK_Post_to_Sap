@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SAP_Batch_GR_TR
+namespace PostSap_GR_TR
 {
     using System;
     using System.Collections.Generic;
