@@ -39,7 +39,7 @@ namespace PostSap_GR_TR.Class
             Message += custid.Length == 4 ? "" : "Custid ,".ToString().Trim();
             Message += store.Length < 5 ? "" : "store ,".ToString().Trim();
             Message += checkdate.Length > 0 ? "Postdate ," : "".ToString().Trim();
-            Message += headertext.Length == 18 ? "" : "headertext ,".ToString().Trim();
+            Message += headertext.Length < 30 ? "" : "headertext ,".ToString().Trim();
 
             string ValidateMessage = "";
             if (Message != "")

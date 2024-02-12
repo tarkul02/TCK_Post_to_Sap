@@ -20,12 +20,12 @@ namespace PostSap_GR_TR
         }
         private void GRTRPost_sap(object sender, EventArgs e)
         {
-            //GetAndUpdate_Batch_GR_TR_Log();
-            //Post_GR_to_Sap();
-            //Post_TR_to_Sap();
+            GetAndUpdate_Batch_GR_TR_Log();
+            Post_GR_to_Sap();
+            Post_TR_to_Sap();
             Post_GI_Sap();
-            // End_update();
-            //GetErrorAndNotify();
+            End_update();
+            GetErrorAndNotify();
             //Application.Exit();
         }
 
@@ -42,15 +42,15 @@ namespace PostSap_GR_TR
             //    "left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action " +
             //    "left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action";
             var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
-                "left join(select count(*) GR_Re_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
-                "left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
-                "left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
-                "left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
-                "left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
+                " left join(select count(*) GR_Re_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
+                " left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
+                " left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
+                " left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
+                " left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
             Class.Condb Condb = new Class.Condb();
             var dt = Condb.GetQuery(sql);
             start_Time = dt.Rows[0]["Start_Time"].ToString();
-            sql = "INSERT INTO [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time)";
+            sql = "INSERT INTO [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
             if (setting != null)
@@ -65,6 +65,8 @@ namespace PostSap_GR_TR
                 cmd.Parameters.AddWithValue("@GR_Re_NO", dt.Rows[0]["GR_Re_NO"].ToString());
                 cmd.Parameters.AddWithValue("@TR_NO", dt.Rows[0]["TR_NO"].ToString());
                 cmd.Parameters.AddWithValue("@TR_Re_NO", dt.Rows[0]["TR_Re_NO"].ToString());
+                cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
+                cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
                 cmd.Parameters.AddWithValue("@Start_Time", dt.Rows[0]["Start_Time"].ToString());
                 conn.Open();
                 int result = cmd.ExecuteNonQuery();
@@ -80,7 +82,7 @@ namespace PostSap_GR_TR
             _ = new DataTable();
             _ = new Class.ServicePostSapGR();
             Class.Condb Condb = new Class.Condb();
-            string sqlGetGR = "select * from [Barcode_DEV].[dbo].[testGR] where Action = 1";
+            string sqlGetGR = "select * from [Barcode_DEV].[dbo].[testGR] where Action = '1'";
             string sqlGetGR_redo = "select * from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1";
             DataTable GRdata = Condb.GetQuery(sqlGetGR);
             DataTable GRErrdata = Condb.GetQuery(sqlGetGR_redo);
@@ -199,9 +201,10 @@ namespace PostSap_GR_TR
                     string Type = "GI";
                     string checkPoAndDO = OrderNo.Substring(0, 2);
                     checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                    string DOandPO = checkPoAndDO;
                     Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                     Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                    sendSapGI.PostSapGIClass(PoAndDo, Type);
+                    sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
                 }
             }
 
@@ -214,9 +217,10 @@ namespace PostSap_GR_TR
                     string Type = "GI_redo";
                     string checkPoAndDO = OrderNo.Substring(0, 2);
                     checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                    string DOandPO = checkPoAndDO;
                     Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                     Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                    sendSapGI.PostSapGIClass(PoAndDo, Type);
+                    sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
                 }
             }
             Console.WriteLine("      End Process GI \n");

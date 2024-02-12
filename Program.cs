@@ -11,7 +11,7 @@ namespace PostSap_GR_TR
         static void Main(string[] args)
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(true);
             Application.Run(new GRTR_Post_sap());
             Application.Exit();
         }

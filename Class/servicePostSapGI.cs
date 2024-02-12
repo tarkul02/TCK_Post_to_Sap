@@ -34,7 +34,7 @@ namespace PostSap_GR_TR.Class
             }
             return dt;
         }
-        public void PostSapGIClass(string PoAndDo, string Type)
+        public void PostSapGIClass(string PoAndDo, string DOandPO)
         {
 
             var ws_service = new Z_CONFIRM_PICKING_GOODS_ISSUE_SRV();
@@ -47,7 +47,7 @@ namespace PostSap_GR_TR.Class
             List<ZsgmDetail1> Detail_GI = new List<ZsgmDetail1>();
             string DoNumber = "";
             string PoNumber = "";
-            if (PoAndDo.Length > 0 && Type == "DO")
+            if (PoAndDo.Length > 0 && DOandPO == "DO")
             {
                  DoNumber = PoAndDo;
                

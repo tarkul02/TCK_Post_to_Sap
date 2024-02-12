@@ -106,7 +106,7 @@ namespace PostSap_GR_TR.Class
                 ws_fn_partosap.ItDetail = result.ToArray();
                 ws_fn_partosap.IGoodsmvtCode = GmCode;
                 //ส่งไปให้ SAP
-                //ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
                 var Log_Gr = new List<T_LOG_GR_STOCK>();
                 var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
@@ -121,7 +121,7 @@ namespace PostSap_GR_TR.Class
                 + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                 "VALUES "
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
-
+               // Console.WriteLine("aa"+ws_res.ItDetail.Count());
                 DataTable insertDataErrorLogGT = new DataTable();
                 if (ws_res.ItDetail.Count() > 0)
                 {
