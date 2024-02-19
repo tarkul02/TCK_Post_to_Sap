@@ -169,7 +169,7 @@ namespace PostSap_GR_TR
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                         Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
-                        sendSapTR.PostSapTRClass(Slipno, Datatype, Type);
+                        sendSapTR.PostSapTRClass(Slipno, Datatype);
                     }
                 }
 
@@ -183,7 +183,7 @@ namespace PostSap_GR_TR
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                         Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(Slipno, Datatype, Type);
-                        sendSapTR.PostSapTRClass(Slipno, Datatype, Type);
+                        sendSapTR.PostSapTRClass(Slipno, Datatype);
                     }
                 }
                 Console.WriteLine("      End Process TR \n");

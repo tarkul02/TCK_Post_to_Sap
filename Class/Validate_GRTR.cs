@@ -20,9 +20,7 @@ namespace PostSap_GR_TR.Class
             string datenow = now.ToString("yyyy-MM-dd HH:mm:ss:fff");
             int checkYear = now.Year;
             string lowYear = (checkYear - 1).ToString();
-            string checkMonth = now.Month.ToString();
-            string checkDay = now.Day.ToString();
-
+           
             if (datenow.Substring(5, 10) == "-01-01")
             {
                 checkdate += postdate.Length == 8 ? "" : "error";

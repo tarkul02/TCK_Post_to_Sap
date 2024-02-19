@@ -12,7 +12,7 @@ namespace PostSap_GR_TR.Class
 {
     class ServicePostSapTR
     {
-        public void PostSapTRClass(string SlipNo, string DataType ,string Type)
+        public void PostSapTRClass(string SlipNo, string DataType )
         {
 
             var ws_service = new Z_GOODSMVT_CREATE1_SRV();
