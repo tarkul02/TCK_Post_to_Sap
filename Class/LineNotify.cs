@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net.Http;
 
 namespace PostSap_GR_TR.Class
@@ -13,7 +14,9 @@ namespace PostSap_GR_TR.Class
         }
         public async void LineNotifyClass(string ValidateMessage)
         {
-            string accessToken = "Hgzg7Idj9s0c7L3Rlloh5lr2wFtuJZYzTJxBo2aFQL4"; // Replace with your Line Notify access token
+            //string accessToken = "Hgzg7Idj9s0c7L3Rlloh5lr2wFtuJZYzTJxBo2aFQL4"; // Replace with your Line Notify access token
+            string accessToken = ConfigurationManager.AppSettings["TokenLine"]; // Replace with your Line Notify access token
+
             using (HttpClient client = new HttpClient())
             {
                 try

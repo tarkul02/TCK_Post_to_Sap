@@ -1,4 +1,6 @@
-﻿namespace SapApiGI.Class
+﻿using System.Configuration;
+
+namespace SapApiGI.Class
 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -15,9 +17,7 @@
         /// <remarks/>
         public Z_CONFIRM_PICKING_GOODS_ISSUE_SRV()
         {
-            // this.Url = global::WebServices.Properties.Settings.Default.WebServices_PRD_Z_CONFIRM_PICKING_GOODS_ISSUE_Z_CONFIRM_PICKING_GOODS_ISSUE_SRV;
-            // this.Url = "http://tkcprdci:8000/sap/bc/srt/rfc/sap/z_confirm_picking_goods_issue/900/z_confirm_picking_goods_issue_sr/z_confirm_picking_goods_issue_bnd"
-            this.Url = "http://172.18.1.35:8000/sap/bc/srt/rfc/sap/z_confirm_picking_goods_issue/400/z_confirm_picking_goods_issue_sr/z_confirm_picking_goods_issue_srv";
+            this.Url = ConfigurationManager.AppSettings["CallApiGI"];
             if ((this.IsLocalFileSystemWebService(this.Url) == true))
             {
                 this.UseDefaultCredentials = true;

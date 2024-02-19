@@ -1,4 +1,6 @@
-﻿namespace SapApiGRAndTR.Class
+﻿using System.Configuration;
+
+namespace SapApiGRAndTR.Class
 {
 
     /// <remarks/>
@@ -17,9 +19,7 @@
         /// <remarks/>
         public Z_GOODSMVT_CREATE1_SRV()
         {
-            //this.Url = global::WebServices.Properties.Settings.Default.WebServices_PRD_Z_GOODSMVT_CREATE1_Z_GOODSMVT_CREATE1_SRV;
-            //this.Url ="http://tkcprdci:8000/sap/bc/srt/rfc/sap/z_goodsmvt_create1/900/z_goodsmvt_create1_srv/z_goodsmvt_create1_bnd"
-            this.Url = "http://172.18.1.35:8000/sap/bc/srt/rfc/sap/z_goodsmvt_create1/400/z_goodsmvt_create1_srv/z_goodsmvt_create1_bnd";
+            this.Url = ConfigurationManager.AppSettings["CallApiGRandTR"]; 
             if ((this.IsLocalFileSystemWebService(this.Url) == true))
             {
                 this.UseDefaultCredentials = true;

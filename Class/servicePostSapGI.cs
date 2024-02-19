@@ -41,7 +41,7 @@ namespace PostSap_GR_TR.Class
             var ws_res = new ZConfirmPickingGoodsIssueResponse();
             var ws_fn_head = new Bapi2017GmHeadRet();
             var ws_fn_det = new ZsgmDetail1();
-            var RefdocNo = "GI-"+ PoAndDo;
+            var RefdocNo = "GI-"+DateTime.Now.ToString("yyMMddHHmm"); ;
             Results res = new Results();
 
             List<ZsgmDetail1> Detail_GI = new List<ZsgmDetail1>();
@@ -58,7 +58,7 @@ namespace PostSap_GR_TR.Class
 
             ZsgmDetail1 temp = new ZsgmDetail1();
             temp.Batch = "DUMMYBATCH";
-            temp.EntryQnt = 0;
+            temp.EntryQnt = Convert.ToInt32(null);
             temp.EntryUom = "";
             temp.FacNo = "";
             temp.Material = "";
@@ -150,7 +150,7 @@ namespace PostSap_GR_TR.Class
                     cmd.Parameters.AddWithValue("@EntryQnt", 0);
                     cmd.Parameters.AddWithValue("@EntryUom", "");
                     cmd.Parameters.AddWithValue("@FacNo", "");
-                    cmd.Parameters.AddWithValue("@Material", "");
+                    cmd.Parameters.AddWithValue("@Material", PoAndDo);
                     cmd.Parameters.AddWithValue("@StgeLoc", "");
                     cmd.Parameters.AddWithValue("@MoveType", "");
                     cmd.Parameters.AddWithValue("@Plant", "");
@@ -159,7 +159,7 @@ namespace PostSap_GR_TR.Class
                     cmd.Parameters.AddWithValue("@Kanban", "");
                     cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
                     cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
-                    cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc);
+                    cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc +"|IT");
                     cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
                     conn.Open();
 
@@ -171,12 +171,12 @@ namespace PostSap_GR_TR.Class
             {
                 using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
                 {
-                    cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);
+                    cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo );
                     cmd.Parameters.AddWithValue("@Batch","");
                     cmd.Parameters.AddWithValue("@EntryQnt", 0);
                     cmd.Parameters.AddWithValue("@EntryUom", "");
                     cmd.Parameters.AddWithValue("@FacNo", "");
-                    cmd.Parameters.AddWithValue("@Material","");
+                    cmd.Parameters.AddWithValue("@Material", PoAndDo);
                     cmd.Parameters.AddWithValue("@StgeLoc","");
                     cmd.Parameters.AddWithValue("@MoveType","");
                     cmd.Parameters.AddWithValue("@Plant", "");

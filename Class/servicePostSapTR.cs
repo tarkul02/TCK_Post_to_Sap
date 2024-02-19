@@ -85,11 +85,8 @@ namespace PostSap_GR_TR.Class
                         tmp.Plant = dataRow["PlantFrom"].ToString();
                         tmp.StgeLoc = dataRow["StorageFrom"].ToString();
                         tmp.Batch = "DUMMYBATCH";
-                        //test dev
-                        //tmp.Batch = "21030CON00";
                         tmp.MoveType = "311";
-                        tmp.EntryQnt = Convert.ToInt32(2);
-                        //tmp.EntryQnt = Convert.ToInt32(dataRow["MvmntQty"].ToString());
+                        tmp.EntryQnt = Convert.ToInt32(dataRow["MvmntQty"].ToString());
                         tmp.EntryUom = "Pcs";
                         tmp.ItemText = "";
                         tmp.GrRcpt = "";
@@ -101,8 +98,6 @@ namespace PostSap_GR_TR.Class
                         tmp.MovePlant = dataRow["PlantTo"].ToString();
                         tmp.MoveStloc = dataRow["StorageTo"].ToString();
                         tmp.MoveBatch = "DUMMYBATCH";
-                        //test dev
-                        //tmp.MoveBatch = "21030CON00";
                         tmp.SoldTo = "";
                         tmp.Custid = "";
                         tmp.Kanban = dataRow["Kanban"].ToString();
