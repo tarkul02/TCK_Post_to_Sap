@@ -21,9 +21,9 @@ namespace PostSap_GR_TR
         public void GRTRPost_sap(object sender, EventArgs e)
         {
             GetAndUpdate_Batch_GR_TR_Log();
-            Post_GR_to_Sap();
-            Post_TR_to_Sap();
-            Post_GI_Sap();
+            //Post_GR_to_Sap();
+            //Post_TR_to_Sap();
+            //Post_GI_Sap();
             End_update();
             GetErrorAndNotify();
             //Application.Exit();
@@ -39,16 +39,16 @@ namespace PostSap_GR_TR
                 Console.WriteLine("\nstart batch run time ");
                 Console.WriteLine("#################################################### \n");
 
-                var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
-                    " left join(select count(*) GR_Re_NO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
-                    " left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
-                    " left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
-                    " left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
-                    " left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode_DEV].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
+                var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
+                    "left join(select count(*) GR_Re_NO, Action from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
+                    " left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
+                    " left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
+                    " left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
+                    " left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
                 Class.Condb Condb = new Class.Condb();
                 var dt = Condb.GetQuery(sql);
                 start_Time = dt.Rows[0]["Start_Time"].ToString();
-                sql = "INSERT INTO [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
+                sql = "INSERT INTO [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
                 ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
                 string connString = "";
                 if (setting != null)
@@ -86,9 +86,9 @@ namespace PostSap_GR_TR
                 _ = new DataTable();
                 _ = new Class.ServicePostSapGR();
                 Class.Condb Condb = new Class.Condb();
-                //string sqlGetGR = "select * from [Barcode_DEV].[dbo].[v_sap_batch_gr] where Action = 1";
-                string sqlGetGR = "select * from [Barcode_DEV].[dbo].[testGR] where Action = '1'";
-                string sqlGetGR_redo = "select * from [Barcode_DEV].[dbo].[v_sap_batch_gr_redo] where Action = 1";
+                //string sqlGetGR = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
+                string sqlGetGR = "select * from [Barcode].[dbo].[testGR] where Action = '1'";
+                string sqlGetGR_redo = "select * from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1";
                 DataTable GRdata = Condb.GetQuery(sqlGetGR);
                 DataTable GRErrdata = Condb.GetQuery(sqlGetGR_redo);
                 Class.ServicePostSapGR sendSapGR = new Class.ServicePostSapGR();
@@ -153,10 +153,10 @@ namespace PostSap_GR_TR
                 _ = new DataTable();
                 _ = new Class.ServicePostSapTR();
                 Class.Condb Condb = new Class.Condb();
-                //string sqlGetTR = "select TOP  count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
-                string sqlGetTR = "select * from [Barcode_DEV].[dbo].[testTR] where 1 = 1";
+                //string sqlGetTR = "select TOP  count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+                string sqlGetTR = "select * from [Barcode].[dbo].[testTR] where 1 = 1";
                 DataTable TRdata = Condb.GetQuery(sqlGetTR);
-                string sqlGetTR_redo = "select count(*) ,SLIPNO from [Barcode_DEV].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
+                string sqlGetTR_redo = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
                 DataTable TRErrdata = Condb.GetQuery(sqlGetTR_redo);
                 Class.ServicePostSapTR sendSapTR = new Class.ServicePostSapTR();
                 if (TRdata.Rows.Count > 0)
@@ -205,7 +205,7 @@ namespace PostSap_GR_TR
                 Class.Condb Condb = new Class.Condb();
 
                 //string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO FROM Barcode_dev.dbo.v_sap_batch_gi where Action = 1 group by ORDERNO";
-                string sqlGetGI = "SELECT * FROM [Barcode_DEV].[dbo].[testGI] where 1=1";
+                string sqlGetGI = "SELECT * FROM [Barcode].[dbo].[testGI] where 1=1";
                 DataTable GIdata = Condb.GetQuery(sqlGetGI);
                 string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO FROM Barcode_dev.dbo.v_sap_batch_gi_redo where Action = 1 group by RefDocNo ,ORDERNO";
                 DataTable GIErrdata = Condb.GetQuery(sqlGetGI_redo);
@@ -254,7 +254,7 @@ namespace PostSap_GR_TR
         {
             try
             {
-                var sql = "UPDATE [Barcode_DEV].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
+                var sql = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
 
                 ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
                 string connString = "";
@@ -297,12 +297,12 @@ namespace PostSap_GR_TR
                 {
                     _ = setting.ConnectionString;
                 }
-                string sqlemailGR = "select  RefDocNo as DocNo , EMessage from [Barcode_DEV].[dbo].[v_get_dataNotify_gr] where 1 = 1";
-                string sqlemailTR = "select  RefDocNo as DocNo , EMessage  from [Barcode_DEV].[dbo].[v_get_dataNotify_tr] where 1 = 1";
-                string sqlemailGI = "select  RefDocNo as DocNo , EMessage  from [Barcode_DEV].[dbo].[v_get_dataNotify_gi] where 1 = 1";
-                string sqllineGR = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_get_dataNotify_gr] where 1 = 1";
-                string sqllineTR = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_get_dataNotify_tr] where 1 = 1";
-                string sqllineGI = "select count(*) as totalSum  from [Barcode_DEV].[dbo].[v_get_dataNotify_gi] where 1 = 1";
+                string sqlemailGR = "select  RefDocNo as DocNo , EMessage from [Barcode].[dbo].[v_get_dataNotify_gr] where 1 = 1";
+                string sqlemailTR = "select  RefDocNo as DocNo , EMessage  from [Barcode].[dbo].[v_get_dataNotify_tr] where 1 = 1";
+                string sqlemailGI = "select  RefDocNo as DocNo , EMessage  from [Barcode].[dbo].[v_get_dataNotify_gi] where 1 = 1";
+                string sqllineGR = "select count(*) as totalSum  from [Barcode].[dbo].[v_get_dataNotify_gr] where 1 = 1";
+                string sqllineTR = "select count(*) as totalSum  from [Barcode].[dbo].[v_get_dataNotify_tr] where 1 = 1";
+                string sqllineGI = "select count(*) as totalSum  from [Barcode].[dbo].[v_get_dataNotify_gi] where 1 = 1";
 
                 DataTable GetDataErrorGR = Condb.GetQuery(sqlemailGR);
                 DataTable GetDataErrorTR = Condb.GetQuery(sqlemailTR);
