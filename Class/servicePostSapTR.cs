@@ -56,7 +56,7 @@ namespace PostSap_GR_TR.Class
                 SqlConnection conn = new SqlConnection(connString);
 
                 DataTable getdata_tr_and_trredo = new DataTable();
-                string sqlSelecttable = DataType == "12" ? "[Barcode].[dbo].[v_sap_batch_tr]" : "[Barcode].[dbo].[v_sap_batch_tr_redo]";
+                string sqlSelecttable = DataType == "12" ? "[Barcode_DEV].[dbo].[v_sap_batch_tr]" : "[Barcode_DEV].[dbo].[v_sap_batch_tr_redo]";
                 string sql = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + SlipNo + "' and MAT_TYPE <> 'ZRM'";
                 Class.Condb Condb = new Class.Condb();
                 getdata_tr_and_trredo = Condb.GetQuery(sql);
@@ -135,21 +135,21 @@ namespace PostSap_GR_TR.Class
                     List<T_LOG_GR_STOCK> Log_Gr = new List<T_LOG_GR_STOCK>();
                     List<T_LOG_STOCK_ERROR> Log_Error = new List<T_LOG_STOCK_ERROR>();
 
-                    string sqlLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_GR_STOCK] "
+                    string sqlLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_GR_STOCK] "
                     + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
                     "VALUES "
                     + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage)";
 
                     DataTable insertDataLogGT = new DataTable();
 
-                    string sqlErrorLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_STOCK_ERROR] "
+                    string sqlErrorLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_STOCK_ERROR] "
                     + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                     "VALUES "
                     + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
                     DataTable insertDataErrorLogGT = new DataTable();
 
-                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
+                    string dataUpdateList = "UPDATE [Barcode_DEV].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
                     DataTable UpdateList = new DataTable();
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {

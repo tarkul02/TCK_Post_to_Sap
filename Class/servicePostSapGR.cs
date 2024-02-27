@@ -62,7 +62,7 @@ namespace PostSap_GR_TR.Class
                     connString = setting.ConnectionString;
                 }
 
-                string sql = "SELECT TOP 1 * FROM [Barcode].[dbo].[T_LOCATION_SAP] where LOC_SAP_ID ='" + Store + "'";
+                string sql = "SELECT TOP 1 * FROM [Barcode_DEV].[dbo].[T_LOCATION_SAP] where LOC_SAP_ID ='" + Store + "'";
                 SqlConnection conn = new SqlConnection(connString);
                 Class.Condb Condb = new Class.Condb();
                 checkDatamaster = Condb.GetQuery(sql);
@@ -110,14 +110,14 @@ namespace PostSap_GR_TR.Class
                 var Log_Gr = new List<T_LOG_GR_STOCK>();
                 var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
-                string sqlLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_GR_STOCK] " 
+                string sqlLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_GR_STOCK] " 
                 + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
                 "VALUES " 
                 + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage)";
 
                 DataTable insertDataLogGT = new DataTable();
 
-                string sqlErrorLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_STOCK_ERROR] "
+                string sqlErrorLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_STOCK_ERROR] "
                 + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                 "VALUES "
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
