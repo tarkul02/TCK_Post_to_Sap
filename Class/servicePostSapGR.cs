@@ -18,8 +18,17 @@ namespace PostSap_GR_TR.Class
             //example from excel postdate = 2022-09-01
             try
             {
+
                 partno = partno.Trim();
+                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+                string connString = "";
+                if (setting != null)
+                {
+                    connString = setting.ConnectionString;
+                }
+
                 BarcodeEntities db = new BarcodeEntities();
+                SqlConnection conn = new SqlConnection(connString);
 
                 T_LOCATION_SAP Master_T_LOCATION_SAP = new T_LOCATION_SAP();
                 var ws_service = new Z_GOODSMVT_CREATE1_SRV();
@@ -42,7 +51,7 @@ namespace PostSap_GR_TR.Class
                 //ws_fn_head.PstngDate = "20220901";
                 ws_fn_head.PstngDate = postdate.Replace("-", "");
                 //ws_fn_head.PstngDate = DateTime.Now.ToString("yyyyMM01");
-             
+
                 GmCode.GmCode = "05";
 
                 var Time = DateTime.Now.ToString("yyyy-MM-dd");
@@ -52,18 +61,12 @@ namespace PostSap_GR_TR.Class
                 var Day = (Convert.ToInt32(_Time[2])).ToString();
 
                 DataTable checkDatamaster = new DataTable();
-                
+
                 List<ZsgmDetail1> Detail_GR = new List<ZsgmDetail1>();
 
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
 
-                string sql = "SELECT TOP 1 * FROM [Barcode_DEV].[dbo].[T_LOCATION_SAP] where LOC_SAP_ID ='" + Store + "'";
-                SqlConnection conn = new SqlConnection(connString);
+                string sql = "SELECT TOP 1 * FROM [Barcode].[dbo].[T_LOCATION_SAP] where LOC_SAP_ID ='" + Store + "'";
+
                 Class.Condb Condb = new Class.Condb();
                 checkDatamaster = Condb.GetQuery(sql);
 
@@ -106,22 +109,24 @@ namespace PostSap_GR_TR.Class
                 ws_fn_partosap.ItDetail = result.ToArray();
                 ws_fn_partosap.IGoodsmvtCode = GmCode;
                 //ส่งไปให้ SAP
-                ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                //ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
                 var Log_Gr = new List<T_LOG_GR_STOCK>();
                 var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
-                string sqlLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_GR_STOCK] " 
+                string sqlLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_GR_STOCK] "
                 + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
-                "VALUES " 
+                "VALUES "
                 + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage)";
 
                 DataTable insertDataLogGT = new DataTable();
 
-                string sqlErrorLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_STOCK_ERROR] "
+                string sqlErrorLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_STOCK_ERROR] "
                 + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                 "VALUES "
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
-               // Console.WriteLine("aa"+ws_res.ItDetail.Count());
+
+                string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where MatNo = '" + partno + "'";
+
                 DataTable insertDataErrorLogGT = new DataTable();
                 if (ws_res.ItDetail.Count() > 0)
                 {
@@ -130,6 +135,14 @@ namespace PostSap_GR_TR.Class
                         if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                         {
 
+                            using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@SapStatus", 1);
+                                cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
+                                conn.Open();
+                                int resultsap = cmd.ExecuteNonQuery();
+                                conn.Close();
+                            }
                             using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
                             {
                                 cmd.Parameters.AddWithValue("@Batch", item.Batch);

@@ -12,7 +12,7 @@ namespace PostSap_GR_TR.Class
 {
     class ServicePostSapTR
     {
-        public void PostSapTRClass(string SlipNo, string DataType )
+        public void PostSapTRClass(string SlipNo, string DataType)
         {
 
             var ws_service = new Z_GOODSMVT_CREATE1_SRV();
@@ -22,8 +22,16 @@ namespace PostSap_GR_TR.Class
             var GmCode = new Bapi2017GmCode();
             var RefdocNo = "TR-" + DateTime.Now.ToString("yyMMddHHmm");
             Results res = new Results();
-            var db = new T_LOCATION_SAP();
+            //var db = new T_LOCATION_SAP();
             List<ZsgmDetail1> DetailToSap = new List<ZsgmDetail1>();
+            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+            string connString = "";
+            if (setting != null)
+            {
+                connString = setting.ConnectionString;
+            }
+
+            SqlConnection conn = new SqlConnection(connString);
             var getpostdate = false;
             string UserID = "";
             ws_fn_head.RefDocNo = RefdocNo;
@@ -32,6 +40,8 @@ namespace PostSap_GR_TR.Class
                 UserID = SlipNo.Split('|')[0];
                 SlipNo = SlipNo.Split('|')[1];
             }
+
+
             int SlipNolength = SlipNo.Length;
             if (SlipNolength > 25)
             {
@@ -46,21 +56,14 @@ namespace PostSap_GR_TR.Class
             GmCode.GmCode = "04";
             try
             {
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
 
-                SqlConnection conn = new SqlConnection(connString);
 
                 DataTable getdata_tr_and_trredo = new DataTable();
-                string sqlSelecttable = DataType == "12" ? "[Barcode_DEV].[dbo].[v_sap_batch_tr]" : "[Barcode_DEV].[dbo].[v_sap_batch_tr_redo]";
+                string sqlSelecttable = DataType == "12" ? "[Barcode].[dbo].[v_sap_batch_tr]" : "[Barcode].[dbo].[v_sap_batch_tr_redo]";
                 string sql = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + SlipNo + "' and MAT_TYPE <> 'ZRM'";
                 Class.Condb Condb = new Class.Condb();
                 getdata_tr_and_trredo = Condb.GetQuery(sql);
-            
+
 
                 if (getdata_tr_and_trredo.Rows.Count > 0)
                 {
@@ -130,26 +133,26 @@ namespace PostSap_GR_TR.Class
                     ws_fn_partosap.ItDetail = result.ToArray();
                     ws_fn_partosap.IGoodsmvtCode = GmCode;
                     //ส่งไปให้ SAP
-                    ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                    //ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
                     BarcodeEntities UpdateBarcode = new BarcodeEntities();
                     List<T_LOG_GR_STOCK> Log_Gr = new List<T_LOG_GR_STOCK>();
                     List<T_LOG_STOCK_ERROR> Log_Error = new List<T_LOG_STOCK_ERROR>();
 
-                    string sqlLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_GR_STOCK] "
+                    string sqlLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_GR_STOCK] "
                     + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
                     "VALUES "
                     + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage)";
 
                     DataTable insertDataLogGT = new DataTable();
 
-                    string sqlErrorLog_Gr = "INSERT INTO [Barcode_DEV].[dbo].[T_LOG_STOCK_ERROR] "
+                    string sqlErrorLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_STOCK_ERROR] "
                     + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                     "VALUES "
                     + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
                     DataTable insertDataErrorLogGT = new DataTable();
-
-                    string dataUpdateList = "UPDATE [Barcode_DEV].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
+                    string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where SlipNo = '" + SlipNo + "'";
+                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
                     DataTable UpdateList = new DataTable();
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
@@ -171,6 +174,16 @@ namespace PostSap_GR_TR.Class
                         {
                             if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                             {
+
+                                using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("@SapStatus", 1);
+                                    cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
+                                    conn.Open();
+                                    int resultsap = cmd.ExecuteNonQuery();
+                                    conn.Close();
+                                }
+
                                 using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
                                 {
                                     cmd.Parameters.AddWithValue("@Batch", item.Batch);

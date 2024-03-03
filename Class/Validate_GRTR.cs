@@ -50,7 +50,7 @@ namespace PostSap_GR_TR.Class
                 ValidateMessage = "";
             }
 
-            var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_GR_to_Sap] " +
+            var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] " +
                 "(MatNo, CustID, FacNo, Plant, SLoc, MvmntType, PostDate, PostTime, QRQty, HeaderText, Action ,Type , CreateDate ,ValidateMessage) " +
                 "VALUES " +
                 "(@MatNo,@CustID,@FacNo,@Plant,@SLoc,@MvmntType,@PostDate,@PostTime,@QRQty,@HeaderText,@Action,@Type,@CreateDate  ,@ValidateMessage)";
@@ -99,7 +99,7 @@ namespace PostSap_GR_TR.Class
 
             SqlConnection conn = new SqlConnection(connString);
             DataTable getdata_tr_and_trredo = new DataTable();
-            string sqlSelecttable = Datatype == "12" ? "[Barcode_DEV].[dbo].[v_sap_batch_tr]" : "[Barcode_DEV].[dbo].[v_sap_batch_tr_redo]";
+            string sqlSelecttable = Datatype == "12" ? "[Barcode].[dbo].[v_sap_batch_tr]" : "[Barcode].[dbo].[v_sap_batch_tr_redo]";
             string sqlcheckmaster = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + checkSlipno + "' and MAT_TYPE <> 'ZRM'";
             Class.Condb Condb = new Class.Condb();
             getdata_tr_and_trredo = Condb.GetQuery(sqlcheckmaster);
@@ -107,7 +107,7 @@ namespace PostSap_GR_TR.Class
             Message += checkSlipno.Length == 14 ? "" : "Slipno ,".ToString().Trim();
             Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
             string ValidateMessage = "";
-            var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
+            var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
               "(PlantFrom ,StorageFrom ,PlantTo ,StorageTo  ,Kanban , MvmntQty,SlipNo ,Mat_Type ,ValidateMessage ,Type, CreateDate ,Datatype) " +
               "VALUES " +
               "(@PlantFrom , @StorageFrom , @PlantTo , @StorageTo  ,@Kanban ,@MvmntQty ,@SlipNo ,@Mat_Type ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
@@ -195,7 +195,7 @@ namespace PostSap_GR_TR.Class
             SqlConnection conn = new SqlConnection(connString);
             DataTable getdata_GI_and_GIredo = new DataTable();
             Class.Condb Condb = new Class.Condb();
-            var sql = "INSERT INTO [Barcode_DEV].[dbo].[T_LogDatavalidate_GI_to_Sap] " +
+            var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_GI_to_Sap] " +
               "(OrderNo ,ValidateMessage ,Type, CreateDate ,Datatype) " +
               "VALUES " +
               "(@OrderNo ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
