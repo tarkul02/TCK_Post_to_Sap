@@ -106,10 +106,7 @@ namespace PostSap_GR_TR.Class
             ws_fn_partosap.ItDetail = result.ToArray();
             ws_fn_partosap.IStgeLoc = "";
             //ส่งไปให้ SAP
-            //ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
-
-
-
+            ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
 
             string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] where ORDERNO = '" + PoAndDo + "'";
             DataTable UpdateList = new DataTable();

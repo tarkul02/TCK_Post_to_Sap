@@ -12,7 +12,7 @@ namespace PostSap_GR_TR.Class
 {
     class ServicePostSapTR
     {
-        public void PostSapTRClass(string SlipNo, string DataType)
+        public void PostSapTRClass(string SlipNo, string DataType, string getID)
         {
 
             var ws_service = new Z_GOODSMVT_CREATE1_SRV();
@@ -22,7 +22,7 @@ namespace PostSap_GR_TR.Class
             var GmCode = new Bapi2017GmCode();
             var RefdocNo = "TR-" + DateTime.Now.ToString("yyMMddHHmm");
             Results res = new Results();
-            //var db = new T_LOCATION_SAP();
+            var db = new T_LOCATION_SAP();
             List<ZsgmDetail1> DetailToSap = new List<ZsgmDetail1>();
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
@@ -133,7 +133,7 @@ namespace PostSap_GR_TR.Class
                     ws_fn_partosap.ItDetail = result.ToArray();
                     ws_fn_partosap.IGoodsmvtCode = GmCode;
                     //ส่งไปให้ SAP
-                    //ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                    ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
                     BarcodeEntities UpdateBarcode = new BarcodeEntities();
                     List<T_LOG_GR_STOCK> Log_Gr = new List<T_LOG_GR_STOCK>();
                     List<T_LOG_STOCK_ERROR> Log_Error = new List<T_LOG_STOCK_ERROR>();
@@ -151,7 +151,7 @@ namespace PostSap_GR_TR.Class
                     + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
                     DataTable insertDataErrorLogGT = new DataTable();
-                    string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where SlipNo = '" + SlipNo + "'";
+                    string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
                     string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
                     DataTable UpdateList = new DataTable();
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))

@@ -20,13 +20,13 @@ namespace PostSap_GR_TR
         }
         public void GRTRPost_sap(object sender, EventArgs e)
         {
+          
             GetAndUpdate_Batch_GR_TR_Log();
             Post_GR_to_Sap();
             Post_TR_to_Sap();
-            Post_GI_Sap();
+            //Post_GI_Sap();
             End_update();
-            //GetErrorAndNotify();
-            //Application.Exit();
+            GetErrorAndNotify();
         }
 
         string start_Time = "";
@@ -38,6 +38,7 @@ namespace PostSap_GR_TR
             {
                 Console.WriteLine("\nstart batch run time ");
                 Console.WriteLine("#################################################### \n");
+
 
                 var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
                     "left join(select count(*) GR_Re_NO, Action from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
@@ -111,7 +112,6 @@ namespace PostSap_GR_TR
                 _ = new Class.ServicePostSapGR();
                 Class.Condb Condb = new Class.Condb();
                 string sqlGetGR = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
-                //string sqlGetGR = "select * from [Barcode].[dbo].[testGR] where Action = '1'";
                 string sqlGetGR_redo = "select * from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1";
                 DataTable GRdata = Condb.GetQuery(sqlGetGR);
                 DataTable GRErrdata = Condb.GetQuery(sqlGetGR_redo);
@@ -133,13 +133,12 @@ namespace PostSap_GR_TR
                         int Action = Convert.ToInt32(item["Action"].ToString());
                         string Type = "GR".ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                        //sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext);
+                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                        sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext, getID);
                     }
                 }
                 if (GRErrdata.Rows.Count > 0)
                 {
-                    Console.WriteLine("      start Process GR2");
                     foreach (DataRow item in GRErrdata.Rows)
                     {
                         string partno = item["MatNo"].ToString().Trim();
@@ -155,8 +154,8 @@ namespace PostSap_GR_TR
                         int Action = Convert.ToInt32(item["Action"].ToString());
                         string Type = "GR_redo".ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                        //sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext);
+                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                        sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext, getID);
                     }
                 }
                 Console.WriteLine("      End Process GR \n");
@@ -200,7 +199,6 @@ namespace PostSap_GR_TR
                 _ = new Class.ServicePostSapTR();
                 Class.Condb Condb = new Class.Condb();
                 string sqlGetTR = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
-                //string sqlGetTR = "select * from [Barcode].[dbo].[testTR] where 1 = 1";
                 DataTable TRdata = Condb.GetQuery(sqlGetTR);
                 string sqlGetTR_redo = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
                 DataTable TRErrdata = Condb.GetQuery(sqlGetTR_redo);
@@ -214,8 +212,8 @@ namespace PostSap_GR_TR
                         string Type = "TR";
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
-                        //sendSapTR.PostSapTRClass(Slipno, Datatype);
+                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
+                        sendSapTR.PostSapTRClass(Slipno, Datatype, getID);
                     }
                 }
 
@@ -228,8 +226,8 @@ namespace PostSap_GR_TR
                         string Type = "TR_redo";
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
-                        //sendSapTR.PostSapTRClass(Slipno, Datatype);
+                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
+                        sendSapTR.PostSapTRClass(Slipno, Datatype, getID);
                     }
                 }
                 Console.WriteLine("      End Process TR \n");
@@ -290,7 +288,7 @@ namespace PostSap_GR_TR
                         string DOandPO = checkPoAndDO;
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                         Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                        //sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
+                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
                     }
                 }
 
@@ -306,7 +304,7 @@ namespace PostSap_GR_TR
                         string DOandPO = checkPoAndDO;
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                         Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                        //sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
+                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
                     }
                 }
                 Console.WriteLine("      End Process GI \n");
@@ -431,8 +429,6 @@ namespace PostSap_GR_TR
                 string MessagelistGI = int.Parse(checkdata3) > 0 ? "GI Error : " + checkdata3 + " Item" : "";
                 string ValidateMessage = "Error  \nrun time =  " + checkTime + "\n" + MessagelistGR + "\n" + MessagelistTR + "\n" + MessagelistGI;
 
-                //if (checkTime == "08:00" || checkTime == "20:00")
-                //{
                 Console.WriteLine("Start sent LineNotify ");
                 // start line notify 
                 if (int.Parse(checkdata1) > 0 || int.Parse(checkdata2) > 0 || int.Parse(checkdata3) > 0)
@@ -440,149 +436,152 @@ namespace PostSap_GR_TR
                     Class.LineNotify lineNotify = new Class.LineNotify();
                     lineNotify.FNLineNotify(ValidateMessage);
                 }
-                // end line notify
-                // start cerate file and send mail
-                if (GetDataErrorGR.Rows.Count > 0 || GetDataErrorTR.Rows.Count > 0 || GetDataErrorGI.Rows.Count > 0)
+                
+                if (checkTime == "08:00" || checkTime == "13:00")
                 {
-                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                    DateTime now = DateTime.Now;
-                    string filename = now.ToString("yyyy-MM-dd HH:mm:ss:fff");
-
-                    string[] words = filename.Split(' ');
-                    string[] text1 = words[0].Split('-');
-                    string[] text2 = words[1].Split(':');
-                    string lastfilename = text1[0] + "_" + text1[1] + "_" + text1[2] + "_" + text2[0];
-                    string Fordername = text1[0] + "_" + text1[1] + "_" + text1[2] + "_" + text2[0];
-                    string folderPath = @"C:\testTKC\temp\" + Fordername;
-                    using (var package = new ExcelPackage())
+                    // end line notify
+                    // start cerate file and send mail
+                    if (GetDataErrorGR.Rows.Count > 0 || GetDataErrorTR.Rows.Count > 0 || GetDataErrorGI.Rows.Count > 0)
                     {
+                        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                        DateTime now = DateTime.Now;
+                        string filename = now.ToString("yyyy-MM-dd HH:mm:ss:fff");
 
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Data");
+                        string[] words = filename.Split(' ');
+                        string[] text1 = words[0].Split('-');
+                        string[] text2 = words[1].Split(':');
+                        string lastfilename = text1[0] + "_" + text1[1] + "_" + text1[2] + "_" + text2[0];
+                        string Fordername = text1[0] + "_" + text1[1] + "_" + text1[2] + "_" + text2[0];
+                        string folderPath = @"C:\testTKC\temp\" + Fordername;
+                        using (var package = new ExcelPackage())
+                        {
 
-                        // Write column headers
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Data");
+
+                            // Write column headers
+                            if (GetDataErrorGR.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < GetDataErrorGR.Columns.Count; i++)
+                                {
+                                    worksheet.Cells[1, i + 1].Value = GetDataErrorGR.Columns[i].ColumnName;
+                                }
+
+                                // Write data to Excel file
+                                for (int row = 0; row < GetDataErrorGR.Rows.Count; row++)
+                                {
+                                    for (int column = 0; column < GetDataErrorGR.Columns.Count; column++)
+                                    {
+                                        worksheet.Cells[row + 2, column + 1].Value = GetDataErrorGR.Rows[row][column];
+                                    }
+                                }
+
+                                //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
+                                Directory.CreateDirectory(folderPath);
+                                FileInfo excelFileGR = new FileInfo(folderPath + "\\GR" + lastfilename + ".xlsx");
+                                package.SaveAs(excelFileGR);
+                            }
+
+                            if (GetDataErrorTR.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < GetDataErrorTR.Columns.Count; i++)
+                                {
+                                    worksheet.Cells[1, i + 1].Value = GetDataErrorTR.Columns[i].ColumnName;
+                                }
+
+                                // Write data to Excel file
+                                for (int row = 0; row < GetDataErrorTR.Rows.Count; row++)
+                                {
+                                    for (int column = 0; column < GetDataErrorTR.Columns.Count; column++)
+                                    {
+                                        worksheet.Cells[row + 2, column + 1].Value = GetDataErrorTR.Rows[row][column];
+                                    }
+                                }
+
+
+                                //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
+                                Directory.CreateDirectory(folderPath);
+                                FileInfo excelFileGR = new FileInfo(folderPath + "\\TR" + lastfilename + ".xlsx");
+                                package.SaveAs(excelFileGR);
+                            }
+
+                            if (GetDataErrorGI.Rows.Count > 0)
+                            {
+                                for (int i = 0; i < GetDataErrorGI.Columns.Count; i++)
+                                {
+                                    worksheet.Cells[1, i + 1].Value = GetDataErrorGI.Columns[i].ColumnName;
+                                }
+
+                                // Write data to Excel file
+                                for (int row = 0; row < GetDataErrorGI.Rows.Count; row++)
+                                {
+                                    for (int column = 0; column < GetDataErrorGI.Columns.Count; column++)
+                                    {
+                                        worksheet.Cells[row + 2, column + 1].Value = GetDataErrorGI.Rows[row][column];
+                                    }
+                                }
+
+
+                                //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
+                                Directory.CreateDirectory(folderPath);
+                                FileInfo excelFileGR = new FileInfo(folderPath + "\\GI" + lastfilename + ".xlsx");
+                                package.SaveAs(excelFileGR);
+                            }
+                        }
+                        Console.WriteLine("Start sent Email \n");
+                        ////// Email settings
+                        ///
+                        //string senderEmail = ConfigurationManager.AppSettings["SenderEmail"];
+                        //string receiverEmail = ConfigurationManager.AppSettings["mailTO"];
+
+                        //string subject = "Excel File Attachment Error";
+                        //string body = "Please Check your data in Excel file attached. \n" + ValidateMessage;
+
+                        // Email configuration
+
+                        MailMessage mail = new MailMessage();
+                        mail.From = new MailAddress(ConfigurationManager.AppSettings["SenderEmail"]);
+                        mail.To.Add(ConfigurationManager.AppSettings["mailTO"]);
+                        mail.Subject = "Excel File Attachment Error";
+                        mail.Body = "Please Check your data in Excel file attached. \n" + ValidateMessage;
+
+                        SmtpClient client = new SmtpClient(ConfigurationManager.AppSettings["SmtpClient"]);
+                        client.Port = 25; // Set the port according to your email provider
+                        client.Credentials = new NetworkCredential(ConfigurationManager.AppSettings["CredentialsUser"], ConfigurationManager.AppSettings["CredentialsPass"]);
+                        client.EnableSsl = false;
+
+
+                        // Enable SSL
+                        //Attach the Excel file
+                        // Attachment attachment1 = new Attachment(@"C:\TKC\TCK_Post_to_Sap\temp\GR" + lastfilename + ".xlsx");
+                        // Attachment attachment2 = new Attachment(@"C:\TKC\TCK_Post_to_Sap\temp\TR" + lastfilename + ".xlsx");
                         if (GetDataErrorGR.Rows.Count > 0)
                         {
-                            for (int i = 0; i < GetDataErrorGR.Columns.Count; i++)
-                            {
-                                worksheet.Cells[1, i + 1].Value = GetDataErrorGR.Columns[i].ColumnName;
-                            }
-
-                            // Write data to Excel file
-                            for (int row = 0; row < GetDataErrorGR.Rows.Count; row++)
-                            {
-                                for (int column = 0; column < GetDataErrorGR.Columns.Count; column++)
-                                {
-                                    worksheet.Cells[row + 2, column + 1].Value = GetDataErrorGR.Rows[row][column];
-                                }
-                            }
-
-                            //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
-                            Directory.CreateDirectory(folderPath);
-                            FileInfo excelFileGR = new FileInfo(folderPath + "\\GR" + lastfilename + ".xlsx");
-                            package.SaveAs(excelFileGR);
+                            Attachment attachment1 = new Attachment(folderPath + "\\GR" + lastfilename + ".xlsx");
+                            mail.Attachments.Add(attachment1);
                         }
-
                         if (GetDataErrorTR.Rows.Count > 0)
                         {
-                            for (int i = 0; i < GetDataErrorTR.Columns.Count; i++)
-                            {
-                                worksheet.Cells[1, i + 1].Value = GetDataErrorTR.Columns[i].ColumnName;
-                            }
-
-                            // Write data to Excel file
-                            for (int row = 0; row < GetDataErrorTR.Rows.Count; row++)
-                            {
-                                for (int column = 0; column < GetDataErrorTR.Columns.Count; column++)
-                                {
-                                    worksheet.Cells[row + 2, column + 1].Value = GetDataErrorTR.Rows[row][column];
-                                }
-                            }
-
-
-                            //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
-                            Directory.CreateDirectory(folderPath);
-                            FileInfo excelFileGR = new FileInfo(folderPath + "\\TR" + lastfilename + ".xlsx");
-                            package.SaveAs(excelFileGR);
+                            Attachment attachment2 = new Attachment(folderPath + "\\TR" + lastfilename + ".xlsx");
+                            mail.Attachments.Add(attachment2);
                         }
-
                         if (GetDataErrorGI.Rows.Count > 0)
                         {
-                            for (int i = 0; i < GetDataErrorGI.Columns.Count; i++)
-                            {
-                                worksheet.Cells[1, i + 1].Value = GetDataErrorGI.Columns[i].ColumnName;
-                            }
-
-                            // Write data to Excel file
-                            for (int row = 0; row < GetDataErrorGI.Rows.Count; row++)
-                            {
-                                for (int column = 0; column < GetDataErrorGI.Columns.Count; column++)
-                                {
-                                    worksheet.Cells[row + 2, column + 1].Value = GetDataErrorGI.Rows[row][column];
-                                }
-                            }
-
-
-                            //string folderPath = @"C:\TKC\TCK_Post_to_Sap\temp\" + Fordername;
-                            Directory.CreateDirectory(folderPath);
-                            FileInfo excelFileGR = new FileInfo(folderPath + "\\GI" + lastfilename + ".xlsx");
-                            package.SaveAs(excelFileGR);
+                            Attachment attachment3 = new Attachment(folderPath + "\\GI" + lastfilename + ".xlsx");
+                            mail.Attachments.Add(attachment3);
+                        }
+                        // Send the email
+                        try
+                        {
+                            client.Send(mail);
+                            Console.WriteLine("Email sent successfully!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error: " + ex.Message);
                         }
                     }
-                    Console.WriteLine("Start sent Email \n");
-                    ////// Email settings
-                    ///
-                    //string senderEmail = ConfigurationManager.AppSettings["SenderEmail"];
-                    //string receiverEmail = ConfigurationManager.AppSettings["mailTO"];
-
-                    //string subject = "Excel File Attachment Error";
-                    //string body = "Please Check your data in Excel file attached. \n" + ValidateMessage;
-
-                    // Email configuration
-
-                    MailMessage mail = new MailMessage();
-                    mail.From = new MailAddress(ConfigurationManager.AppSettings["SenderEmail"]);
-                    mail.To.Add(ConfigurationManager.AppSettings["mailTO"]);
-                    mail.Subject = "Excel File Attachment Error";
-                    mail.Body = "Please Check your data in Excel file attached. \n" + ValidateMessage;
-
-                    SmtpClient client = new SmtpClient(ConfigurationManager.AppSettings["SmtpClient"]);
-                    client.Port = 25; // Set the port according to your email provider
-                    client.Credentials = new NetworkCredential(ConfigurationManager.AppSettings["CredentialsUser"], ConfigurationManager.AppSettings["CredentialsPass"]);
-                    client.EnableSsl = false;
-
-
-                    // Enable SSL
-                    //Attach the Excel file
-                    // Attachment attachment1 = new Attachment(@"C:\TKC\TCK_Post_to_Sap\temp\GR" + lastfilename + ".xlsx");
-                    // Attachment attachment2 = new Attachment(@"C:\TKC\TCK_Post_to_Sap\temp\TR" + lastfilename + ".xlsx");
-                    if (GetDataErrorGR.Rows.Count > 0)
-                    {
-                        Attachment attachment1 = new Attachment(folderPath + "\\GR" + lastfilename + ".xlsx");
-                        mail.Attachments.Add(attachment1);
-                    }
-                    if (GetDataErrorTR.Rows.Count > 0)
-                    {
-                        Attachment attachment2 = new Attachment(folderPath + "\\TR" + lastfilename + ".xlsx");
-                        mail.Attachments.Add(attachment2);
-                    }
-                    if (GetDataErrorGI.Rows.Count > 0)
-                    {
-                        Attachment attachment3 = new Attachment(folderPath + "\\GI" + lastfilename + ".xlsx");
-                        mail.Attachments.Add(attachment3);
-                    }
-                    // Send the email
-                    try
-                    {
-                        client.Send(mail);
-                        Console.WriteLine("Email sent successfully!");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error: " + ex.Message);
-                    }
+                    // end cerate file and send mail
                 }
-                // end cerate file and send mail
-                //}
             }
             catch (Exception ex)
             {

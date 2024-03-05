@@ -20,7 +20,7 @@ namespace PostSap_GR_TR.Class
             string datenow = now.ToString("yyyy-MM-dd HH:mm:ss:fff");
             int checkYear = now.Year;
             string lowYear = (checkYear - 1).ToString();
-           
+
             if (datenow.Substring(5, 10) == "-01-01")
             {
                 checkdate += postdate.Length == 8 ? "" : "error";
@@ -85,10 +85,16 @@ namespace PostSap_GR_TR.Class
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
             }
-            return ValidateMessage;
+            _ = new DataTable();
+            _ = new Class.ServicePostSapGR();
+            Class.Condb Condb = new Class.Condb();
+            string sqlgetID = "SELECT TOP (1) [ID] FROM [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] where MatNo = '" + partno + "' order by ID desc";
+            var getID = Condb.GetQuery(sqlgetID);
+            string lastID = getID.Rows[0]["ID"].ToString();
+            return lastID;
         }
 
-        public void GetAndUpdate_LogDataValidate_TR_to_Sap(string checkSlipno, string Datatype, string Type)
+        public string GetAndUpdate_LogDataValidate_TR_to_Sap(string checkSlipno, string Datatype, string Type)
         {
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
@@ -104,7 +110,7 @@ namespace PostSap_GR_TR.Class
             Class.Condb Condb = new Class.Condb();
             getdata_tr_and_trredo = Condb.GetQuery(sqlcheckmaster);
             string Message = "";
-            Message += checkSlipno.Length == 14 ? "" : "Slipno ,".ToString().Trim();
+            //Message += checkSlipno.Length == 14 ? "" : "Slipno ,".ToString().Trim();
             Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
             string ValidateMessage = "";
             var sql = "INSERT INTO [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] " +
@@ -182,6 +188,12 @@ namespace PostSap_GR_TR.Class
                     conn.Close();
                 }
             }
+            _ = new DataTable();
+            _ = new Class.ServicePostSapGR();
+            string sqlgetID = "SELECT TOP (1) [ID] FROM [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] where SlipNo = '" + checkSlipno + "' order by ID desc";
+            var getID = Condb.GetQuery(sqlgetID);
+            string lastID = getID.Rows[0]["ID"].ToString();
+            return lastID;
         }
         public void GetAndUpdate_saveLogData_GI_to_Sap(string OrderNo, string checkPoAndDO, string Type)
         {
@@ -199,18 +211,18 @@ namespace PostSap_GR_TR.Class
               "(OrderNo ,ValidateMessage ,Type, CreateDate ,Datatype) " +
               "VALUES " +
               "(@OrderNo ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
-           
+
             using (SqlCommand cmd = new SqlCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@OrderNo", OrderNo);
-                    cmd.Parameters.AddWithValue("@Type", Type);
-                    cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                    cmd.Parameters.AddWithValue("@Datatype", checkPoAndDO);
-                    cmd.Parameters.AddWithValue("@ValidateMessage", "");
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+            {
+                cmd.Parameters.AddWithValue("@OrderNo", OrderNo);
+                cmd.Parameters.AddWithValue("@Type", Type);
+                cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                cmd.Parameters.AddWithValue("@Datatype", checkPoAndDO);
+                cmd.Parameters.AddWithValue("@ValidateMessage", "");
+                conn.Open();
+                int result = cmd.ExecuteNonQuery();
+                conn.Close();
+            }
         }
     }
 }

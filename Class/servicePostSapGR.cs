@@ -12,10 +12,9 @@ namespace PostSap_GR_TR.Class
 {
     class ServicePostSapGR
     {
-        public void PostSapGRClass(string partno, int Qty, string Custid, string Store, string postdate, string headerText)  //List<ZsgmDetail> zsgms, List<T_barcode_trans> t_Barcodes, string Kanban
+        public void PostSapGRClass(string partno, int Qty, string Custid, string Store, string postdate, string headerText, string getID)  //List<ZsgmDetail> zsgms, List<T_barcode_trans> t_Barcodes, string Kanban
         {
 
-            //example from excel postdate = 2022-09-01
             try
             {
 
@@ -109,7 +108,7 @@ namespace PostSap_GR_TR.Class
                 ws_fn_partosap.ItDetail = result.ToArray();
                 ws_fn_partosap.IGoodsmvtCode = GmCode;
                 //ส่งไปให้ SAP
-                //ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
                 var Log_Gr = new List<T_LOG_GR_STOCK>();
                 var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
@@ -125,7 +124,7 @@ namespace PostSap_GR_TR.Class
                 "VALUES "
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
-                string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where MatNo = '" + partno + "'";
+                string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
                 DataTable insertDataErrorLogGT = new DataTable();
                 if (ws_res.ItDetail.Count() > 0)
@@ -223,6 +222,39 @@ namespace PostSap_GR_TR.Class
                             }
                         }
                     }
+                }
+                if (ws_res.EMaterailDoc.MatDoc != "")
+                {
+                    //var ValidateMessage = ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage;
+                    //Class.LineNotify lineNotify = new Class.LineNotify();
+                    //lineNotify.FNLineNotify("GR PROGRAMMER 521 \n" + ValidateMessage);
+
+                    string sqlLogAddStock = "INSERT INTO [Barcode].[dbo].[T_LOG_ADD_STOCK] "
+                    + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ) " +
+                    "VALUES "
+                    + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat )";
+
+                    using (SqlCommand cmd = new SqlCommand(sqlLogAddStock, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc);
+                        cmd.Parameters.AddWithValue("@Batch", "DUMMYBATCH");
+                        cmd.Parameters.AddWithValue("@EntryQnt", Qty);
+                        cmd.Parameters.AddWithValue("@EntryUom", "Pcs");
+                        cmd.Parameters.AddWithValue("@FacNo", checkDatamaster.Rows[0]["FAC"].ToString());
+                        cmd.Parameters.AddWithValue("@Material", partno + "|" + UserID);
+                        cmd.Parameters.AddWithValue("@StgeLoc", Store);
+                        cmd.Parameters.AddWithValue("@MoveType", "521");
+                        cmd.Parameters.AddWithValue("@Plant", checkDatamaster.Rows[0]["PLANT"].ToString());
+                        cmd.Parameters.AddWithValue("@Custid", Custid);
+                        cmd.Parameters.AddWithValue("@Kanban", "");
+                        cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+                        cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+
+                        conn.Open();
+                        int resultAddStock = cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+
                 }
             }
             catch (Exception ex)
