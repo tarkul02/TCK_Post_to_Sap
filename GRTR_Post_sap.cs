@@ -27,11 +27,12 @@ namespace PostSap_GR_TR
             //Post_TR_to_Sap();
             //Post_GI_Sap();
             End_update();
-            GetErrorAndNotify();
-            //Application.Exit();
+            //GetErrorAndNotify();
+            Application.Exit();
         }
 
-        string start_Time = "";
+        string start_Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
+
 
         // บันทึกรอบเวลาการส่งข้อมูล
         private void GetAndUpdate_Batch_GR_TR_Log()
@@ -59,7 +60,7 @@ namespace PostSap_GR_TR
                     cmd.Parameters.AddWithValue("@TR_Re_NO", "");
                     cmd.Parameters.AddWithValue("@GI_NO", "");
                     cmd.Parameters.AddWithValue("@GI_Re_NO", "");
-                    cmd.Parameters.AddWithValue("@Start_Time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                    cmd.Parameters.AddWithValue("@Start_Time", start_Time);
                     conn.Open();
                     int result = cmd.ExecuteNonQuery();
                     conn.Close();
@@ -82,6 +83,7 @@ namespace PostSap_GR_TR
                     sql = "UPDATE  [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,Start_Time = @Start_Time,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where ID = '" + updatelog.Rows[0]["ID"].ToString() + "'";
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
+                        cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0][""].ToString());
                         cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
                         cmd.Parameters.AddWithValue("@GR_Re_NO", dt.Rows[0]["GR_Re_NO"].ToString());
                         cmd.Parameters.AddWithValue("@TR_NO", dt.Rows[0]["TR_NO"].ToString());
@@ -98,12 +100,11 @@ namespace PostSap_GR_TR
                 {
                     string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
                     var nodata = Condb.GetQuery(getruntime);
-                    start_Time = nodata.Rows[0]["Start_Time"].ToString();
                     string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + nodata.Rows[0]["ID"].ToString() + "'";
 
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
-                        cmd.Parameters.AddWithValue("@EMessageError", "no data available");
+                        cmd.Parameters.AddWithValue("@EMessageError", "No data available");
                         conn.Open();
                         int result = cmd.ExecuteNonQuery();
                         conn.Close();
@@ -114,29 +115,8 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error Batch_GR_TR_Log: {ex.Message}");
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                Class.Condb Condb = new Class.Condb();
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
-
-                SqlConnection conn = new SqlConnection(connString);
-                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
-                var dt = Condb.GetQuery(getruntime);
-                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
-
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error Batch_GR_TR_Log :" + ex.Message);
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                string Message = "Unexpected error Batch_GR_TR_Log : " + ex.Message; ;
+                CatchError(Message);
             }
         }
 
@@ -201,29 +181,8 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error Post_GR_to_Sap: {ex.Message}");
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                Class.Condb Condb = new Class.Condb();
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
-
-                SqlConnection conn = new SqlConnection(connString);
-                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
-                var dt = Condb.GetQuery(getruntime);
-                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
-
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error Post_GR_to_Sap:" + ex.Message);
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                string Message = "Unexpected error Post_GR_to_Sap : " + ex.Message; ;
+                CatchError(Message);
             }
         }
 
@@ -273,29 +232,8 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error Post_TR_to_Sap : {ex.Message}");
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                Class.Condb Condb = new Class.Condb();
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
-
-                SqlConnection conn = new SqlConnection(connString);
-                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
-                var dt = Condb.GetQuery(getruntime);
-                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
-
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error Post_TR_to_Sap :" + ex.Message);
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                string Message = "Unexpected error Post_TR_to_Sap : " + ex.Message; ;
+                CatchError(Message);
             }
         }
         private void Post_GI_Sap()
@@ -351,29 +289,8 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error Post_GI_Sap: {ex.Message}");
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                Class.Condb Condb = new Class.Condb();
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
-
-                SqlConnection conn = new SqlConnection(connString);
-                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
-                var dt = Condb.GetQuery(getruntime);
-                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
-
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error Post_GI_Sap : " + ex.Message);
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                string Message = "Unexpected error Post_GI_Sap : " + ex.Message; ;
+                CatchError(Message);
             }
         }
 
@@ -405,29 +322,8 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error End_update: {ex.Message}");
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                Class.Condb Condb = new Class.Condb();
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
-
-                SqlConnection conn = new SqlConnection(connString);
-                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
-                var dt = Condb.GetQuery(getruntime);
-                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
-
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error End_update :" + ex.Message);
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                string Message = "Unexpected error End_update : " + ex.Message; ;
+                CatchError(Message);
             }
         }
 
@@ -459,9 +355,9 @@ namespace PostSap_GR_TR
                 DataTable GetDataErrorGRrow = Condb.GetQuery(sqllineGR);
                 DataTable GetDataErrorTRrow = Condb.GetQuery(sqllineTR);
                 DataTable GetDataErrorGIrow = Condb.GetQuery(sqllineGI);
-                string checkdata1 = GetDataErrorGRrow.Rows.Count>0 ?  GetDataErrorGRrow.Rows[0]["totalSum"].ToString() : "";
-                string checkdata2 = GetDataErrorTRrow.Rows.Count>0 ?  GetDataErrorTRrow.Rows[0]["totalSum"].ToString() : "";
-                string checkdata3 = GetDataErrorGIrow.Rows.Count>0 ?  GetDataErrorGIrow.Rows[0]["totalSum"].ToString() : "";
+                string checkdata1 = GetDataErrorGRrow.Rows.Count > 0 ? GetDataErrorGRrow.Rows[0]["totalSum"].ToString() : "";
+                string checkdata2 = GetDataErrorTRrow.Rows.Count > 0 ? GetDataErrorTRrow.Rows[0]["totalSum"].ToString() : "";
+                string checkdata3 = GetDataErrorGIrow.Rows.Count > 0 ? GetDataErrorGIrow.Rows[0]["totalSum"].ToString() : "";
                 string MessagelistGR = int.Parse(checkdata1) > 0 ? "GR Error : " + checkdata1 + " Item" : "";
                 string MessagelistTR = int.Parse(checkdata2) > 0 ? "TR Error : " + checkdata2 + " Item" : "";
                 string MessagelistGI = int.Parse(checkdata3) > 0 ? "GI Error : " + checkdata3 + " Item" : "";
@@ -625,28 +521,8 @@ namespace PostSap_GR_TR
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error GetErrorAndNotify: {ex.Message}");
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                Class.Condb Condb = new Class.Condb();
-                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
-                string connString = "";
-                if (setting != null)
-                {
-                    connString = setting.ConnectionString;
-                }
-
-                SqlConnection conn = new SqlConnection(connString);
-                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
-                var dt = Condb.GetQuery(getruntime);
-                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
-
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error GetErrorAndNotify :" + ex.Message);
-                    conn.Open();
-                    int result = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                string Message = "Unexpected error GetErrorAndNotify : " + ex.Message; ;
+                CatchError(Message);
             }
 
         }
@@ -666,5 +542,37 @@ namespace PostSap_GR_TR
             return flag;
 
         }
+
+        public void CatchError(string massage)
+        {
+            _ = new DataTable();
+            _ = new Class.ServicePostSapGR();
+            Class.Condb Condb = new Class.Condb();
+            ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+            string connString = "";
+            if (setting != null)
+            {
+                connString = setting.ConnectionString;
+            }
+
+            SqlConnection conn = new SqlConnection(connString);
+            string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
+            var dt = Condb.GetQuery(getruntime);
+            start_Time = dt.Rows[0]["Start_Time"].ToString();
+            string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
+
+            using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+            {
+                cmd.Parameters.AddWithValue("@EMessageError", massage);
+                conn.Open();
+                int result = cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+           
+            //End_update();
+            Application.Exit();
+
+        }
+
     }
 }
