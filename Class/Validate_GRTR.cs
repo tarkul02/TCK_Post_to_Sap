@@ -195,7 +195,7 @@ namespace PostSap_GR_TR.Class
             string lastID = getID.Rows[0]["ID"].ToString();
             return lastID;
         }
-        public void GetAndUpdate_saveLogData_GI_to_Sap(string OrderNo, string checkPoAndDO, string Type)
+        public string GetAndUpdate_saveLogData_GI_to_Sap(string OrderNo, string checkPoAndDO, string Type)
         {
             ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
             string connString = "";
@@ -223,6 +223,12 @@ namespace PostSap_GR_TR.Class
                 int result = cmd.ExecuteNonQuery();
                 conn.Close();
             }
+            _ = new DataTable();
+            _ = new Class.ServicePostSapGR();
+            string sqlgetID = "SELECT TOP (1) [ID] FROM [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] where OrderNo = '" + OrderNo + "' order by ID desc";
+            var getID = Condb.GetQuery(sqlgetID);
+            string lastID = getID.Rows[0]["ID"].ToString();
+            return lastID;
         }
     }
 }

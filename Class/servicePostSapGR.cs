@@ -74,11 +74,11 @@ namespace PostSap_GR_TR.Class
                 temp.Batch = "DUMMYBATCH";
                 temp.EntryQnt = Convert.ToDecimal(Qty);
                 temp.EntryUom = "Pcs";
-                temp.FacNo = checkDatamaster.Rows[0]["FAC"].ToString();
+                temp.FacNo = checkDatamaster.Rows.Count > 0 ? checkDatamaster.Rows[0]["FAC"].ToString() : "";
                 temp.Material = partno;
                 temp.StgeLoc = Store;
                 temp.MoveType = "521";
-                temp.Plant = checkDatamaster.Rows[0]["PLANT"].ToString();
+                temp.Plant = checkDatamaster.Rows.Count > 0 ? checkDatamaster.Rows[0]["PLANT"].ToString() : "";
                 temp.Custid = Custid; //tmp.CUSTID;
                 temp.Kanban = ""; //tmp.KANBANID;
                 Detail_GR.Add(temp);

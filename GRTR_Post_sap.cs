@@ -9,6 +9,8 @@ using System.Net;
 using System.IO;
 using OfficeOpenXml;
 using LicenseContext = OfficeOpenXml.LicenseContext;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System.Xml.Linq;
 
 namespace PostSap_GR_TR
 {
@@ -20,13 +22,13 @@ namespace PostSap_GR_TR
         }
         public void GRTRPost_sap(object sender, EventArgs e)
         {
-          
             GetAndUpdate_Batch_GR_TR_Log();
-            Post_GR_to_Sap();
-            Post_TR_to_Sap();
+            //Post_GR_to_Sap();
+            //Post_TR_to_Sap();
             //Post_GI_Sap();
             End_update();
             GetErrorAndNotify();
+            //Application.Exit();
         }
 
         string start_Time = "";
@@ -39,17 +41,6 @@ namespace PostSap_GR_TR
                 Console.WriteLine("\nstart batch run time ");
                 Console.WriteLine("#################################################### \n");
 
-
-                var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
-                    "left join(select count(*) GR_Re_NO, Action from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
-                    " left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
-                    " left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
-                    " left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
-                    " left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
-                Class.Condb Condb = new Class.Condb();
-                var dt = Condb.GetQuery(sql);
-                start_Time = dt.Rows[0]["Start_Time"].ToString();
-                sql = "INSERT INTO [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
                 ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
                 string connString = "";
                 if (setting != null)
@@ -58,18 +49,67 @@ namespace PostSap_GR_TR
                 }
 
                 SqlConnection conn = new SqlConnection(connString);
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
+
+                string sqlinsertRow = "INSERT INTO [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
+                using (SqlCommand cmd = new SqlCommand(sqlinsertRow, conn))
                 {
-                    cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
-                    cmd.Parameters.AddWithValue("@GR_Re_NO", dt.Rows[0]["GR_Re_NO"].ToString());
-                    cmd.Parameters.AddWithValue("@TR_NO", dt.Rows[0]["TR_NO"].ToString());
-                    cmd.Parameters.AddWithValue("@TR_Re_NO", dt.Rows[0]["TR_Re_NO"].ToString());
-                    cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
-                    cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
-                    cmd.Parameters.AddWithValue("@Start_Time", dt.Rows[0]["Start_Time"].ToString());
+                    cmd.Parameters.AddWithValue("@GR_NO", "");
+                    cmd.Parameters.AddWithValue("@GR_Re_NO", "");
+                    cmd.Parameters.AddWithValue("@TR_NO", "");
+                    cmd.Parameters.AddWithValue("@TR_Re_NO", "");
+                    cmd.Parameters.AddWithValue("@GI_NO", "");
+                    cmd.Parameters.AddWithValue("@GI_Re_NO", "");
+                    cmd.Parameters.AddWithValue("@Start_Time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                     conn.Open();
                     int result = cmd.ExecuteNonQuery();
                     conn.Close();
+                }
+
+                var sql = "select isnull(A.GR_NO,0)GR_NO, isnull(B.GR_Re_NO,0)GR_Re_NO, isnull(C.TR_NO,0)TR_NO, isnull(D.TR_Re_NO,0)TR_Re_NO, isnull(E.GI_NO,0)GI_NO, isnull(F.GI_Re_NO,0)GI_Re_NO,FORMAT(getdate(), 'yyyy-MM-dd HH:mm:ss:fff') as Start_Time  From (select count(*) GR_NO, Action from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action) A  " +
+                    "left join(select count(*) GR_Re_NO, Action from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action) B ON A.Action = B.Action" +
+                    " left join(select count(*) TR_NO, Action From (select count(*) TR_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action ) C ON B.Action = C.Action or A.Action = C.Action" +
+                    " left join(select count(*) TR_Re_NO, Action From (select count(*) TR_Re_NO, SLIPNO, Action from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action) D ON C.Action = D.Action or B.Action = D.Action or A.Action = D.Action" +
+                    " left join(select count(*) GI_NO, Action From (select count(*) GI_NO, ORDERNO, Action from [Barcode].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action ) E ON D.Action = E.Action or A.Action = E.Action" +
+                    " left join(select count(*) GI_Re_NO, Action From (select count(*) GI_Re_NO, ORDERNO, Action from [Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action) F ON E.Action = F.Action or B.Action = F.Action or A.Action = F.Action";
+                Class.Condb Condb = new Class.Condb();
+                DataTable dt = Condb.GetQuery(sql);
+
+                if (dt.Rows.Count > 0)
+                {
+                    start_Time = dt.Rows[0]["Start_Time"].ToString();
+                    string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
+                    var updatelog = Condb.GetQuery(getruntime);
+                    sql = "UPDATE  [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,Start_Time = @Start_Time,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where ID = '" + updatelog.Rows[0]["ID"].ToString() + "'";
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@GR_Re_NO", dt.Rows[0]["GR_Re_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@TR_NO", dt.Rows[0]["TR_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@TR_Re_NO", dt.Rows[0]["TR_Re_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@Start_Time", dt.Rows[0]["Start_Time"].ToString());
+                        conn.Open();
+                        int result = cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                }
+                else
+                {
+                    string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
+                    var nodata = Condb.GetQuery(getruntime);
+                    start_Time = nodata.Rows[0]["Start_Time"].ToString();
+                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + nodata.Rows[0]["ID"].ToString() + "'";
+
+                    using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@EMessageError", "no data available");
+                        conn.Open();
+                        int result = cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                    End_update();
+                    Application.Exit();
                 }
             }
             catch (Exception ex)
@@ -97,7 +137,6 @@ namespace PostSap_GR_TR
                     int result = cmd.ExecuteNonQuery();
                     conn.Close();
                 }
-
             }
         }
 
@@ -287,8 +326,8 @@ namespace PostSap_GR_TR
                         checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
                         string DOandPO = checkPoAndDO;
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
+                        var getID  = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
+                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO , getID);
                     }
                 }
 
@@ -303,8 +342,8 @@ namespace PostSap_GR_TR
                         checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
                         string DOandPO = checkPoAndDO;
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO);
+                        var getID =  Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
+                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID);
                     }
                 }
                 Console.WriteLine("      End Process GI \n");
@@ -420,10 +459,9 @@ namespace PostSap_GR_TR
                 DataTable GetDataErrorGRrow = Condb.GetQuery(sqllineGR);
                 DataTable GetDataErrorTRrow = Condb.GetQuery(sqllineTR);
                 DataTable GetDataErrorGIrow = Condb.GetQuery(sqllineGI);
-
-                string checkdata1 = GetDataErrorGRrow.Rows[0]["totalSum"].ToString();
-                string checkdata2 = GetDataErrorTRrow.Rows[0]["totalSum"].ToString();
-                string checkdata3 = GetDataErrorGIrow.Rows[0]["totalSum"].ToString();
+                string checkdata1 = GetDataErrorGRrow.Rows.Count>0 ?  GetDataErrorGRrow.Rows[0]["totalSum"].ToString() : "";
+                string checkdata2 = GetDataErrorTRrow.Rows.Count>0 ?  GetDataErrorTRrow.Rows[0]["totalSum"].ToString() : "";
+                string checkdata3 = GetDataErrorGIrow.Rows.Count>0 ?  GetDataErrorGIrow.Rows[0]["totalSum"].ToString() : "";
                 string MessagelistGR = int.Parse(checkdata1) > 0 ? "GR Error : " + checkdata1 + " Item" : "";
                 string MessagelistTR = int.Parse(checkdata2) > 0 ? "TR Error : " + checkdata2 + " Item" : "";
                 string MessagelistGI = int.Parse(checkdata3) > 0 ? "GI Error : " + checkdata3 + " Item" : "";
@@ -436,10 +474,11 @@ namespace PostSap_GR_TR
                     Class.LineNotify lineNotify = new Class.LineNotify();
                     lineNotify.FNLineNotify(ValidateMessage);
                 }
-                
-                if (checkTime == "08:00" || checkTime == "13:00")
+                // end line notify
+                string checkruntime =  getTimeNotify();
+                if (checkruntime == "Y")
                 {
-                    // end line notify
+                    
                     // start cerate file and send mail
                     if (GetDataErrorGR.Rows.Count > 0 || GetDataErrorTR.Rows.Count > 0 || GetDataErrorGI.Rows.Count > 0)
                     {
@@ -586,7 +625,46 @@ namespace PostSap_GR_TR
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error GetErrorAndNotify: {ex.Message}");
+                _ = new DataTable();
+                _ = new Class.ServicePostSapGR();
+                Class.Condb Condb = new Class.Condb();
+                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+                string connString = "";
+                if (setting != null)
+                {
+                    connString = setting.ConnectionString;
+                }
+
+                SqlConnection conn = new SqlConnection(connString);
+                string getruntime = "select TOP (1) * from [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] order by ID desc";
+                var dt = Condb.GetQuery(getruntime);
+                string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where ID = '" + dt.Rows[0]["ID"].ToString() + "'";
+
+                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+                {
+                    cmd.Parameters.AddWithValue("@EMessageError", "Unexpected error GetErrorAndNotify :" + ex.Message);
+                    conn.Open();
+                    int result = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
             }
+
+        }
+        public string getTimeNotify()
+        {
+            string checkTime = DateTime.Now.ToString("HH:mm");
+            string[] timenow = checkTime.Split(':');
+            string hour = timenow[0];
+            int minute = Convert.ToInt32(timenow[1]);
+            string flag = "Y";
+            if ((hour == "08"  && minute < 30) || (hour == "13" && minute < 30)) {
+                flag = "Y";
+            }
+            else {
+                flag = "N";
+            }
+            return flag;
+
         }
     }
 }

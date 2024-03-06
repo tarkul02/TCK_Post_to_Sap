@@ -34,7 +34,7 @@ namespace PostSap_GR_TR.Class
             }
             return dt;
         }
-        public void PostSapGIClass(string PoAndDo, string DOandPO)
+        public void PostSapGIClass(string PoAndDo, string DOandPO ,string getID)
         {
 
             var ws_service = new Z_CONFIRM_PICKING_GOODS_ISSUE_SRV();
@@ -140,7 +140,7 @@ namespace PostSap_GR_TR.Class
             + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
             DataTable insertDataErrorLogGT = new DataTable();
-            string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where OrderNo = '" + PoAndDo + "'";
+            string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
             if (!string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
             {
