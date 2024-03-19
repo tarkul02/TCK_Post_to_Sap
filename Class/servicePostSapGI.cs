@@ -108,7 +108,7 @@ namespace PostSap_GR_TR.Class
             //ส่งไปให้ SAP
             ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
 
-            string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] where ORDERNO = '" + PoAndDo + "'";
+            string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE  where ORDERNO = '" + PoAndDo + "'";
             DataTable UpdateList = new DataTable();
             using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
             {
@@ -122,6 +122,10 @@ namespace PostSap_GR_TR.Class
                 {
                     cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
                 }
+                conn.Open();
+
+                int resultseccess = cmd.ExecuteNonQuery();
+                conn.Close();
             }
 
             var Log_Gr = new List<T_LOG_GR_STOCK>();

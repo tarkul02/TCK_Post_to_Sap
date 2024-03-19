@@ -54,6 +54,7 @@ namespace PostSap_GR_TR.Class
             ws_fn_head.BillOfLading = "";
             ws_fn_head.GrGiSlipNo = "";
             GmCode.GmCode = "04";
+
             try
             {
 
@@ -63,6 +64,7 @@ namespace PostSap_GR_TR.Class
                 string sql = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + SlipNo + "' and MAT_TYPE <> 'ZRM'";
                 Class.Condb Condb = new Class.Condb();
                 getdata_tr_and_trredo = Condb.GetQuery(sql);
+
 
 
                 if (getdata_tr_and_trredo.Rows.Count > 0)
@@ -152,7 +154,7 @@ namespace PostSap_GR_TR.Class
 
                     DataTable insertDataErrorLogGT = new DataTable();
                     string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
-                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] where SLIPNO = '" + SlipNo + "'";
+                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE where SLIPNO = '" + SlipNo + "'";
                     DataTable UpdateList = new DataTable();
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
@@ -166,6 +168,10 @@ namespace PostSap_GR_TR.Class
                         {
                             cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
                         }
+                        conn.Open();
+
+                        int resultError = cmd.ExecuteNonQuery();
+                        conn.Close();
                     }
 
                     if (ws_res.ItDetail.Count() > 0)
