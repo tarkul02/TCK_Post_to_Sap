@@ -27,9 +27,9 @@ namespace PostSap_GR_TR
             Post_GR_to_Sap();
             Post_TR_to_Sap();
             //Post_GI_Sap();
-            End_update();
             await GetErrorAndNotify();
-            System.Environment.Exit(1);
+            await Task.Delay(3000);
+            End_update();
         }
        
         string start_Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
@@ -100,21 +100,21 @@ namespace PostSap_GR_TR
 
             try
             {
-            //    var sql = "select isnull((select count(*) GR_NO from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action),0)GR_NO," +
-            //       "isnull((select count(*) GR_Re_NO from[Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action),0)GR_Re_NO," +
-            //       "isnull((select count(*) TR_NO From(select count(*) TR_NO, SLIPNO, Action from[Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action),0)TR_NO," +
-            //       "isnull((select count(*) TR_Re_NO From(select count(*) TR_Re_NO, SLIPNO, Action from[Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action),0)TR_Re_NO," +
-            //       "isnull((select count(*) GI_NO From(select count(*) GI_NO, ORDERNO, Action from[Barcode].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action),0)GI_NO," +
-            //       "isnull((select count(*) GI_Re_NO From(select count(*) GI_Re_NO, ORDERNO, Action from[Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action),0)GI_Re_NO";
-            //Class.Condb Condb = new Class.Condb();
-            //DataTable dt = Condb.GetQuery(sql);
+                //    var sql = "select isnull((select count(*) GR_NO from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action),0)GR_NO," +
+                //       "isnull((select count(*) GR_Re_NO from[Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action),0)GR_Re_NO," +
+                //       "isnull((select count(*) TR_NO From(select count(*) TR_NO, SLIPNO, Action from[Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action),0)TR_NO," +
+                //       "isnull((select count(*) TR_Re_NO From(select count(*) TR_Re_NO, SLIPNO, Action from[Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action),0)TR_Re_NO," +
+                //       "isnull((select count(*) GI_NO From(select count(*) GI_NO, ORDERNO, Action from[Barcode].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action),0)GI_NO," +
+                //       "isnull((select count(*) GI_Re_NO From(select count(*) GI_Re_NO, ORDERNO, Action from[Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action),0)GI_Re_NO";
+                //Class.Condb Condb = new Class.Condb();
+                //DataTable dt = Condb.GetQuery(sql);
 
-            SqlCommand command = new SqlCommand("[Barcode].[dbo].[SP_2SAP_item_chk]", conn);
-            command.CommandType = CommandType.StoredProcedure;
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
-            DataTable dt = new DataTable();
-            adapter.Fill(dt);
-            int checkdataOnprocess = Convert.ToInt32(dt.Rows[0]["GR_NO"]) + Convert.ToInt32(dt.Rows[0]["GR_Re_NO"]) + Convert.ToInt32(dt.Rows[0]["TR_NO"]) + Convert.ToInt32(dt.Rows[0]["TR_Re_NO"]) + Convert.ToInt32(dt.Rows[0]["GI_NO"]) + Convert.ToInt32(dt.Rows[0]["GI_Re_NO"]);
+                SqlCommand command = new SqlCommand("[Barcode].[dbo].[SP_2SAP_item_chk]", conn);
+                command.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+                int checkdataOnprocess = Convert.ToInt32(dt.Rows[0]["GR_NO"]) + Convert.ToInt32(dt.Rows[0]["GR_Re_NO"]) + Convert.ToInt32(dt.Rows[0]["TR_NO"]) + Convert.ToInt32(dt.Rows[0]["TR_Re_NO"]) + Convert.ToInt32(dt.Rows[0]["GI_NO"]) + Convert.ToInt32(dt.Rows[0]["GI_Re_NO"]);
                 if (checkdataOnprocess > 0)
                 {
                 
@@ -158,7 +158,6 @@ namespace PostSap_GR_TR
                         conn.Close();
                     }
                     End_update();
-                    System.Environment.Exit(1);
                 }
                 return false;
             }
@@ -385,6 +384,8 @@ namespace PostSap_GR_TR
                 Console.WriteLine("End batch run time");
                 Console.WriteLine("successfully\n");
                 Console.WriteLine("#################################################### \n");
+                System.Environment.Exit(1);
+                Application.Exit();
             }
             catch (Exception ex)
             {
@@ -635,7 +636,6 @@ namespace PostSap_GR_TR
             }
            
             End_update();
-            System.Environment.Exit(1);
 
         }
 
