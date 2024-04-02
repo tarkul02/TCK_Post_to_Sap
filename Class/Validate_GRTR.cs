@@ -225,7 +225,7 @@ namespace PostSap_GR_TR.Class
             }
             _ = new DataTable();
             _ = new Class.ServicePostSapGR();
-            string sqlgetID = "SELECT TOP (1) [ID] FROM [Barcode].[dbo].[T_LogDatavalidate_TR_to_Sap] where OrderNo = '" + OrderNo + "' order by ID desc";
+            string sqlgetID = "SELECT TOP (1) [ID] FROM [Barcode].[dbo].[T_LogDatavalidate_GI_to_Sap] where OrderNo = '" + OrderNo + "' order by ID desc";
             var getID = Condb.GetQuery(sqlgetID);
             string lastID = getID.Rows[0]["ID"].ToString();
             return lastID;
