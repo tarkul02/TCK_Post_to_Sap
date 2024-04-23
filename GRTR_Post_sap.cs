@@ -35,7 +35,8 @@ namespace PostSap_GR_TR
         string start_Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
         int checkruntime = 1;
         int checkcatchend = 0;
-
+        string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
+        string checkError;
 
         // บันทึกรอบเวลาการส่งข้อมูล
         private void GetAndUpdate_Batch_GR_TR_Log()
@@ -54,7 +55,7 @@ namespace PostSap_GR_TR
 
                 SqlConnection conn = new SqlConnection(connString);
 
-                string sqlinsertRow = "INSERT INTO [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
+                string sqlinsertRow = "INSERT INTO "+ DBconfig + ".[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
                 using (SqlCommand cmd = new SqlCommand(sqlinsertRow, conn))
                 {
                     cmd.Parameters.AddWithValue("@GR_NO", "");
@@ -100,16 +101,10 @@ namespace PostSap_GR_TR
 
             try
             {
-                //    var sql = "select isnull((select count(*) GR_NO from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1 group by Action),0)GR_NO," +
-                //       "isnull((select count(*) GR_Re_NO from[Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1 group by Action),0)GR_Re_NO," +
-                //       "isnull((select count(*) TR_NO From(select count(*) TR_NO, SLIPNO, Action from[Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO, Action) C1 GROUP BY C1.Action),0)TR_NO," +
-                //       "isnull((select count(*) TR_Re_NO From(select count(*) TR_Re_NO, SLIPNO, Action from[Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO, Action)D1 Group by D1.Action),0)TR_Re_NO," +
-                //       "isnull((select count(*) GI_NO From(select count(*) GI_NO, ORDERNO, Action from[Barcode].[dbo].[v_sap_batch_gi] where Action = 1 GROUP BY ORDERNO, Action) E1 GROUP BY E1.Action),0)GI_NO," +
-                //       "isnull((select count(*) GI_Re_NO From(select count(*) GI_Re_NO, ORDERNO, Action from[Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 GROUP BY ORDERNO, Action)D1 Group by D1.Action),0)GI_Re_NO";
                 //Class.Condb Condb = new Class.Condb();
                 //DataTable dt = Condb.GetQuery(sql);
 
-                SqlCommand command = new SqlCommand("[Barcode].[dbo].[SP_2SAP_item_chk]", conn);
+                SqlCommand command = new SqlCommand(DBconfig +".[SP_2SAP_item_chk]", conn);
                 command.CommandType = CommandType.StoredProcedure;
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
                 DataTable dt = new DataTable();
@@ -118,7 +113,7 @@ namespace PostSap_GR_TR
                 if (checkdataOnprocess > 0)
                 {
                 
-                    string sql = "UPDATE  [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
+                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
@@ -133,7 +128,7 @@ namespace PostSap_GR_TR
                     }
                     if (checkruntime > 1) {
                         string Message = "Found data in round : " + checkruntime;
-                        string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
+                        string dataUpdateList = "UPDATE "+ DBconfig +".[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
 
                         string ms = checkruntime > 0 ? "No data available Round " + checkruntime : "No data available";
                         using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
@@ -147,7 +142,7 @@ namespace PostSap_GR_TR
                 }
                 else
                 {
-                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
+                    string dataUpdateList = "UPDATE "+ DBconfig +".[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
 
                     string ms = checkruntime > 1 ? "No data available Round " + checkruntime : "No data available";
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
@@ -166,7 +161,7 @@ namespace PostSap_GR_TR
                 string Message ;
               
                     Message = "select Data time out && recheck data : Round "+ checkruntime;
-                    string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
+                    string dataUpdateList = "UPDATE "+ DBconfig +".[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
 
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
@@ -195,8 +190,8 @@ namespace PostSap_GR_TR
                 _ = new DataTable();
                 _ = new Class.ServicePostSapGR();
                 Class.Condb Condb = new Class.Condb();
-                string sqlGetGR = "select * from [Barcode].[dbo].[v_sap_batch_gr] where Action = 1";
-                string sqlGetGR_redo = "select * from [Barcode].[dbo].[v_sap_batch_gr_redo] where Action = 1";
+                string sqlGetGR = "select * from " + DBconfig +".[v_sap_batch_gr] where Action = 1";
+                string sqlGetGR_redo = "select * from " + DBconfig +".[v_sap_batch_gr_redo] where Action = 1";
                 DataTable GRdata = Condb.GetQuery(sqlGetGR);
                 DataTable GRErrdata = Condb.GetQuery(sqlGetGR_redo);
                 Class.ServicePostSapGR sendSapGR = new Class.ServicePostSapGR();
@@ -261,11 +256,15 @@ namespace PostSap_GR_TR
                 _ = new DataTable();
                 _ = new Class.ServicePostSapTR();
                 Class.Condb Condb = new Class.Condb();
-                string sqlGetTR = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+                string sqlGetTR = "select count(*) ,SLIPNO from " + DBconfig +".[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
+                checkError = "sqlGetTR1";
                 DataTable TRdata = Condb.GetQuery(sqlGetTR);
-                string sqlGetTR_redo = "select count(*) ,SLIPNO from [Barcode].[dbo].[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
+                checkError = "sqlGetTR2";
+                string sqlGetTR_redo = "select count(*) ,SLIPNO from " + DBconfig +".[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
+                checkError = "sqlGetTR_redo1";
                 DataTable TRErrdata = Condb.GetQuery(sqlGetTR_redo);
                 Class.ServicePostSapTR sendSapTR = new Class.ServicePostSapTR();
+                checkError = "sqlGetTR_redo2";
                 if (TRdata.Rows.Count > 0)
                 {
                     foreach (DataRow item in TRdata.Rows)
@@ -275,7 +274,9 @@ namespace PostSap_GR_TR
                         string Type = "TR";
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                        checkError = "getID1";
                         var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
+                        checkError = "getID2";
                         sendSapTR.PostSapTRClass(Slipno, Datatype, getID);
                     }
                 }
@@ -289,7 +290,9 @@ namespace PostSap_GR_TR
                         string Type = "TR_redo";
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                        checkError = "redogetID1";
                         var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
+                        checkError = "redogetID2";
                         sendSapTR.PostSapTRClass(Slipno, Datatype, getID);
                     }
                 }
@@ -312,10 +315,10 @@ namespace PostSap_GR_TR
                 _ = new Class.ServicePostSapGI();
                 Class.Condb Condb = new Class.Condb();
 
-                string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO FROM [Barcode].[dbo].[v_sap_batch_gi] where Action = 1 group by ORDERNO";
+                string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO FROM " + DBconfig +".[v_sap_batch_gi] where Action = 1 group by ORDERNO";
                 //string sqlGetGI = "SELECT * FROM [Barcode].[dbo].[testGI] where 1=1";
                 DataTable GIdata = Condb.GetQuery(sqlGetGI);
-                string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO FROM [Barcode].[dbo].[v_sap_batch_gi_redo] where Action = 1 group by RefDocNo ,ORDERNO";
+                string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO FROM " + DBconfig +".[v_sap_batch_gi_redo] where Action = 1 group by RefDocNo ,ORDERNO";
                 DataTable GIErrdata = Condb.GetQuery(sqlGetGI_redo);
                 Class.ServicePostSapGI sendSapGI = new Class.ServicePostSapGI();
                 if (GIdata.Rows.Count > 0)
@@ -324,13 +327,14 @@ namespace PostSap_GR_TR
                     {
                         string OrderNo = item["ORDERNO"].ToString().Trim();
                         string PoAndDo = item["ORDERNO"].ToString().Trim();
+                        string SLoc = item["SLoc"].ToString().Trim();
                         string Type = "GI";
                         string checkPoAndDO = OrderNo.Substring(0, 2);
                         checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
                         string DOandPO = checkPoAndDO;
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID  = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO , getID);
+                        var getID  = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type , SLoc);
+                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO , getID , SLoc);
                     }
                 }
 
@@ -340,13 +344,14 @@ namespace PostSap_GR_TR
                     {
                         string OrderNo = item["ORDERNO"].ToString().Trim();
                         string PoAndDo = item["ORDERNO"].ToString().Trim();
+                        string SLoc = item["SLoc"].ToString().Trim();
                         string Type = "GI_redo";
                         string checkPoAndDO = OrderNo.Substring(0, 2);
                         checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
                         string DOandPO = checkPoAndDO;
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID =  Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID);
+                        var getID =  Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type , SLoc);
+                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID , SLoc);
                     }
                 }
                 Console.WriteLine("      End Process GI \n");
@@ -363,7 +368,7 @@ namespace PostSap_GR_TR
         {
             try
             {
-                var sql = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
+                var sql = "UPDATE " + DBconfig +".[T_SAP_Batch_GR_TR_Log] SET End_Time = @End_Time where Start_Time = '" + start_Time + "'";
 
                 ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
                 string connString = "";
@@ -409,13 +414,13 @@ namespace PostSap_GR_TR
                 {
                     _ = setting.ConnectionString;
                 }
-                string sqlemailGR = "select  RefDocNo as DocNo , EMessage from [Barcode].[dbo].[v_get_dataNotify_gr] where 1 = 1";
-                string sqlemailTR = "select  RefDocNo as DocNo , EMessage from [Barcode].[dbo].[v_get_dataNotify_tr] where 1 = 1";
-                string sqlemailGI = "select  RefDocNo as DocNo , EMessage from [Barcode].[dbo].[v_get_dataNotify_gi] where 1 = 1";
+                string sqlemailGR = "select  RefDocNo as DocNo , EMessage from "+ DBconfig +".[v_get_dataNotify_gr] where 1 = 1";
+                string sqlemailTR = "select  RefDocNo as DocNo , EMessage from "+ DBconfig +".[v_get_dataNotify_tr] where 1 = 1";
+                string sqlemailGI = "select  RefDocNo as DocNo , EMessage from "+ DBconfig +".[v_get_dataNotify_gi] where 1 = 1";
 
-                string sqllineGR = "select count(*) totalSum from [Barcode].[dbo].[v_get_dataNotify_gr] where Action = 1";
-                string sqllineTR = "select count(*) totalSum From (select count(*) TR_Re_NO, SLIPNO, Action from[Barcode].[dbo].[v_get_dataNotify_tr] where Action = 1 GROUP BY SLIPNO, Action)D1 ";
-                string sqllineGI = "select count(*) totalSum From (select count(*) TR_Re_NO, ORDERNO, Action from[Barcode].[dbo].[v_get_dataNotify_gi] where Action = 1 GROUP BY ORDERNO, Action)D1 ";
+                string sqllineGR = "select count(*) totalSum from "+ DBconfig +".[v_get_dataNotify_gr] where Action = 1";
+                string sqllineTR = "select count(*) totalSum From (select count(*) TR_Re_NO, SLIPNO, Action from "+ DBconfig +".[v_get_dataNotify_tr] where Action = 1 GROUP BY SLIPNO, Action)D1 ";
+                string sqllineGI = "select count(*) totalSum From (select count(*) TR_Re_NO, ORDERNO, Action from "+ DBconfig +".[v_get_dataNotify_gi] where Action = 1 GROUP BY ORDERNO, Action)D1 ";
 
                 DataTable GetDataErrorGR = Condb.GetQuery(sqlemailGR);
                 DataTable GetDataErrorTR = Condb.GetQuery(sqlemailTR);
@@ -626,7 +631,7 @@ namespace PostSap_GR_TR
             }
 
             SqlConnection conn = new SqlConnection(connString);
-            string dataUpdateList = "UPDATE [Barcode].[dbo].[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
+            string dataUpdateList = "UPDATE "+ DBconfig +".[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
             using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
             {
                 cmd.Parameters.AddWithValue("@EMessageError", massage);

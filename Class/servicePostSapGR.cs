@@ -12,6 +12,7 @@ namespace PostSap_GR_TR.Class
 {
     class ServicePostSapGR
     {
+        string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
         public void PostSapGRClass(string partno, int Qty, string Custid, string Store, string postdate, string headerText, string getID)  //List<ZsgmDetail> zsgms, List<T_barcode_trans> t_Barcodes, string Kanban
         {
 
@@ -64,7 +65,7 @@ namespace PostSap_GR_TR.Class
                 List<ZsgmDetail1> Detail_GR = new List<ZsgmDetail1>();
 
 
-                string sql = "SELECT TOP 1 * FROM [Barcode].[dbo].[T_LOCATION_SAP] where LOC_SAP_ID ='" + Store + "'";
+                string sql = "SELECT TOP 1 * FROM "+ DBconfig +".[T_LOCATION_SAP] where LOC_SAP_ID ='" + Store + "'";
 
                 Class.Condb Condb = new Class.Condb();
                 checkDatamaster = Condb.GetQuery(sql);
@@ -112,19 +113,19 @@ namespace PostSap_GR_TR.Class
                 var Log_Gr = new List<T_LOG_GR_STOCK>();
                 var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
-                string sqlLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_GR_STOCK] "
+                string sqlLog_Gr = "INSERT INTO "+ DBconfig +".[T_LOG_GR_STOCK] "
                 + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
                 "VALUES "
                 + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage)";
 
                 DataTable insertDataLogGT = new DataTable();
 
-                string sqlErrorLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_STOCK_ERROR] "
+                string sqlErrorLog_Gr = "INSERT INTO "+ DBconfig +".[T_LOG_STOCK_ERROR] "
                 + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                 "VALUES "
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
-                string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
+                string UpdateStatusSap = "UPDATE "+ DBconfig +".[T_LogDatavalidate_GR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
                 DataTable insertDataErrorLogGT = new DataTable();
                 if (ws_res.ItDetail.Count() > 0)
@@ -229,7 +230,7 @@ namespace PostSap_GR_TR.Class
                     //Class.LineNotify lineNotify = new Class.LineNotify();
                     //lineNotify.FNLineNotify("GR PROGRAMMER 521 \n" + ValidateMessage);
 
-                    string sqlLogAddStock = "INSERT INTO [Barcode].[dbo].[T_LOG_ADD_STOCK] "
+                    string sqlLogAddStock = "INSERT INTO "+ DBconfig +".[T_LOG_ADD_STOCK] "
                     + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ) " +
                     "VALUES "
                     + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat )";

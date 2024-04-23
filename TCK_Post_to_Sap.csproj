@@ -137,6 +137,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".ENV\Localhost.config" />
+    <None Include=".ENV\Prod.config" />
+    <None Include=".ENV\DEV.config" />
     <None Include="App.config" />
     <EntityDeploy Include="Barcode.edmx">
       <Generator>EntityModelCodeGenerator</Generator>

@@ -12,6 +12,7 @@ namespace PostSap_GR_TR.Class
 {
     class ServicePostSapGI
     {
+        string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
         public DataTable GetQuery(string sql)
         {
             var dt = new DataTable();
@@ -34,7 +35,7 @@ namespace PostSap_GR_TR.Class
             }
             return dt;
         }
-        public void PostSapGIClass(string PoAndDo, string DOandPO ,string getID)
+        public void PostSapGIClass(string PoAndDo, string DOandPO ,string getID ,string SLoc)
         {
 
             var ws_service = new Z_CONFIRM_PICKING_GOODS_ISSUE_SRV();
@@ -104,11 +105,28 @@ namespace PostSap_GR_TR.Class
             ws_fn_partosap.IDoNumber = DoNumber;
             ws_fn_partosap.IPoNumber = PoNumber;
             ws_fn_partosap.ItDetail = result.ToArray();
-            ws_fn_partosap.IStgeLoc = "";
+            ws_fn_partosap.IStgeLoc = SLoc;
+            ws_fn_partosap.IBatch = "DUMMYBATCH";
             //ส่งไปให้ SAP
             ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
 
-            string dataUpdateList = "UPDATE [Barcode].[dbo].[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE  where ORDERNO = '" + PoAndDo + "'";
+            dynamic obj1 = new
+            {
+                Emessage = "Value1",
+                            Matdoc = new[]
+                {
+                    new
+                    {
+                        Matdoc1 = "Value1",
+                        DO = "Value1",
+                    },
+
+                },
+                            DocYear = "Value2"
+            };
+
+
+            string dataUpdateList = "UPDATE "+ DBconfig + ".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE ,CONFIRM_DOC = @CONFIRM_DOC  where ORDERNO = '" + PoAndDo + "' and MENUID = 'DO13'";
             DataTable UpdateList = new DataTable();
             using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
             {
@@ -116,11 +134,13 @@ namespace PostSap_GR_TR.Class
                 if (ws_res.EMessage.Contains("was create"))
                 {
                     cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                    cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMaterailDoc.MatDoc);
                     cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
                 }
                 else
                 {
                     cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                    cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMaterailDoc.MatDoc);
                 }
                 conn.Open();
 
@@ -131,20 +151,20 @@ namespace PostSap_GR_TR.Class
             var Log_Gr = new List<T_LOG_GR_STOCK>();
             var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
-            string sqlLog_Gi = "INSERT INTO [Barcode].[dbo].[T_LOG_GI_STOCK] "
+            string sqlLog_Gi = "INSERT INTO "+ DBconfig +".[T_LOG_GI_STOCK] "
             + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
             "VALUES "
             + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage)";
 
             DataTable insertDataLogGT = new DataTable();
 
-            string sqlErrorLog_Gr = "INSERT INTO [Barcode].[dbo].[T_LOG_STOCK_ERROR] "
+            string sqlErrorLog_Gr = "INSERT INTO "+ DBconfig +".[T_LOG_STOCK_ERROR] "
             + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
             "VALUES "
             + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
             DataTable insertDataErrorLogGT = new DataTable();
-            string UpdateStatusSap = "UPDATE [Barcode].[dbo].[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
+            string UpdateStatusSap = "UPDATE "+ DBconfig +".[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
             if (!string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
             {
@@ -156,7 +176,6 @@ namespace PostSap_GR_TR.Class
                     int resultsap = cmd.ExecuteNonQuery();
                     conn.Close();
                 }
-
                 using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
                 {
                     cmd.Parameters.AddWithValue("@Batch", "");
