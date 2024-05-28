@@ -24,10 +24,10 @@ namespace PostSap_GR_TR
         public async void GRTRPost_sap(object sender, EventArgs e)
         {
             GetAndUpdate_Batch_GR_TR_Log();
-            Post_GR_to_Sap();
+            //Post_GR_to_Sap();
             Post_TR_to_Sap();
             //Post_GI_Sap();
-            await GetErrorAndNotify();
+            //await GetErrorAndNotify();
             await Task.Delay(3000);
             End_update();
         }
@@ -43,6 +43,7 @@ namespace PostSap_GR_TR
         {
             try
             {
+               
                 Console.WriteLine("\nstart batch run time ");
                 Console.WriteLine("#################################################### \n");
 
@@ -241,7 +242,7 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                string Message = "Unexpected error Post_GR_to_Sap : " + ex.Message; ;
+                string Message = "Unexpected error Post_GR_to_Sap : " + ex.Message; 
                 CatchError(Message);
             }
         }
@@ -300,7 +301,7 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                string Message = "Unexpected error Post_TR_to_Sap : " + ex.Message; ;
+                string Message = "checkError :" + checkError + " Unexpected error Post_TR_to_Sap : " + ex.Message; 
                 CatchError(Message);
             }
         }
@@ -315,10 +316,10 @@ namespace PostSap_GR_TR
                 _ = new Class.ServicePostSapGI();
                 Class.Condb Condb = new Class.Condb();
 
-                string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO FROM " + DBconfig +".[v_sap_batch_gi] where Action = 1 group by ORDERNO";
+                string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO , From_To as SLoc FROM " + DBconfig + ".[v_sap_batch_gi] where Action = 1 group by  ORDERNO ,From_To ";
                 //string sqlGetGI = "SELECT * FROM [Barcode].[dbo].[testGI] where 1=1";
                 DataTable GIdata = Condb.GetQuery(sqlGetGI);
-                string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO FROM " + DBconfig +".[v_sap_batch_gi_redo] where Action = 1 group by RefDocNo ,ORDERNO";
+                string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO ,StgeLoc as SLoc FROM " + DBconfig + ".[v_sap_batch_gi_redo] where Action = 1 group by RefDocNo ,ORDERNO ,StgeLoc ";
                 DataTable GIErrdata = Condb.GetQuery(sqlGetGI_redo);
                 Class.ServicePostSapGI sendSapGI = new Class.ServicePostSapGI();
                 if (GIdata.Rows.Count > 0)
@@ -389,8 +390,8 @@ namespace PostSap_GR_TR
                 Console.WriteLine("End batch run time");
                 Console.WriteLine("successfully\n");
                 Console.WriteLine("#################################################### \n");
-                System.Environment.Exit(1);
-                Application.Exit();
+                //System.Environment.Exit(1);
+                //Application.Exit();
             }
             catch (Exception ex)
             {
