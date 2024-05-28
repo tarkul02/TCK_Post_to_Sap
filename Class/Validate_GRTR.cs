@@ -122,9 +122,10 @@ namespace PostSap_GR_TR.Class
                   "(PlantFrom ,StorageFrom ,PlantTo ,StorageTo  ,Kanban , MvmntQty,SlipNo ,Mat_Type ,ValidateMessage ,Type, CreateDate ,Datatype) " +
                   "VALUES " +
                   "(@PlantFrom , @StorageFrom , @PlantTo , @StorageTo  ,@Kanban ,@MvmntQty ,@SlipNo ,@Mat_Type ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
+                checkError += "3";
                 if (getdata_tr_and_trredo.Rows.Count > 0)
                 {
-                    checkError += "3";
+                    checkError += "4";
                     foreach (DataRow dataRow in getdata_tr_and_trredo.Rows)
                     {
                         if (Message != "")
@@ -162,6 +163,7 @@ namespace PostSap_GR_TR.Class
                 }
                 else
                 {
+                    checkError += "5";
                     if (Message != "")
                     {
                         Message = Message.Substring(0, Message.Length - 1);
@@ -198,6 +200,7 @@ namespace PostSap_GR_TR.Class
                 _ = new Class.ServicePostSapGR();
                 string sqlgetID = "SELECT TOP (1) [ID] FROM " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] where SlipNo = '" + checkSlipno + "' order by ID desc";
                 var getID = Condb.GetQuery(sqlgetID);
+                checkError += "6";
                 string lastID = getID.Rows[0]["ID"].ToString();
                 return lastID;
             }
@@ -205,7 +208,7 @@ namespace PostSap_GR_TR.Class
             {
                 string Message = "Unexpected error Post_TR_to_Sap validate: " + ex.Message;
                 GRTR_Post_sap checkError = new GRTR_Post_sap();
-                checkError.CatchError(Message+" Error : " + checkError);
+                checkError.CatchError("checkError :" + checkError +","+ Message );
                 return "";
             }
         }
