@@ -13,9 +13,11 @@ namespace PostSap_GR_TR.Class
     class ServicePostSapTR
     {
         string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
+        string checkError;
         public void PostSapTRClass(string SlipNo, string DataType, string getID)
         {
-
+            checkError += getID + "01";
+         
             var ws_service = new Z_GOODSMVT_CREATE1_SRV();
             var ws_res = new ZGoodsmvtCreate1Response();
             var ws_fn_head = new ZsgmHeader();
@@ -66,12 +68,14 @@ namespace PostSap_GR_TR.Class
                 Class.Condb Condb = new Class.Condb();
                 getdata_tr_and_trredo = Condb.GetQuery(sql);
 
-
+                checkError += "02";
 
                 if (getdata_tr_and_trredo.Rows.Count > 0)
                 {
+                    checkError += "03" + getdata_tr_and_trredo.Rows.Count;
                     foreach (DataRow dataRow in getdata_tr_and_trredo.Rows)
                     {
+                        checkError += "04" + getdata_tr_and_trredo.Rows.Count;
                         ZsgmDetail1 tmp = new ZsgmDetail1();
                         if (getpostdate == false)
                         {
@@ -136,11 +140,13 @@ namespace PostSap_GR_TR.Class
                     ws_fn_partosap.ItDetail = result.ToArray();
                     ws_fn_partosap.IGoodsmvtCode = GmCode;
                     //ส่งไปให้ SAP
+                    checkError += "05";
                     ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                    checkError += "06";
                     BarcodeEntities UpdateBarcode = new BarcodeEntities();
                     List<T_LOG_GR_STOCK> Log_Gr = new List<T_LOG_GR_STOCK>();
                     List<T_LOG_STOCK_ERROR> Log_Error = new List<T_LOG_STOCK_ERROR>();
-
+                    
                     string sqlLog_Gr = "INSERT INTO "+ DBconfig +".[T_LOG_GR_STOCK] "
                     + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage) " +
                     "VALUES "
@@ -152,11 +158,12 @@ namespace PostSap_GR_TR.Class
                     + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
                     "VALUES "
                     + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
-
+                    checkError += "07";
                     DataTable insertDataErrorLogGT = new DataTable();
                     string UpdateStatusSap = "UPDATE "+ DBconfig +".[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
                     string dataUpdateList = "UPDATE "+ DBconfig +".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE where SLIPNO = '" + SlipNo + "'";
                     DataTable UpdateList = new DataTable();
+                    checkError += "08";
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
 
@@ -174,13 +181,16 @@ namespace PostSap_GR_TR.Class
                         int resultError = cmd.ExecuteNonQuery();
                         conn.Close();
                     }
-
+                    checkError += "09";
                     if (ws_res.ItDetail.Count() > 0)
                     {
+                        checkError += "10" + ws_res.ItDetail.Count();
                         foreach (var item in ws_res.ItDetail)
                         {
+                            checkError += "11" + ws_res.ItDetail.Count();
                             if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                             {
+                                checkError += "12";
 
                                 using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
                                 {
@@ -215,6 +225,7 @@ namespace PostSap_GR_TR.Class
                             }
                             else
                             {
+                                checkError += "13";
                                 if (item.Error != "")
                                 {
                                     using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
@@ -271,6 +282,9 @@ namespace PostSap_GR_TR.Class
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                string Message = "Unexpected error Post_TR_to_Sap SAP: " + ex.Message;
+                GRTR_Post_sap checkError = new GRTR_Post_sap();
+                checkError.CatchError("checkError :" + checkError + "," + Message);
                 //res.status = false;
                 //res.message = "Web service status : False";
                 //res.message3 = e.Message.ToString();
