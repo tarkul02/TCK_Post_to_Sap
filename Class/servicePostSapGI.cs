@@ -106,48 +106,37 @@ namespace PostSap_GR_TR.Class
             ws_fn_partosap.IPoNumber = PoNumber;
             ws_fn_partosap.ItDetail = result.ToArray();
             ws_fn_partosap.IStgeLoc = SLoc;
-            ws_fn_partosap.IBatch = "DUMMYBATCH";
+
             //ส่งไปให้ SAP
             ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
-
-            dynamic obj1 = new
-            {
-                Emessage = "Value1",
-                            Matdoc = new[]
-                {
-                    new
-                    {
-                        Matdoc1 = "Value1",
-                        DO = "Value1",
-                    },
-
-                },
-                            DocYear = "Value2"
-            };
 
 
             string dataUpdateList = "UPDATE "+ DBconfig + ".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE ,CONFIRM_DOC = @CONFIRM_DOC  where ORDERNO = '" + PoAndDo + "' and MENUID = 'DO13'";
             DataTable UpdateList = new DataTable();
+            Console.WriteLine(ws_res);
             using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
             {
 
                 if (ws_res.EMessage.Contains("was create"))
                 {
+                    Console.WriteLine(1);
                     cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
                     cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMaterailDoc.MatDoc);
                     cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
                 }
                 else
                 {
+                    Console.WriteLine(2);
                     cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
                     cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMaterailDoc.MatDoc);
+                    cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
                 }
                 conn.Open();
 
                 int resultseccess = cmd.ExecuteNonQuery();
                 conn.Close();
             }
-
+            Console.WriteLine(3);
             var Log_Gr = new List<T_LOG_GR_STOCK>();
             var Log_Error = new List<T_LOG_STOCK_ERROR>();
 
@@ -165,9 +154,10 @@ namespace PostSap_GR_TR.Class
 
             DataTable insertDataErrorLogGT = new DataTable();
             string UpdateStatusSap = "UPDATE "+ DBconfig +".[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
-
+            Console.WriteLine(4);
             if (!string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
             {
+                Console.WriteLine(5);
                 using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
                 {
                     cmd.Parameters.AddWithValue("@SapStatus", 1);
@@ -178,12 +168,13 @@ namespace PostSap_GR_TR.Class
                 }
                 using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
                 {
+                    Console.WriteLine(6);
                     cmd.Parameters.AddWithValue("@Batch", "");
                     cmd.Parameters.AddWithValue("@EntryQnt", 0);
                     cmd.Parameters.AddWithValue("@EntryUom", "");
                     cmd.Parameters.AddWithValue("@FacNo", "");
                     cmd.Parameters.AddWithValue("@Material", PoAndDo);
-                    cmd.Parameters.AddWithValue("@StgeLoc", "");
+                    cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
                     cmd.Parameters.AddWithValue("@MoveType", "");
                     cmd.Parameters.AddWithValue("@Plant", "");
 
@@ -203,13 +194,14 @@ namespace PostSap_GR_TR.Class
             {
                 using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
                 {
+                    Console.WriteLine(7);
                     cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);
                     cmd.Parameters.AddWithValue("@Batch", "");
                     cmd.Parameters.AddWithValue("@EntryQnt", 0);
                     cmd.Parameters.AddWithValue("@EntryUom", "");
                     cmd.Parameters.AddWithValue("@FacNo", "");
                     cmd.Parameters.AddWithValue("@Material", PoAndDo);
-                    cmd.Parameters.AddWithValue("@StgeLoc", "");
+                    cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
                     cmd.Parameters.AddWithValue("@MoveType", "");
                     cmd.Parameters.AddWithValue("@Plant", "");
 
