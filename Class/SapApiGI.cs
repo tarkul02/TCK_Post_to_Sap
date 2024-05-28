@@ -137,8 +137,6 @@ namespace SapApiGI.Class
 
         private string iStgeLocField;
 
-        private string iBatchField;
-
         private ZsgmDetail1[] itDetailField;
 
         /// <remarks/>
@@ -181,21 +179,7 @@ namespace SapApiGI.Class
             {
                 this.iStgeLocField = value;
             }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IBatch
-        {
-            get
-            {
-                return this.iBatchField;
-            }
-            set
-            {
-                this.iBatchField = value;
-            }
-        }
+        } 
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
