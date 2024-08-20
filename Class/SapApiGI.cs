@@ -1,4 +1,9 @@
-﻿using System.Configuration;
+﻿using SapApiGRAndTR.Class;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Reflection;
+using System.Text;
 
 namespace SapApiGI.Class
 {
@@ -60,6 +65,82 @@ namespace SapApiGI.Class
             }
         }
 
+        //เช็ค data to json
+        public static string ConvertObjectArrayToString(object[] objects)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Object Array:");
+
+            foreach (var obj in objects)
+            {
+                sb.AppendLine(InspectObject(obj));
+            }
+
+            return sb.ToString();
+        }
+
+        public static string InspectObject(object obj, int indentLevel = 0)
+        {
+            if (obj == null)
+            {
+                return "null";
+            }
+
+            var type = obj.GetType();
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var sb = new StringBuilder();
+
+            string indent = new string(' ', indentLevel * 2);
+            sb.AppendLine($"{indent}Type: {type.Name}");
+
+            sb.AppendLine($"{indent}Properties:");
+            foreach (var prop in properties)
+            {
+                object value = prop.GetValue(obj);
+                if (value != null && !IsSimpleType(value.GetType()))
+                {
+                    sb.AppendLine($"{indent}  {prop.Name}:");
+                    sb.Append(InspectObject(value, indentLevel + 2));
+                }
+                else
+                {
+                    sb.AppendLine($"{indent}  {prop.Name}: {value}");
+                }
+            }
+
+            sb.AppendLine($"{indent}Fields:");
+            foreach (var field in fields)
+            {
+                object value = field.GetValue(obj);
+                if (value != null && !IsSimpleType(value.GetType()))
+                {
+                    sb.AppendLine($"{indent}  {field.Name}:");
+                    sb.Append(InspectObject(value, indentLevel + 2));
+                }
+                else
+                {
+                    sb.AppendLine($"{indent}  {field.Name}: {value}");
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private static bool IsSimpleType(Type type)
+        {
+            return type.IsPrimitive ||
+                   type.IsEnum ||
+                   type == typeof(string) ||
+                   type == typeof(decimal) ||
+                   type == typeof(DateTime) ||
+                   type == typeof(DateTimeOffset) ||
+                   type == typeof(TimeSpan) ||
+                   type == typeof(Guid);
+        }
+
+        //end เช็ค data to json
+
         /// <remarks/>
         public event ZConfirmPickingGoodsIssueCompletedEventHandler ZConfirmPickingGoodsIssueCompleted;
 
@@ -69,8 +150,14 @@ namespace SapApiGI.Class
         [return: System.Xml.Serialization.XmlElementAttribute("ZConfirmPickingGoodsIssueResponse", Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZConfirmPickingGoodsIssueResponse ZConfirmPickingGoodsIssue([System.Xml.Serialization.XmlElementAttribute("ZConfirmPickingGoodsIssue", Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")] ZConfirmPickingGoodsIssue ZConfirmPickingGoodsIssue1)
         {
+
+
+
             object[] results = this.Invoke("ZConfirmPickingGoodsIssue", new object[] {
                     ZConfirmPickingGoodsIssue1});
+
+            //string result = ConvertObjectArrayToString(results);
+            //Console.WriteLine("resultsap: "+ result);
             return ((ZConfirmPickingGoodsIssueResponse)(results[0]));
         }
 
@@ -130,14 +217,13 @@ namespace SapApiGI.Class
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZConfirmPickingGoodsIssue
     {
-
+        internal ZsgmitMaterialDocDetail[] itMaterialDoc;
         private string iDoNumberField;
 
         private string iPoNumberField;
 
         private string iStgeLocField;
 
-        private ZsgmDetail1[] itDetailField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -180,21 +266,6 @@ namespace SapApiGI.Class
                 this.iStgeLocField = value;
             }
         } 
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = false)]
-        public ZsgmDetail1[] ItDetail
-        {
-            get
-            {
-                return this.itDetailField;
-            }
-            set
-            {
-                this.itDetailField = value;
-            }
-        }
     }
 
     /// <remarks/>
@@ -236,6 +307,8 @@ namespace SapApiGI.Class
 
         private string docYearField;
 
+        private string DONumberField;
+
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string MatDoc
@@ -263,6 +336,20 @@ namespace SapApiGI.Class
                 this.docYearField = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DONumber
+        {
+            get
+            {
+                return this.DONumberField;
+            }
+            set
+            {
+                this.DONumberField = value;
+            }
+        }
     }
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
@@ -277,24 +364,30 @@ namespace SapApiGI.Class
     public partial class ZConfirmPickingGoodsIssueResponse
     {
 
-        private Bapi2017GmHeadRet eMaterailDocField;
+        //private Bapi2017GmHeadRet eMaterailDocField;
+
+        //private ZsgmitMaterialDocDetail[] itMaterialDocField;
+        private ZsgmitMaterialDocDetail[] eMaterailDocField;
 
         private string eMessageField;
 
+        private string eMessageTestField;
 
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public Bapi2017GmHeadRet EMaterailDoc
-        {
-            get
-            {
-                return this.eMaterailDocField;
-            }
-            set
-            {
-                this.eMaterailDocField = value;
-            }
-        }
+
+        ///// <remarks/>
+        //[System.Xml.Serialization.XmlArrayAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        //[System.Xml.Serialization.XmlArrayItemAttribute("item", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = false)]
+        //public ZsgmitMaterialDocDetail[] itMaterialDoc
+        //{
+        //    get
+        //    {
+        //        return this.itMaterialDocField;
+        //    }
+        //    set
+        //    {
+        //        this.itMaterialDocField = value;
+        //    }
+        //}
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -309,7 +402,40 @@ namespace SapApiGI.Class
                 this.eMessageField = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("EMessageTest", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string eMessageTest
+        {
+            get
+            {
+                return this.eMessageTestField;
+            }
+            set
+            {
+                this.eMessageTestField = value;
+            }
+        }
+
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute("EMaterialDoc",Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = false)]
+        public ZsgmitMaterialDocDetail[] eMaterailDoc
+        {
+            get
+            {
+                return this.eMaterailDocField;
+            }
+            set
+            {
+                this.eMaterailDocField = value;
+            }
+        }
     }
+
+
+
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
@@ -317,7 +443,7 @@ namespace SapApiGI.Class
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZsgmDetail1
+    public partial class ZsgmDetail
     {
 
         private string materialField;
@@ -364,11 +490,54 @@ namespace SapApiGI.Class
 
         private string errorField;
 
-        private string IDoNumberField;
 
-        private string IPoNumberField;
+        private string matDocField;
 
-        private string IStgeLocField;
+        private string docYearField;
+
+        private string doNoField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MatDoc
+        {
+            get
+            {
+                return this.matDocField;
+            }
+            set
+            {
+                this.matDocField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DocYear
+        {
+            get
+            {
+                return this.docYearField;
+            }
+            set
+            {
+                this.docYearField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DoNo
+        {
+            get
+            {
+                return this.doNoField;
+            }
+            set
+            {
+                this.doNoField = value;
+            }
+        }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -677,45 +846,62 @@ namespace SapApiGI.Class
                 this.errorField = value;
             }
         }
+    }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4084.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZsgmitMaterialDocDetail
+    {
+
+        private string matDocField;
+
+        private string docYearField;
+
+        private string doNoField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IPoNumber
+        [System.Xml.Serialization.XmlElementAttribute("MAT_DOC", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MatDoc
         {
             get
             {
-                return this.IPoNumberField;
+                return this.matDocField;
             }
             set
             {
-                this.IPoNumberField = value;
+                this.matDocField = value;
             }
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IDoNumber
+        [System.Xml.Serialization.XmlElementAttribute("DOC_YEAR", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DocYear
         {
             get
             {
-                return this.IDoNumberField;
+                return this.docYearField;
             }
             set
             {
-                this.IDoNumberField = value;
+                this.docYearField = value;
             }
         }
+
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IStgeLoc
+        [System.Xml.Serialization.XmlElementAttribute("DO_NO", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DoNo
         {
             get
             {
-                return this.IStgeLocField;
+                return this.doNoField;
             }
             set
             {
-                this.IStgeLocField = value;
+                this.doNoField = value;
             }
         }
     }
