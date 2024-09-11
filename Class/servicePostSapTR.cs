@@ -175,6 +175,7 @@ namespace PostSap_GR_TR.Class
                         else
                         {
                             cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                            cmd.Parameters.AddWithValue("@CONFIRM_DATE", "");
                         }
                         conn.Open();
 

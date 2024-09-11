@@ -12,6 +12,11 @@ using OfficeOpenXml;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Xml.Linq;
+using PostSap_GR_TR.Class;
+using System.Linq;
+using System.Data.Entity;
+using System.Reflection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PostSap_GR_TR
 {
@@ -23,27 +28,26 @@ namespace PostSap_GR_TR
         }
         public async void GRTRPost_sap(object sender, EventArgs e)
         {
+
             GetAndUpdate_Batch_GR_TR_Log();
-            //Post_GR_to_Sap();
+            Post_GR_to_Sap();
             Post_TR_to_Sap();
-            //Post_GI_Sap();
-            //await GetErrorAndNotify();
+            Post_GI_Sap();
+            await GetErrorAndNotify();
             await Task.Delay(3000);
             End_update();
         }
        
+
         string start_Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
         int checkruntime = 1;
-        int checkcatchend = 0;
         string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
-        string checkError;
-
+       
         // บันทึกรอบเวลาการส่งข้อมูล
         private void GetAndUpdate_Batch_GR_TR_Log()
         {
             try
             {
-               
                 Console.WriteLine("\nstart batch run time ");
                 Console.WriteLine("#################################################### \n");
 
@@ -57,8 +61,11 @@ namespace PostSap_GR_TR
                 SqlConnection conn = new SqlConnection(connString);
 
                 string sqlinsertRow = "INSERT INTO "+ DBconfig + ".[T_SAP_Batch_GR_TR_Log] (GR_NO, GR_Re_NO,TR_NO,TR_Re_NO,Start_Time,GI_NO,GI_Re_NO) VALUES (@GR_NO,@GR_Re_NO,@TR_NO,@TR_Re_NO,@Start_Time,@GI_NO,@GI_Re_NO)";
+                
+
                 using (SqlCommand cmd = new SqlCommand(sqlinsertRow, conn))
                 {
+                 
                     cmd.Parameters.AddWithValue("@GR_NO", "");
                     cmd.Parameters.AddWithValue("@GR_Re_NO", "");
                     cmd.Parameters.AddWithValue("@TR_NO", "");
@@ -106,15 +113,16 @@ namespace PostSap_GR_TR
                 //DataTable dt = Condb.GetQuery(sql);
 
                 SqlCommand command = new SqlCommand(DBconfig +".[SP_2SAP_item_chk]", conn);
+                command.CommandTimeout = 240;
                 command.CommandType = CommandType.StoredProcedure;
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
                 int checkdataOnprocess = Convert.ToInt32(dt.Rows[0]["GR_NO"]) + Convert.ToInt32(dt.Rows[0]["GR_Re_NO"]) + Convert.ToInt32(dt.Rows[0]["TR_NO"]) + Convert.ToInt32(dt.Rows[0]["TR_Re_NO"]) + Convert.ToInt32(dt.Rows[0]["GI_NO"]) + Convert.ToInt32(dt.Rows[0]["GI_Re_NO"]);
+
                 if (checkdataOnprocess > 0)
                 {
-                
-                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
+                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO ,GR_QTY = @GR_QTY, GR_RE_QTY = @GR_RE_QTY,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
@@ -123,6 +131,8 @@ namespace PostSap_GR_TR
                         cmd.Parameters.AddWithValue("@TR_Re_NO", dt.Rows[0]["TR_Re_NO"].ToString());
                         cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
                         cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
+                        cmd.Parameters.AddWithValue("@GR_QTY", dt.Rows[0]["GR_QTY"].ToString());
+                        cmd.Parameters.AddWithValue("@GR_RE_QTY", dt.Rows[0]["GR_RE_QTY"].ToString());
                         conn.Open();
                         int result = cmd.ExecuteNonQuery();
                         conn.Close();
@@ -144,7 +154,6 @@ namespace PostSap_GR_TR
                 else
                 {
                     string dataUpdateList = "UPDATE "+ DBconfig +".[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
-
                     string ms = checkruntime > 1 ? "No data available Round " + checkruntime : "No data available";
                     using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
@@ -181,8 +190,7 @@ namespace PostSap_GR_TR
             }
         }
 
-        private void Post_GR_to_Sap()
-            {
+        private void Post_GR_to_Sap(){
             try
             {
                 Console.WriteLine("      Process GR");
@@ -193,8 +201,11 @@ namespace PostSap_GR_TR
                 Class.Condb Condb = new Class.Condb();
                 string sqlGetGR = "select * from " + DBconfig +".[v_sap_batch_gr] where Action = 1";
                 string sqlGetGR_redo = "select * from " + DBconfig +".[v_sap_batch_gr_redo] where Action = 1";
+
                 DataTable GRdata = Condb.GetQuery(sqlGetGR);
+
                 DataTable GRErrdata = Condb.GetQuery(sqlGetGR_redo);
+
                 Class.ServicePostSapGR sendSapGR = new Class.ServicePostSapGR();
                 if (GRdata.Rows.Count > 0)
                 {
@@ -242,11 +253,11 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                string Message = "Unexpected error Post_GR_to_Sap : " + ex.Message; 
+                string Message = "Unexpected error Post_GR_to_Sap checkrow : "  + ex.Message; 
                 CatchError(Message);
             }
         }
-
+        string checktable;
         private void Post_TR_to_Sap()
         {
             try
@@ -258,14 +269,10 @@ namespace PostSap_GR_TR
                 _ = new Class.ServicePostSapTR();
                 Class.Condb Condb = new Class.Condb();
                 string sqlGetTR = "select count(*) ,SLIPNO from " + DBconfig +".[v_sap_batch_tr] where Action = 1 GROUP BY SLIPNO";
-                checkError = "sqlGetTR1";
+                string sqlGetTR_redo = "select count(*) ,SLIPNO from " + DBconfig + ".[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
                 DataTable TRdata = Condb.GetQuery(sqlGetTR);
-                checkError = "sqlGetTR2";
-                string sqlGetTR_redo = "select count(*) ,SLIPNO from " + DBconfig +".[v_sap_batch_tr_redo] where Action = 1 GROUP BY SLIPNO";
-                checkError = "sqlGetTR_redo1";
                 DataTable TRErrdata = Condb.GetQuery(sqlGetTR_redo);
                 Class.ServicePostSapTR sendSapTR = new Class.ServicePostSapTR();
-                checkError = "sqlGetTR_redo2";
                 if (TRdata.Rows.Count > 0)
                 {
                     foreach (DataRow item in TRdata.Rows)
@@ -275,9 +282,9 @@ namespace PostSap_GR_TR
                         string Type = "TR";
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        checkError = "getID1";
+                        checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
                         var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
-                        checkError = "getID2";
+                        checktable = "PostSapTRClass";
                         sendSapTR.PostSapTRClass(Slipno, Datatype, getID);
                     }
                 }
@@ -291,9 +298,9 @@ namespace PostSap_GR_TR
                         string Type = "TR_redo";
                         string checkSlipno = item["SLIPNO"].ToString().Trim();
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        checkError = "redogetID1";
+                        checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
                         var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type);
-                        checkError = "redogetID2";
+                        checktable = "PostSapTRClass";
                         sendSapTR.PostSapTRClass(Slipno, Datatype, getID);
                     }
                 }
@@ -301,10 +308,11 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                string Message = "checkError :" + checkError + " Unexpected error Post_TR_to_Sap : " + ex.Message; 
+                string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message; 
                 CatchError(Message);
             }
         }
+
         private void Post_GI_Sap()
         {
             try
@@ -317,10 +325,11 @@ namespace PostSap_GR_TR
                 Class.Condb Condb = new Class.Condb();
 
                 string sqlGetGI = "SELECT count(*) as countOrder, ORDERNO , From_To as SLoc FROM " + DBconfig + ".[v_sap_batch_gi] where Action = 1 group by  ORDERNO ,From_To ";
-                //string sqlGetGI = "SELECT * FROM [Barcode].[dbo].[testGI] where 1=1";
-                DataTable GIdata = Condb.GetQuery(sqlGetGI);
                 string sqlGetGI_redo = "SELECT count(*) as countOrder, RefDocNo , ORDERNO ,StgeLoc as SLoc FROM " + DBconfig + ".[v_sap_batch_gi_redo] where Action = 1 group by RefDocNo ,ORDERNO ,StgeLoc ";
+
+                DataTable GIdata = Condb.GetQuery(sqlGetGI);
                 DataTable GIErrdata = Condb.GetQuery(sqlGetGI_redo);
+               
                 Class.ServicePostSapGI sendSapGI = new Class.ServicePostSapGI();
                 if (GIdata.Rows.Count > 0)
                 {
@@ -360,7 +369,7 @@ namespace PostSap_GR_TR
             }
             catch (Exception ex)
             {
-                string Message = "Unexpected error Post_GI_Sap : " + ex.Message; ;
+                string Message = "Unexpected error Post_GI_Sap checkrowGR :"+  ex.Message; 
                 CatchError(Message);
             }
         }
@@ -390,8 +399,8 @@ namespace PostSap_GR_TR
                 Console.WriteLine("End batch run time");
                 Console.WriteLine("successfully\n");
                 Console.WriteLine("#################################################### \n");
-                //System.Environment.Exit(1);
-                //Application.Exit();
+                System.Environment.Exit(1);
+                Application.Exit();
             }
             catch (Exception ex)
             {
@@ -435,7 +444,6 @@ namespace PostSap_GR_TR
                 string MessagelistGR = int.Parse(checkdata1) > 0 ? "GR Error : " + checkdata1 + " Item" : "";
                 string MessagelistTR = int.Parse(checkdata2) > 0 ? "TR Error : " + checkdata2 + " Item" : "";
                 string MessagelistGI = int.Parse(checkdata3) > 0 ? "GI Error : " + checkdata3 + " Item" : "";
-                Console.WriteLine("Start sent LineNotify ");
                 string ValidateMessage = "Error  \nrun time =  " + checkTime + "\n" + MessagelistGR + "\n" + MessagelistTR + "\n" + MessagelistGI;
 
                 Console.WriteLine("Start sent LineNotify ");
