@@ -154,8 +154,13 @@ namespace PostSap_GR_TR.Class
             string eMaterailDoc = ConvertObjectArrayToString(ws_res.eMaterailDoc);
 
             //test data to json
-            //Console.WriteLine("eMaterailDocresultsap: " + eMaterailDoc);
-            //Console.WriteLine("EMessage: " + ws_res.EMessage);
+            Console.WriteLine("POandDO: " + PoAndDo);
+            Console.WriteLine("POandDO: " + SLoc);
+
+            Console.WriteLine("eMaterailDocresultsap: " + eMaterailDoc);
+            Console.WriteLine("EMessage: " + ws_res.EMessage);
+
+            Console.WriteLine("############################################################");
 
             string dataUpdateList = "UPDATE " + DBconfig + ".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE ,CONFIRM_DOC = @CONFIRM_DOC  where ORDERNO = '" + PoAndDo + "' and MENUID = 'DO13'";
 
@@ -210,7 +215,7 @@ namespace PostSap_GR_TR.Class
 
             string UpdateStatusSap = "UPDATE " + DBconfig + ".[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
-            Console.WriteLine("ws_res.EMessage :" + ws_res.EMessage);
+            //Console.WriteLine("ws_res.EMessage :" + ws_res.EMessage);
             string[] datalast = null;
             if (ws_res.EMessage.Contains("saved")) {
                 string txtClean = ws_res.EMessage.Replace(" ", "");
@@ -221,16 +226,15 @@ namespace PostSap_GR_TR.Class
                 string data = txtClean.Substring(start, end);
                 datalast = data.Split(',');
             }
-           
-            
-            Console.WriteLine("datalast :" + datalast);
+
+            datalast = datalast == null ? new string[] { "1" } : datalast;
 
             int index = 0;
             if (ws_res.eMaterailDoc.Count() > 0)
             {
                 foreach (var doc in ws_res.eMaterailDoc)
                 {
-                    Console.WriteLine("doc :" + doc.DoNo);
+                    //Console.WriteLine("doc :" + doc.DoNo);
 
                     index++;
                     //if (!string.IsNullOrEmpty(doc.MatDoc))
@@ -296,7 +300,7 @@ namespace PostSap_GR_TR.Class
                     //    saved = 1;
                     //}
 
-                  
+                    
                     if (ws_res.EMessage.Contains("saved") && index <= datalast.Length)
                     {
                         using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))

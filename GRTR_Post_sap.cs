@@ -113,6 +113,10 @@ namespace PostSap_GR_TR
                 //DataTable dt = Condb.GetQuery(sql);
 
                 SqlCommand command = new SqlCommand(DBconfig +".[SP_2SAP_item_chk]", conn);
+
+                //เช็คข้อมูล GR QTY
+                //SqlCommand command = new SqlCommand(DBconfig + ".[SP_2SAP_item_chk_check_QtyGR]", conn);
+
                 command.CommandTimeout = 240;
                 command.CommandType = CommandType.StoredProcedure;
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
@@ -122,7 +126,9 @@ namespace PostSap_GR_TR
 
                 if (checkdataOnprocess > 0)
                 {
-                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO ,GR_QTY = @GR_QTY, GR_RE_QTY = @GR_RE_QTY,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
+                    //เช็คข้อมูล GR QTY
+                    //string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO ,GR_QTY = @GR_QTY, GR_RE_QTY = @GR_RE_QTY,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
+                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
@@ -131,8 +137,9 @@ namespace PostSap_GR_TR
                         cmd.Parameters.AddWithValue("@TR_Re_NO", dt.Rows[0]["TR_Re_NO"].ToString());
                         cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
                         cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
-                        cmd.Parameters.AddWithValue("@GR_QTY", dt.Rows[0]["GR_QTY"].ToString());
-                        cmd.Parameters.AddWithValue("@GR_RE_QTY", dt.Rows[0]["GR_RE_QTY"].ToString());
+                        //เช็คข้อมูล GR QTY
+                        //cmd.Parameters.AddWithValue("@GR_QTY", dt.Rows[0]["GR_QTY"].ToString());
+                        //cmd.Parameters.AddWithValue("@GR_RE_QTY", dt.Rows[0]["GR_RE_QTY"].ToString());
                         conn.Open();
                         int result = cmd.ExecuteNonQuery();
                         conn.Close();

@@ -229,6 +229,15 @@ namespace PostSap_GR_TR.Class
                                 checkError += "13";
                                 if (item.Error != "")
                                 {
+                                    using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+                                    {
+                                        cmd.Parameters.AddWithValue("@SapStatus",0);
+                                        cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
+                                        conn.Open();
+                                        int resultsap = cmd.ExecuteNonQuery();
+                                        conn.Close();
+                                    }
+
                                     using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
                                     {
                                         cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo + "|" + UserID);
