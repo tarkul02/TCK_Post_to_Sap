@@ -154,13 +154,13 @@ namespace PostSap_GR_TR.Class
             string eMaterailDoc = ConvertObjectArrayToString(ws_res.eMaterailDoc);
 
             //test data to json
-            Console.WriteLine("POandDO: " + PoAndDo);
-            Console.WriteLine("POandDO: " + SLoc);
+            //Console.WriteLine("POandDO: " + PoAndDo);
+            //Console.WriteLine("POandDO: " + SLoc);
 
-            Console.WriteLine("eMaterailDocresultsap: " + eMaterailDoc);
-            Console.WriteLine("EMessage: " + ws_res.EMessage);
+            //Console.WriteLine("eMaterailDocresultsap: " + eMaterailDoc);
+            //Console.WriteLine("EMessage: " + ws_res.EMessage);
 
-            Console.WriteLine("############################################################");
+            //Console.WriteLine("############################################################");
 
             string dataUpdateList = "UPDATE " + DBconfig + ".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE ,CONFIRM_DOC = @CONFIRM_DOC  where ORDERNO = '" + PoAndDo + "' and MENUID = 'DO13'";
 

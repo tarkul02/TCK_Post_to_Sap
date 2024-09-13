@@ -2,8 +2,8 @@
 
 # dependencies
 
-/bin/
-/obj/
+bin/
+obj/
 .vs
 
 
