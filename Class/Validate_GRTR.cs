@@ -95,7 +95,7 @@ namespace PostSap_GR_TR.Class
             string lastID = getID.Rows[0]["ID"].ToString();
             return lastID;
         }
-        public string GetAndUpdate_LogDataValidate_TR_to_Sap(string checkSlipno, string Datatype, string Type)
+        public string GetAndUpdate_LogDataValidate_TR_to_Sap(string checkSlipno, string Datatype, string Type , string Plant, string StgeLoc, string EntryQnt, string MovePlant, string MoveStloc, string Kanban, string PostDate, string start_Time , string Mat_Type)
         {
             try
             {
@@ -107,12 +107,11 @@ namespace PostSap_GR_TR.Class
                 }
 
                 SqlConnection conn = new SqlConnection(connString);
-                DataTable getdata_tr_and_trredo = new DataTable();
-                string sqlSelecttable = Datatype == "12" ? DBconfig + ".[v_sap_batch_tr]" : DBconfig + ".[v_sap_batch_tr_redo]";
-                string sqlcheckmaster = "select t.* from " + sqlSelecttable + " t where t.SLIPNO = '" + checkSlipno + "' and MAT_TYPE <> 'ZRM'";
+
+             
                 Class.Condb Condb = new Class.Condb();
                 checkError += "1";
-                getdata_tr_and_trredo = Condb.GetQuery(sqlcheckmaster);
+             
                 checkError += "2";
                 string Message = "";
                 //Message += checkSlipno.Length == 14 ? "" : "Slipno ,".ToString().Trim();
@@ -123,79 +122,38 @@ namespace PostSap_GR_TR.Class
                   "VALUES " +
                   "(@PlantFrom , @StorageFrom , @PlantTo , @StorageTo  ,@Kanban ,@MvmntQty ,@SlipNo ,@Mat_Type ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
                 checkError += "3";
-                if (getdata_tr_and_trredo.Rows.Count > 0)
+                if (Message != "")
                 {
-                    checkError += "4";
-                    foreach (DataRow dataRow in getdata_tr_and_trredo.Rows)
-                    {
-                        if (Message != "")
-                        {
-                            Message = Message.Substring(0, Message.Length - 1);
-                            ValidateMessage = "Error : ( " + Message + ")";
-                        }
-                        else
-                        {
-                            ValidateMessage = "";
-                        }
-
-                        using (SqlCommand cmd = new SqlCommand(sql, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@PlantFrom", dataRow["PlantFrom"].ToString().Trim());
-                            cmd.Parameters.AddWithValue("@StorageFrom", dataRow["StorageFrom"].ToString().Trim());
-                            cmd.Parameters.AddWithValue("@PlantTo", dataRow["PlantTo"].ToString().Trim());
-                            cmd.Parameters.AddWithValue("@StorageTo", dataRow["StorageTo"].ToString().Trim());
-                            //cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
-                            //cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
-                            cmd.Parameters.AddWithValue("@Kanban", dataRow["Kanban"].ToString().Trim());
-                            cmd.Parameters.AddWithValue("@MvmntQty", Convert.ToInt32(dataRow["MvmntQty"].ToString().Trim()));
-                            cmd.Parameters.AddWithValue("@SlipNo", checkSlipno);
-                            cmd.Parameters.AddWithValue("@Mat_Type", dataRow["Mat_Type"].ToString().Trim());
-                            cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
-                            cmd.Parameters.AddWithValue("@Type", Type);
-                            //cmd.Parameters.AddWithValue("@Status", Status);
-                            cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                            cmd.Parameters.AddWithValue("@Datatype", Datatype);
-                            conn.Open();
-                            int result = cmd.ExecuteNonQuery();
-                            conn.Close();
-                        }
-                    }
+                    Message = Message.Substring(0, Message.Length - 1);
+                    ValidateMessage = "Error : ( " + Message + ")";
                 }
                 else
                 {
-                    checkError += "5";
-                    if (Message != "")
-                    {
-                        Message = Message.Substring(0, Message.Length - 1);
-                        ValidateMessage = "Error : ( " + Message + ")";
-                    }
-                    else
-                    {
-                        ValidateMessage = "";
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(sql, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@PlantFrom", "");
-                        cmd.Parameters.AddWithValue("@StorageFrom", "");
-                        cmd.Parameters.AddWithValue("@PlantTo", "");
-                        cmd.Parameters.AddWithValue("@StorageTo", "");
-                        //cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
-                        //cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
-                        cmd.Parameters.AddWithValue("@Kanban", "");
-                        cmd.Parameters.AddWithValue("@MvmntQty", "");
-                        cmd.Parameters.AddWithValue("@SlipNo", checkSlipno);
-                        cmd.Parameters.AddWithValue("@Mat_Type", "");
-                        cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
-                        cmd.Parameters.AddWithValue("@Type", Type);
-                        //cmd.Parameters.AddWithValue("@Status", Status);
-                        cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                        cmd.Parameters.AddWithValue("@Datatype", Datatype);
-                        conn.Open();
-                        int result = cmd.ExecuteNonQuery();
-                        conn.Close();
-                    }
+                    ValidateMessage = "";
                 }
+              
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@PlantFrom", Plant);
+                    cmd.Parameters.AddWithValue("@StorageFrom", StgeLoc);
+                    cmd.Parameters.AddWithValue("@PlantTo", MovePlant);
+                    cmd.Parameters.AddWithValue("@StorageTo", MoveStloc);
+                    //cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
+                    //cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
+                    cmd.Parameters.AddWithValue("@Kanban", Kanban);
+                    cmd.Parameters.AddWithValue("@MvmntQty", EntryQnt);
+                    cmd.Parameters.AddWithValue("@SlipNo", checkSlipno);
+                    cmd.Parameters.AddWithValue("@Mat_Type", Mat_Type);
+                    cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
+                    cmd.Parameters.AddWithValue("@Type", Type);
+                    //cmd.Parameters.AddWithValue("@Status", Status);
+                    cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                    cmd.Parameters.AddWithValue("@Datatype", Datatype);
+                    conn.Open();
+                    int result = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+
                 _ = new DataTable();
                 _ = new Class.ServicePostSapGR();
                 string sqlgetID = "SELECT TOP (1) [ID] FROM " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] where SlipNo = '" + checkSlipno + "' order by ID desc";
