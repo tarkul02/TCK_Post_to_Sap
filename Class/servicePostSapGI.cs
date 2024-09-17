@@ -151,7 +151,7 @@ namespace PostSap_GR_TR.Class
          
             ws_res = ws_service.ZConfirmPickingGoodsIssue(ws_fn_partosap);
 
-            string eMaterailDoc = ConvertObjectArrayToString(ws_res.eMaterailDoc);
+            //string eMaterailDoc = ConvertObjectArrayToString(ws_res.eMaterailDoc);
 
             //test data to json
             //Console.WriteLine("POandDO: " + PoAndDo);

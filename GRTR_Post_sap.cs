@@ -26,8 +26,10 @@ namespace PostSap_GR_TR
         {
             InitializeComponent();
         }
+
         public async void GRTRPost_sap(object sender, EventArgs e)
         {
+
             Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             GetAndUpdate_Batch_GR_TR_Log();
             Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
@@ -118,10 +120,10 @@ namespace PostSap_GR_TR
                 //Class.Condb Condb = new Class.Condb();
                 //DataTable dt = Condb.GetQuery(sql);
 
-               // SqlCommand command = new SqlCommand(DBconfig +".[SP_2SAP_item_chk]", conn);
+                SqlCommand command = new SqlCommand(DBconfig +".[SP_2SAP_item_chk]", conn);
 
                 //เช็คข้อมูล GR QTY
-                SqlCommand command = new SqlCommand(DBconfig + ".[SP_2SAP_item_chk_check_QtyGR]", conn);
+                //SqlCommand command = new SqlCommand(DBconfig + ".[SP_2SAP_item_chk_check_QtyGR]", conn);
 
                 command.CommandTimeout = 240;
                 command.CommandType = CommandType.StoredProcedure;
@@ -133,8 +135,8 @@ namespace PostSap_GR_TR
                 if (checkdataOnprocess > 0)
                 {
                     //เช็คข้อมูล GR QTY
-                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO ,GR_QTY = @GR_QTY, GR_RE_QTY = @GR_RE_QTY,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
-                    //string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
+                    //string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO ,GR_QTY = @GR_QTY, GR_RE_QTY = @GR_RE_QTY,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
+                    string sql = "UPDATE  " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET GR_NO = @GR_NO, GR_Re_NO = @GR_Re_NO,TR_NO = @TR_NO,TR_Re_NO = @TR_Re_NO,GI_NO = @GI_NO,GI_Re_NO = @GI_Re_NO where start_Time = '" + start_Time + "'";
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@GR_NO", dt.Rows[0]["GR_NO"].ToString());
@@ -144,8 +146,8 @@ namespace PostSap_GR_TR
                         cmd.Parameters.AddWithValue("@GI_NO", dt.Rows[0]["GI_NO"].ToString());
                         cmd.Parameters.AddWithValue("@GI_Re_NO", dt.Rows[0]["GI_Re_NO"].ToString());
                         //เช็คข้อมูล GR QTY
-                        cmd.Parameters.AddWithValue("@GR_QTY", dt.Rows[0]["GR_QTY"].ToString());
-                        cmd.Parameters.AddWithValue("@GR_RE_QTY", dt.Rows[0]["GR_RE_QTY"].ToString());
+                        //cmd.Parameters.AddWithValue("@GR_QTY", dt.Rows[0]["GR_QTY"].ToString());
+                        //cmd.Parameters.AddWithValue("@GR_RE_QTY", dt.Rows[0]["GR_RE_QTY"].ToString());
                         conn.Open();
                         int result = cmd.ExecuteNonQuery();
                         conn.Close();
@@ -336,6 +338,7 @@ namespace PostSap_GR_TR
                         Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
                         checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
                         var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
+                        
                         checktable = "PostSapTRClass Error";
                         sendSapTR.PostSapTRClass(Slipno, Datatype, getID, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time);
                         checktable = "PostSapTRClass2 Error";
@@ -436,8 +439,8 @@ namespace PostSap_GR_TR
                 Console.WriteLine("End batch run time");
                 Console.WriteLine("successfully\n");
                 Console.WriteLine("#################################################### \n");
-                //System.Environment.Exit(1);
-                //Application.Exit();
+                System.Environment.Exit(1);
+                Application.Exit();
             }
             catch (Exception ex)
             {
@@ -666,6 +669,8 @@ namespace PostSap_GR_TR
 
         public void CatchError(string massage)
         {
+           
+
             _ = new DataTable();
             _ = new Class.ServicePostSapGR();
             Class.Condb Condb = new Class.Condb();
@@ -677,6 +682,13 @@ namespace PostSap_GR_TR
             }
 
             SqlConnection conn = new SqlConnection(connString);
+
+            // ตรวจสอบและปิดการเชื่อมต่อหากเปิดอยู่
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
+
             string dataUpdateList = "UPDATE "+ DBconfig +".[T_SAP_Batch_GR_TR_Log] SET EMessageError = @EMessageError  where start_Time = '" + start_Time + "'";
             using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
             {

@@ -150,23 +150,35 @@ namespace PostSap_GR_TR.Class
                 DataTable UpdateList = new DataTable();
 
                 checkError = "Update T_barcode_trans ";
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+
+                if (ws_res.EMessage != null)
                 {
-
-                    if (ws_res.EMessage.Contains("was create"))
+                    using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
                     {
-                        cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
-                        cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
-                    }
-                    else
-                    {
-                        cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
-                        cmd.Parameters.AddWithValue("@CONFIRM_DATE", "");
-                    }
-                    conn.Open();
 
-                    int resultError = cmd.ExecuteNonQuery();
-                    conn.Close();
+                        if (ws_res.EMessage.Contains("was create"))
+                        {
+                            cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                            cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+                            cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                        }
+                        conn.Open();
+
+                        int resultError = cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                } else {
+                    using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@REFDOCSAP", "");
+                        cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                        ExecuteSqlCommand(conn, cmd);
+                    }
                 }
 
                 if (ws_res.ItDetail.Count() > 0)
@@ -174,17 +186,29 @@ namespace PostSap_GR_TR.Class
                     
                     foreach (var item in ws_res.ItDetail)
                     {
-                
+                        //Console.WriteLine("<---------#################--------->");
+                        //Console.WriteLine(item.Batch);
+                        //Console.WriteLine((int)item.EntryQnt);
+                        //Console.WriteLine(item.EntryUom);
+                        //Console.WriteLine(item.FacNo);
+                        //Console.WriteLine(SlipNo);
+                        //Console.WriteLine(item.StgeLoc + "|" + item.MoveStloc);
+                        //Console.WriteLine(item.MoveType);
+                        //Console.WriteLine(item.Plant + "|" + item.MovePlant);
+                        //Console.WriteLine(item.Custid);
+                        //Console.WriteLine(item.Kanban);
+                        //Console.WriteLine(ws_res.EMaterailDoc.MatDoc + "|" + UserID);
+                        //Console.WriteLine("TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
+                        //Console.WriteLine("<---------#################--------->");
+
                         if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                         {
                             checkError = "Update T_LogDatavalidate_TR_to_Sap";
                             using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
                             {
                                 cmd.Parameters.AddWithValue("@SapStatus", 1);
-                                cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
-                                conn.Open();
-                                int resultsap = cmd.ExecuteNonQuery();
-                                conn.Close();
+                                cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                                ExecuteSqlCommand(conn, cmd);
                             }
 
                             checkError = "insert T_LOG_GR_STOCK";
@@ -201,13 +225,10 @@ namespace PostSap_GR_TR.Class
                                 cmd.Parameters.AddWithValue("@Custid", item.Custid);
                                 cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
                                 cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                                 cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
                                 cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
-                                conn.Open();
-
-                                int resultseccess = cmd.ExecuteNonQuery();
-                                conn.Close();
+                                ExecuteSqlCommand(conn, cmd);
                             }
                         }
                         else
@@ -216,16 +237,7 @@ namespace PostSap_GR_TR.Class
 
                             if (item.Error != "")
                             {
-                                checkError = "insert ERROR T_LogDatavalidate_TR_to_Sap";
-                                using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
-                                {
-                                    cmd.Parameters.AddWithValue("@SapStatus",0);
-                                    cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
-                                    conn.Open();
-                                    int resultsap = cmd.ExecuteNonQuery();
-                                    conn.Close();
-                                }
-
+                               
                                 checkError = "insert T_LOG_STOCK_ERROR";
                                 using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
                                 {
@@ -241,19 +253,18 @@ namespace PostSap_GR_TR.Class
                                     cmd.Parameters.AddWithValue("@Custid", item.Custid);
                                     cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
                                     cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                                    cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+                                    cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                                     cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
                                     cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + item.Error);
-                                    conn.Open();
 
-                                    int resultError = cmd.ExecuteNonQuery();
-                                    conn.Close();
+                                    ExecuteSqlCommand(conn , cmd);
+
                                 }
                             }
                         }
                     }
                 }
-
+              
                 var Matdoc = "";
                 var Errmsg = "";
                 if (ws_res.EMaterailDoc.MatDoc == "")
@@ -295,6 +306,19 @@ namespace PostSap_GR_TR.Class
 
             }
 
+        }
+
+        public void ExecuteSqlCommand(SqlConnection conn, SqlCommand cmd)
+        {
+            // ตรวจสอบและปิดการเชื่อมต่อหากเปิดอยู่
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
+
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
         }
     }
 }

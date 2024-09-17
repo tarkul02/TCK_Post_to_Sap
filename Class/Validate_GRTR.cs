@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAP_Batch_GR_TR.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -118,9 +119,10 @@ namespace PostSap_GR_TR.Class
                 Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
                 string ValidateMessage = "";
                 var sql = "INSERT INTO " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] " +
-                  "(PlantFrom ,StorageFrom ,PlantTo ,StorageTo  ,Kanban , MvmntQty,SlipNo ,Mat_Type ,ValidateMessage ,Type, CreateDate ,Datatype) " +
-                  "VALUES " +
-                  "(@PlantFrom , @StorageFrom , @PlantTo , @StorageTo  ,@Kanban ,@MvmntQty ,@SlipNo ,@Mat_Type ,@ValidateMessage ,@Type,@CreateDate ,@Datatype)";
+                   "(PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype) " +
+                   "VALUES " +
+                   "(@PlantFrom, @StorageFrom, @PlantTo, @StorageTo, @Kanban, @MvmntQty, @SlipNo, @Mat_Type, @ValidateMessage, @Type, @CreateDate, @Datatype);" +
+                   "SELECT SCOPE_IDENTITY();";  // ดึง ID ของแถวที่เพิ่งถูกแทรก
                 checkError += "3";
                 if (Message != "")
                 {
@@ -131,36 +133,40 @@ namespace PostSap_GR_TR.Class
                 {
                     ValidateMessage = "";
                 }
-              
+                //var result = "";
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
+                    // ใส่ค่า Parameters
                     cmd.Parameters.AddWithValue("@PlantFrom", Plant);
                     cmd.Parameters.AddWithValue("@StorageFrom", StgeLoc);
                     cmd.Parameters.AddWithValue("@PlantTo", MovePlant);
                     cmd.Parameters.AddWithValue("@StorageTo", MoveStloc);
-                    //cmd.Parameters.AddWithValue("@PostDate", dataRow["PostDate"].ToString().Trim());
-                    //cmd.Parameters.AddWithValue("@POSTTIME", dataRow["POSTTIME"].ToString().Trim());
                     cmd.Parameters.AddWithValue("@Kanban", Kanban);
                     cmd.Parameters.AddWithValue("@MvmntQty", EntryQnt);
                     cmd.Parameters.AddWithValue("@SlipNo", checkSlipno);
                     cmd.Parameters.AddWithValue("@Mat_Type", Mat_Type);
                     cmd.Parameters.AddWithValue("@ValidateMessage", ValidateMessage);
                     cmd.Parameters.AddWithValue("@Type", Type);
-                    //cmd.Parameters.AddWithValue("@Status", Status);
                     cmd.Parameters.AddWithValue("@CreateDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                     cmd.Parameters.AddWithValue("@Datatype", Datatype);
+
                     conn.Open();
-                    int result = cmd.ExecuteNonQuery();
+
+                    // รับค่า ID ที่เพิ่งแทรกกลับมา
+                    var result = cmd.ExecuteScalar();
+
                     conn.Close();
+
+                    // แปลง result ให้เป็น int และส่งกลับ
+                    return result.ToString();
                 }
 
-                _ = new DataTable();
-                _ = new Class.ServicePostSapGR();
-                string sqlgetID = "SELECT TOP (1) [ID] FROM " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] where SlipNo = '" + checkSlipno + "' order by ID desc";
-                var getID = Condb.GetQuery(sqlgetID);
-                checkError += "6";
-                string lastID = getID.Rows[0]["ID"].ToString();
-                return lastID;
+                //_ = new DataTable();
+                //_ = new Class.ServicePostSapGR();
+                //string sqlgetID = "SELECT TOP (1) [ID] FROM " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] where SlipNo = '" + checkSlipno + "' order by ID desc";
+                //var getID = Condb.GetQuery(sqlgetID);
+                //checkError += "6";
+                //string lastID = getID.Rows[0]["ID"].ToString();
             }
             catch (Exception ex)
             {
