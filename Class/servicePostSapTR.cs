@@ -14,9 +14,8 @@ namespace PostSap_GR_TR.Class
     {
         string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
         string checkError;
-        public void PostSapTRClass(string SlipNo, string DataType, string getID, string Plant, string StgeLoc, string EntryQnt , string MovePlant , string MoveStloc, string Kanban, string PostDate ,string start_Time)
+        public void PostSapTRClass(string SlipNo, string DataType, string Type , string Plant, string StgeLoc, string EntryQnt , string MovePlant , string MoveStloc, string Kanban, string PostDate ,string start_Time , string Mat_Type)
         {
-            checkError += getID + "01";
          
             var ws_service = new Z_GOODSMVT_CREATE1_SRV();
             var ws_res = new ZGoodsmvtCreate1Response();
@@ -145,11 +144,10 @@ namespace PostSap_GR_TR.Class
                 + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
              
                 DataTable insertDataErrorLogGT = new DataTable();
-                string UpdateStatusSap = "UPDATE "+ DBconfig +".[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
+                //string UpdateStatusSap = "UPDATE "+ DBconfig +".[T_LogDatavalidate_TR_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
                 string dataUpdateList = "UPDATE "+ DBconfig +".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE where SLIPNO = '" + SlipNo + "'";
                 DataTable UpdateList = new DataTable();
 
-                checkError = "Update T_barcode_trans ";
 
                 if (ws_res.EMessage != null)
                 {
@@ -181,89 +179,72 @@ namespace PostSap_GR_TR.Class
                     }
                 }
 
-                if (ws_res.ItDetail.Count() > 0)
-                {
+                //if (ws_res.ItDetail.Count() > 0)
+                //{
                     
-                    foreach (var item in ws_res.ItDetail)
-                    {
-                        //Console.WriteLine("<---------#################--------->");
-                        //Console.WriteLine(item.Batch);
-                        //Console.WriteLine((int)item.EntryQnt);
-                        //Console.WriteLine(item.EntryUom);
-                        //Console.WriteLine(item.FacNo);
-                        //Console.WriteLine(SlipNo);
-                        //Console.WriteLine(item.StgeLoc + "|" + item.MoveStloc);
-                        //Console.WriteLine(item.MoveType);
-                        //Console.WriteLine(item.Plant + "|" + item.MovePlant);
-                        //Console.WriteLine(item.Custid);
-                        //Console.WriteLine(item.Kanban);
-                        //Console.WriteLine(ws_res.EMaterailDoc.MatDoc + "|" + UserID);
-                        //Console.WriteLine("TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
-                        //Console.WriteLine("<---------#################--------->");
+                //    foreach (var item in ws_res.ItDetail)
+                //    {
 
-                        if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
-                        {
-                            checkError = "Update T_LogDatavalidate_TR_to_Sap";
-                            using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
-                            {
-                                cmd.Parameters.AddWithValue("@SapStatus", 1);
-                                cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                                ExecuteSqlCommand(conn, cmd);
-                            }
+                //        if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                //        {
 
-                            checkError = "insert T_LOG_GR_STOCK";
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
-                            {
-                                cmd.Parameters.AddWithValue("@Batch", item.Batch);
-                                cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
-                                cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
-                                cmd.Parameters.AddWithValue("@FacNo", item.FacNo);
-                                cmd.Parameters.AddWithValue("@Material", SlipNo);
-                                cmd.Parameters.AddWithValue("@StgeLoc", item.StgeLoc + "|" + item.MoveStloc);
-                                cmd.Parameters.AddWithValue("@MoveType", item.MoveType);
-                                cmd.Parameters.AddWithValue("@Plant", item.Plant + "|" + item.MovePlant);
-                                cmd.Parameters.AddWithValue("@Custid", item.Custid);
-                                cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
-                                cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                                cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
-                                cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
-                                ExecuteSqlCommand(conn, cmd);
-                            }
-                        }
-                        else
-                        {
-                            
 
-                            if (item.Error != "")
-                            {
-                               
-                                checkError = "insert T_LOG_STOCK_ERROR";
-                                using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
-                                {
-                                    cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo + "|" + UserID);
-                                    cmd.Parameters.AddWithValue("@Batch", item.Batch);
-                                    cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
-                                    cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
-                                    cmd.Parameters.AddWithValue("@FacNo", item.FacNo);
-                                    cmd.Parameters.AddWithValue("@Material", SlipNo);
-                                    cmd.Parameters.AddWithValue("@StgeLoc", item.StgeLoc + "|" + item.MoveStloc);
-                                    cmd.Parameters.AddWithValue("@MoveType", item.MoveType);
-                                    cmd.Parameters.AddWithValue("@Plant", item.Plant + "|" + item.MovePlant);
-                                    cmd.Parameters.AddWithValue("@Custid", item.Custid);
-                                    cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
-                                    cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                                    cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                                    cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
-                                    cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + item.Error);
+                //            //using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+                //            //{
+                //            //    cmd.Parameters.AddWithValue("@SapStatus", 1);
+                //            //    cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                //            //    ExecuteSqlCommand(conn, cmd);
+                //            //}
 
-                                    ExecuteSqlCommand(conn , cmd);
+                //            using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
+                //            {
+                //                cmd.Parameters.AddWithValue("@Batch", item.Batch);
+                //                cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
+                //                cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
+                //                cmd.Parameters.AddWithValue("@FacNo", item.FacNo);
+                //                cmd.Parameters.AddWithValue("@Material", SlipNo);
+                //                cmd.Parameters.AddWithValue("@StgeLoc", item.StgeLoc + "|" + item.MoveStloc);
+                //                cmd.Parameters.AddWithValue("@MoveType", item.MoveType);
+                //                cmd.Parameters.AddWithValue("@Plant", item.Plant + "|" + item.MovePlant);
+                //                cmd.Parameters.AddWithValue("@Custid", item.Custid);
+                //                cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
+                //                cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+                //                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                //                cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
+                //                cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
+                //                ExecuteSqlCommand(conn, cmd);
+                //            }
+                //        }
+                //        else
+                //        {
 
-                                }
-                            }
-                        }
-                    }
-                }
+                //            if (item.Error != "")
+                //            {
+                //                using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
+                //                {
+                //                    cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo + "|" + UserID);
+                //                    cmd.Parameters.AddWithValue("@Batch", item.Batch);
+                //                    cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
+                //                    cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
+                //                    cmd.Parameters.AddWithValue("@FacNo", item.FacNo);
+                //                    cmd.Parameters.AddWithValue("@Material", SlipNo);
+                //                    cmd.Parameters.AddWithValue("@StgeLoc", item.StgeLoc + "|" + item.MoveStloc);
+                //                    cmd.Parameters.AddWithValue("@MoveType", item.MoveType);
+                //                    cmd.Parameters.AddWithValue("@Plant", item.Plant + "|" + item.MovePlant);
+                //                    cmd.Parameters.AddWithValue("@Custid", item.Custid);
+                //                    cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
+                //                    cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+                //                    cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                //                    cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
+                //                    cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + item.Error);
+
+                //                    ExecuteSqlCommand(conn , cmd);
+
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
               
                 var Matdoc = "";
                 var Errmsg = "";
