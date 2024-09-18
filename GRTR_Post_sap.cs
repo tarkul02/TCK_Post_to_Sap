@@ -226,42 +226,54 @@ namespace PostSap_GR_TR
                 {
                     foreach (DataRow item in GRdata.Rows)
                     {
-                        string partno = item["MatNo"].ToString().Trim();
-                        int qty = Convert.ToInt32(item["QRQty"].ToString());
-                        string custid = item["CustID"].ToString().Trim();
-                        string FacNo = item["FacNo"].ToString().Trim();
-                        string Plant = item["Plant"].ToString().Trim();
-                        string store = item["SLoc"].ToString().Trim();
-                        int MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
-                        string postdate = item["PostDate"].ToString().Trim();
-                        string PostTime = item["PostTime"].ToString().Trim();
-                        string headertext = "IT|" + item["HeaderText"].ToString().Trim();
-                        int Action = Convert.ToInt32(item["Action"].ToString());
-                        string Type = "GR".ToString().Trim();
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                        sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext, getID);
+                        try { 
+                            string partno = item["MatNo"].ToString().Trim();
+                            int qty = Convert.ToInt32(item["QRQty"].ToString());
+                            string custid = item["CustID"].ToString().Trim();
+                            string FacNo = item["FacNo"].ToString().Trim();
+                            string Plant = item["Plant"].ToString().Trim();
+                            string store = item["SLoc"].ToString().Trim();
+                            int MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
+                            string postdate = item["PostDate"].ToString().Trim();
+                            string PostTime = item["PostTime"].ToString().Trim();
+                            string headertext = "IT|" + item["HeaderText"].ToString().Trim();
+                            int Action = Convert.ToInt32(item["Action"].ToString());
+                            string Type = "GR".ToString().Trim();
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                            sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext, getID);
+                        }
+                        catch (Exception ex)
+                        {
+                            string Message =  ex.Message;
+                        }
                     }
                 }
                 if (GRErrdata.Rows.Count > 0)
                 {
                     foreach (DataRow item in GRErrdata.Rows)
                     {
-                        string partno = item["MatNo"].ToString().Trim();
-                        int qty = Convert.ToInt32(item["QRQty"].ToString());
-                        string custid = item["CustID"].ToString().Trim();
-                        string FacNo = item["FacNo"].ToString().Trim();
-                        string Plant = item["Plant"].ToString().Trim();
-                        string store = item["SLoc"].ToString().Trim();
-                        int MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
-                        string postdate = item["PostDate"].ToString().Trim();
-                        string PostTime = item["PostTime"].ToString().Trim();
-                        string headertext = "IT|" + item["HeaderText"].ToString().Trim();
-                        int Action = Convert.ToInt32(item["Action"].ToString());
-                        string Type = "GR_redo".ToString().Trim();
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
-                        sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext, getID);
+                        try { 
+                            string partno = item["MatNo"].ToString().Trim();
+                            int qty = Convert.ToInt32(item["QRQty"].ToString());
+                            string custid = item["CustID"].ToString().Trim();
+                            string FacNo = item["FacNo"].ToString().Trim();
+                            string Plant = item["Plant"].ToString().Trim();
+                            string store = item["SLoc"].ToString().Trim();
+                            int MvmntType = Convert.ToInt32(item["MvmntType"].ToString());
+                            string postdate = item["PostDate"].ToString().Trim();
+                            string PostTime = item["PostTime"].ToString().Trim();
+                            string headertext = "IT|" + item["HeaderText"].ToString().Trim();
+                            int Action = Convert.ToInt32(item["Action"].ToString());
+                            string Type = "GR_redo".ToString().Trim();
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_GR_to_Sap(partno, qty, custid, FacNo, Plant, store, MvmntType, postdate, PostTime, headertext, Action, Type);
+                            sendSapGR.PostSapGRClass(partno, qty, custid, store, postdate, headertext, getID);
+                        }
+                        catch (Exception ex)
+                        {
+                            string Message = ex.Message;
+                        }
                     }
                 }
                 Console.WriteLine("      End Process GR \n");
@@ -293,55 +305,69 @@ namespace PostSap_GR_TR
                 {
                     foreach (DataRow item in TRdata.Rows)
                     {
+                        try
+                        {
+                            string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                            string Datatype = "12";
+                            string Type = "TR";
+                            string checkSlipno = item["SLIPNO"].ToString().Trim();
 
-                        string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                        string Datatype = "12";
-                        string Type = "TR";
-                        string checkSlipno = item["SLIPNO"].ToString().Trim();
-
-                        string Plant = item["PlantFrom"].ToString();
-                        string StgeLoc = item["StorageFrom"].ToString();
-                        string EntryQnt = Convert.ToInt32(item["MvmntQty"].ToString()).ToString();
-                        string MovePlant = item["PlantTo"].ToString();
-                        string MoveStloc = item["StorageTo"].ToString();
-                        string Kanban = item["Kanban"].ToString();
-                        string PostDate = item["POSTDATE"].ToString();
-                        string Mat_Type = item["Mat_Type"].ToString();
+                            string Plant = item["PlantFrom"].ToString();
+                            string StgeLoc = item["StorageFrom"].ToString();
+                            string EntryQnt = Convert.ToInt32(item["MvmntQty"].ToString()).ToString();
+                            string MovePlant = item["PlantTo"].ToString();
+                            string MoveStloc = item["StorageTo"].ToString();
+                            string Kanban = item["Kanban"].ToString();
+                            string PostDate = item["POSTDATE"].ToString();
+                            string Mat_Type = item["Mat_Type"].ToString();
 
 
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
-                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time , Mat_Type);
-                        checktable = "PostSapTRClass ";
-                        sendSapTR.PostSapTRClass(Slipno, Datatype, getID, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time);
-                        checktable = "PostSapTRClass2 ";
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
+                            var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
+                            checktable = "PostSapTRClass ";
+                            sendSapTR.PostSapTRClass(Slipno, Datatype, getID, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time);
+                            checktable = "PostSapTRClass2 ";
+                        }
+                        catch (Exception ex)
+                        {
+                            string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
+                        }
                     }
                 }
                 if (TRErrdata.Rows.Count > 0)
                 {
                     foreach (DataRow item in TRErrdata.Rows)
                     {
-                        string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                        string Datatype = "13";
-                        string Type = "TR_redo";
-                        string checkSlipno = item["SLIPNO"].ToString().Trim();
+                        try
+                        {
 
-                        string Plant = item["PlantFrom"].ToString();
-                        string StgeLoc = item["StorageFrom"].ToString();
-                        string EntryQnt = Convert.ToInt32(item["MvmntQty"].ToString()).ToString();
-                        string MovePlant = item["PlantTo"].ToString();
-                        string MoveStloc = item["StorageTo"].ToString();
-                        string Kanban = item["Kanban"].ToString();
-                        string PostDate = item["POSTDATE"].ToString();
-                        string Mat_Type = item["Mat_Type"].ToString();
+                            string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                            string Datatype = "13";
+                            string Type = "TR_redo";
+                            string checkSlipno = item["SLIPNO"].ToString().Trim();
 
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
-                        var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
+                            string Plant = item["PlantFrom"].ToString();
+                            string StgeLoc = item["StorageFrom"].ToString();
+                            string EntryQnt = Convert.ToInt32(item["MvmntQty"].ToString()).ToString();
+                            string MovePlant = item["PlantTo"].ToString();
+                            string MoveStloc = item["StorageTo"].ToString();
+                            string Kanban = item["Kanban"].ToString();
+                            string PostDate = item["POSTDATE"].ToString();
+                            string Mat_Type = item["Mat_Type"].ToString();
+
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            checktable = "GetAndUpdate_LogDataValidate_TR_to_Sap";
+                            var getID = Validate_GRTR.GetAndUpdate_LogDataValidate_TR_to_Sap(checkSlipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
                         
-                        checktable = "PostSapTRClass Error";
-                        sendSapTR.PostSapTRClass(Slipno, Datatype, getID, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time);
-                        checktable = "PostSapTRClass2 Error";
+                            checktable = "PostSapTRClass Error";
+                            sendSapTR.PostSapTRClass(Slipno, Datatype, getID, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time);
+                            checktable = "PostSapTRClass2 Error";
+                        }
+                        catch (Exception ex)
+                        {
+                            string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
+                        }
                     }
                 }
                 Console.WriteLine("      End Process TR \n");
@@ -375,16 +401,22 @@ namespace PostSap_GR_TR
                 {
                     foreach (DataRow item in GIdata.Rows)
                     {
-                        string OrderNo = item["ORDERNO"].ToString().Trim();
-                        string PoAndDo = item["ORDERNO"].ToString().Trim();
-                        string SLoc = item["SLoc"].ToString().Trim();
-                        string Type = "GI";
-                        string checkPoAndDO = OrderNo.Substring(0, 2);
-                        checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
-                        string DOandPO = checkPoAndDO;
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID  = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type , SLoc);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO , getID , SLoc);
+                        try { 
+                            string OrderNo = item["ORDERNO"].ToString().Trim();
+                            string PoAndDo = item["ORDERNO"].ToString().Trim();
+                            string SLoc = item["SLoc"].ToString().Trim();
+                            string Type = "GI";
+                            string checkPoAndDO = OrderNo.Substring(0, 2);
+                            checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                            string DOandPO = checkPoAndDO;
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            var getID  = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type , SLoc);
+                            sendSapGI.PostSapGIClass(PoAndDo, DOandPO , getID , SLoc);
+                        }
+                        catch (Exception ex)
+                        {
+                            string Message = ex.Message;
+                        }
                     }
                 }
 
@@ -392,16 +424,22 @@ namespace PostSap_GR_TR
                 {
                     foreach (DataRow item in GIErrdata.Rows)
                     {
-                        string OrderNo = item["ORDERNO"].ToString().Trim();
-                        string PoAndDo = item["ORDERNO"].ToString().Trim();
-                        string SLoc = item["SLoc"].ToString().Trim();
-                        string Type = "GI_redo";
-                        string checkPoAndDO = OrderNo.Substring(0, 2);
-                        checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
-                        string DOandPO = checkPoAndDO;
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID =  Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type , SLoc);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID , SLoc);
+                        try { 
+                            string OrderNo = item["ORDERNO"].ToString().Trim();
+                            string PoAndDo = item["ORDERNO"].ToString().Trim();
+                            string SLoc = item["SLoc"].ToString().Trim();
+                            string Type = "GI_redo";
+                            string checkPoAndDO = OrderNo.Substring(0, 2);
+                            checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                            string DOandPO = checkPoAndDO;
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            var getID =  Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type , SLoc);
+                            sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID , SLoc);
+                        }
+                        catch (Exception ex)
+                        {
+                            string Message =  ex.Message;
+                        }
                     }
                 }
                 Console.WriteLine("      End Process GI \n");

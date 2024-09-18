@@ -186,62 +186,21 @@ namespace PostSap_GR_TR.Class
                     
                     foreach (var item in ws_res.ItDetail)
                     {
-                        //Console.WriteLine("<---------#################--------->");
-                        //Console.WriteLine(item.Batch);
-                        //Console.WriteLine((int)item.EntryQnt);
-                        //Console.WriteLine(item.EntryUom);
-                        //Console.WriteLine(item.FacNo);
-                        //Console.WriteLine(SlipNo);
-                        //Console.WriteLine(item.StgeLoc + "|" + item.MoveStloc);
-                        //Console.WriteLine(item.MoveType);
-                        //Console.WriteLine(item.Plant + "|" + item.MovePlant);
-                        //Console.WriteLine(item.Custid);
-                        //Console.WriteLine(item.Kanban);
-                        //Console.WriteLine(ws_res.EMaterailDoc.MatDoc + "|" + UserID);
-                        //Console.WriteLine("TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
-                        //Console.WriteLine("<---------#################--------->");
-
-                        if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                        try
                         {
-                            checkError = "Update T_LogDatavalidate_TR_to_Sap";
-                            using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+                            if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                             {
-                                cmd.Parameters.AddWithValue("@SapStatus", 1);
-                                cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                                ExecuteSqlCommand(conn, cmd);
-                            }
-
-                            checkError = "insert T_LOG_GR_STOCK";
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
-                            {
-                                cmd.Parameters.AddWithValue("@Batch", item.Batch);
-                                cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
-                                cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
-                                cmd.Parameters.AddWithValue("@FacNo", item.FacNo);
-                                cmd.Parameters.AddWithValue("@Material", SlipNo);
-                                cmd.Parameters.AddWithValue("@StgeLoc", item.StgeLoc + "|" + item.MoveStloc);
-                                cmd.Parameters.AddWithValue("@MoveType", item.MoveType);
-                                cmd.Parameters.AddWithValue("@Plant", item.Plant + "|" + item.MovePlant);
-                                cmd.Parameters.AddWithValue("@Custid", item.Custid);
-                                cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
-                                cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                                cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
-                                cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
-                                ExecuteSqlCommand(conn, cmd);
-                            }
-                        }
-                        else
-                        {
-                            
-
-                            if (item.Error != "")
-                            {
-                               
-                                checkError = "insert T_LOG_STOCK_ERROR";
-                                using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
+                                checkError = "Update T_LogDatavalidate_TR_to_Sap";
+                                using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo + "|" + UserID);
+                                    cmd.Parameters.AddWithValue("@SapStatus", 1);
+                                    cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                                    ExecuteSqlCommand(conn, cmd);
+                                }
+
+                                checkError = "insert T_LOG_GR_STOCK";
+                                using (SqlCommand cmd = new SqlCommand(sqlLog_Gr, conn))
+                                {
                                     cmd.Parameters.AddWithValue("@Batch", item.Batch);
                                     cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
                                     cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
@@ -255,12 +214,56 @@ namespace PostSap_GR_TR.Class
                                     cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
                                     cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                                     cmd.Parameters.AddWithValue("@DocMat", ws_res.EMaterailDoc.MatDoc + "|" + UserID);
-                                    cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + item.Error);
-
-                                    ExecuteSqlCommand(conn , cmd);
-
+                                    cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error);
+                                    ExecuteSqlCommand(conn, cmd);
                                 }
                             }
+                            else
+                            {
+
+
+                                if (item.Error != "")
+                                {
+
+                                    checkError = "insert T_LOG_STOCK_ERROR";
+                                    using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gr, conn))
+                                    {
+                                        cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo + "|" + UserID);
+                                        cmd.Parameters.AddWithValue("@Batch", item.Batch);
+                                        cmd.Parameters.AddWithValue("@EntryQnt", (int)item.EntryQnt);
+                                        cmd.Parameters.AddWithValue("@EntryUom", item.EntryUom);
+                                        cmd.Parameters.AddWithValue("@FacNo", item.FacNo);
+                                        cmd.Parameters.AddWithValue("@Material", SlipNo);
+                                        cmd.Parameters.AddWithValue("@StgeLoc", item.StgeLoc + "|" + item.MoveStloc);
+                                        cmd.Parameters.AddWithValue("@MoveType", item.MoveType);
+                                        cmd.Parameters.AddWithValue("@Plant", item.Plant + "|" + item.MovePlant);
+                                        cmd.Parameters.AddWithValue("@Custid", item.Custid);
+                                        cmd.Parameters.AddWithValue("@Kanban", item.Kanban);
+                                        cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+                                        cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                                        cmd.Parameters.AddWithValue("@EMessage", "TransferStockDataToSAP_311 : " + item.Error);
+
+                                        ExecuteSqlCommand(conn, cmd);
+
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _ = new DataTable();
+                            _ = new Class.ServicePostSapGR();
+                            Class.Condb Condb = new Class.Condb();
+
+                            string dataUpdateList2 = "UPDATE " + DBconfig + ".[T_SAP_Batch_GR_TR_Log] SET EMessageErrorTR = @EMessageErrorTR  where start_Time = '" + start_Time + "'";
+                            using (SqlCommand cmd = new SqlCommand(dataUpdateList2, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@EMessageErrorTR", "Errorlocaltion :" + checkError + ", message : " + ex.Message);
+                                conn.Open();
+                                int result2 = cmd.ExecuteNonQuery();
+                                conn.Close();
+                            }
+
                         }
                     }
                 }
