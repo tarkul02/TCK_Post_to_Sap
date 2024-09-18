@@ -14,7 +14,7 @@ namespace PostSap_GR_TR.Class
     {
         string DBconfig = ConfigurationManager.AppSettings["Databaseconfig"];
         string checkError;
-        public void PostSapTRClass(string SlipNo, string DataType, string Type , string Plant, string StgeLoc, string EntryQnt , string MovePlant , string MoveStloc, string Kanban, string PostDate ,string start_Time , string Mat_Type)
+        public ZGoodsmvtCreate1Response PostSapTRClass(string SlipNo, string DataType, string Type , string Plant, string StgeLoc, string EntryQnt , string MovePlant , string MoveStloc, string Kanban, string PostDate ,string start_Time , string Mat_Type)
         {
          
             var ws_service = new Z_GOODSMVT_CREATE1_SRV();
@@ -268,7 +268,7 @@ namespace PostSap_GR_TR.Class
                 res.message = "Transfer : success ";
                 res.message2 = "\nmatdoc :" + Matdoc;
                 res.message3 = "\nError massage : \n" + Errmsg;
-                
+
             }
             catch (Exception ex)
             {
@@ -286,6 +286,8 @@ namespace PostSap_GR_TR.Class
                 }
 
             }
+
+            return ws_res;
 
         }
 
