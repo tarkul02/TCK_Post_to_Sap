@@ -251,6 +251,12 @@ namespace PostSap_GR_TR.Class
                         }
                         catch (Exception ex)
                         {
+                            // ตรวจสอบและปิดการเชื่อมต่อหากเปิดอยู่
+                            if (conn.State == ConnectionState.Open)
+                            {
+                                conn.Close();
+                            }
+
                             _ = new DataTable();
                             _ = new Class.ServicePostSapGR();
                             Class.Condb Condb = new Class.Condb();
@@ -294,6 +300,12 @@ namespace PostSap_GR_TR.Class
             }
             catch (Exception ex)
             {
+                // ตรวจสอบและปิดการเชื่อมต่อหากเปิดอยู่
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+
                 _ = new DataTable();
                 _ = new Class.ServicePostSapGR();
                 Class.Condb Condb = new Class.Condb();
