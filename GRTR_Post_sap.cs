@@ -324,6 +324,17 @@ namespace PostSap_GR_TR
                 sqlLog_TR_Error.Append("INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] " +
                     "(RefdocNo, Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, EMessage) VALUES ");
 
+                StringBuilder sql_redo = new StringBuilder();
+                sql_redo.Append("INSERT INTO " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] " +
+                    "(PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
+
+                StringBuilder sqlLog_TR_redo = new StringBuilder();
+                sqlLog_TR_redo.Append("INSERT INTO " + DBconfig + ".[T_LOG_GR_STOCK] " +
+                    "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, DocMat, EMessage) VALUES ");
+
+                StringBuilder sqlLog_TR_Error_redo = new StringBuilder();
+                sqlLog_TR_Error_redo.Append("INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] " +
+                    "(RefdocNo, Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, EMessage) VALUES ");
 
 
 
@@ -334,11 +345,8 @@ namespace PostSap_GR_TR
 
                 if (TRdata.Rows.Count > 0)
                 {
-                    //save log
                     List<SqlParameter> parameters = new List<SqlParameter>();
-                    //save log success
                     List<SqlParameter> parameters2 = new List<SqlParameter>();
-                    //save log error
                     List<SqlParameter> parameters3 = new List<SqlParameter>();
 
                     foreach (DataRow data in TRdata.Rows)
@@ -378,24 +386,6 @@ namespace PostSap_GR_TR
 
                             ws_res = sendSapTR.PostSapTRClass(Slipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
 
-                            sql.Append($"(@PlantFrom{paramIndex}, @StorageFrom{paramIndex}, @PlantTo{paramIndex}, @StorageTo{paramIndex}, @Kanban{paramIndex}, @MvmntQty{paramIndex}, @SlipNo{paramIndex}, @Mat_Type{paramIndex}, @ValidateMessage{paramIndex}, @Type{paramIndex}, @CreateDate{paramIndex}, @Datatype{paramIndex}, @SapStatus{paramIndex}, @ConfirmDate{paramIndex}),");
-
-
-
-                            // Add parameters for each row
-                            parameters.Add(new SqlParameter($"@PlantFrom{paramIndex}", Plant));
-                            parameters.Add(new SqlParameter($"@StorageFrom{paramIndex}", StgeLoc));
-                            parameters.Add(new SqlParameter($"@PlantTo{paramIndex}", MovePlant));
-                            parameters.Add(new SqlParameter($"@StorageTo{paramIndex}", MoveStloc));
-                            parameters.Add(new SqlParameter($"@Kanban{paramIndex}", Kanban));
-                            parameters.Add(new SqlParameter($"@MvmntQty{paramIndex}", EntryQnt));
-                            parameters.Add(new SqlParameter($"@SlipNo{paramIndex}", checkSlipno));
-                            parameters.Add(new SqlParameter($"@Mat_Type{paramIndex}", Mat_Type));
-                            parameters.Add(new SqlParameter($"@ValidateMessage{paramIndex}", ValidateMessage));
-                            parameters.Add(new SqlParameter($"@Type{paramIndex}", Type));
-                            parameters.Add(new SqlParameter($"@CreateDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                            parameters.Add(new SqlParameter($"@Datatype{paramIndex}", Datatype));
-
                             if (ws_res.ItDetail.Count() > 0)
                             {
 
@@ -405,31 +395,38 @@ namespace PostSap_GR_TR
                                     if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                                     {
 
-
-                                        parameters.Add(new SqlParameter($"@SapStatus{paramIndex}", "1"));
-                                        parameters.Add(new SqlParameter($"@ConfirmDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
+                                        sql.Append("('" + Plant + "' , " +
+                                                    "'" + StgeLoc + "', " +
+                                                    "'" + MovePlant + "', " +
+                                                    "'" + MoveStloc + "', " +
+                                                    "'" + Kanban + "'," +
+                                                    "'" + EntryQnt + "', " +
+                                                    "'" + checkSlipno + "', " +
+                                                    "'" + Mat_Type + "', " +
+                                                    "'" + ValidateMessage + "', " +
+                                                    "'" + Type + "', " +
+                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                                                    "'" + Datatype + "', " +
+                                                    "'1', " +
+                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
 
                                         setlog = true;
 
-                                        sqlLog_TR.Append($"(@Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, @Material{paramIndex}, " +
-                                                $"@StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, @Kanban{paramIndex}, " +
-                                                $"@StockDate{paramIndex}, @UpdDate{paramIndex}, @DocMat{paramIndex}, @EMessage{paramIndex}),");
+                                        sqlLog_TR.Append("('" + item.Batch + "' , " +
+                                                        "'" + (int)item.EntryQnt + "', " +
+                                                        "'" + item.EntryUom + "', " +
+                                                        "'" + item.FacNo + "', " +
+                                                        "'" + checkSlipno + "'," +
+                                                        "'" + item.StgeLoc + "|" + item.MoveStloc + "', " +
+                                                        "'" + item.MoveType + "', " +
+                                                        "'" + item.Plant + "|" + item.MovePlant + "', " +
+                                                        "'" + item.Custid + "', " +
+                                                        "'" + item.Kanban + "', " +
+                                                        "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                                                        "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
+                                                        "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error + "' ),");
 
-                                        // Add parameters for each row
-                                        parameters2.Add(new SqlParameter($"@Batch{paramIndex}", item.Batch));
-                                        parameters2.Add(new SqlParameter($"@EntryQnt{paramIndex}", (int)item.EntryQnt));
-                                        parameters2.Add(new SqlParameter($"@EntryUom{paramIndex}", item.EntryUom));
-                                        parameters2.Add(new SqlParameter($"@FacNo{paramIndex}", item.FacNo));
-                                        parameters2.Add(new SqlParameter($"@Material{paramIndex}", checkSlipno));
-                                        parameters2.Add(new SqlParameter($"@StgeLoc{paramIndex}", item.StgeLoc + "|" + item.MoveStloc));
-                                        parameters2.Add(new SqlParameter($"@MoveType{paramIndex}", item.MoveType));
-                                        parameters2.Add(new SqlParameter($"@Plant{paramIndex}", item.Plant + "|" + item.MovePlant));
-                                        parameters2.Add(new SqlParameter($"@Custid{paramIndex}", item.Custid));
-                                        parameters2.Add(new SqlParameter($"@Kanban{paramIndex}", item.Kanban));
-                                        parameters2.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                        parameters2.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                        parameters2.Add(new SqlParameter($"@DocMat{paramIndex}", ws_res.EMaterailDoc.MatDoc + "|" + UserID));
-                                        parameters2.Add(new SqlParameter($"@EMessage{paramIndex}", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error));
                                         setsuccesslog = true;
 
                                     }
@@ -438,30 +435,36 @@ namespace PostSap_GR_TR
 
                                         if (item.Error != "")
                                         {
-                                            parameters.Add(new SqlParameter($"@SapStatus{paramIndex}", "0"));
-                                            parameters.Add(new SqlParameter($"@ConfirmDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
+                                            
+                                            sql.Append("('" + Plant + "' , " +
+                                                        "'" + StgeLoc + "', " +
+                                                        "'" + MovePlant + "', " +
+                                                        "'" + MoveStloc + "', " +
+                                                        "'" + Kanban + "'," +
+                                                        "'" + EntryQnt + "', " +
+                                                        "'" + checkSlipno + "', " +
+                                                        "'" + Mat_Type + "', " +
+                                                        "'" + ValidateMessage + "', " +
+                                                        "'" + Type + "', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
+                                                        "'" + Datatype + "', " +
+                                                        "'1', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
 
                                             setlog = true;
 
-                                            sqlLog_TR_Error.Append($"(@RefdocNo{paramIndex}, @Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, " +
-                                              $"@Material{paramIndex}, @StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, " +
-                                              $"@Kanban{paramIndex}, @StockDate{paramIndex}, @UpdDate{paramIndex}, @EMessage{paramIndex}),");
-
-                                            // เพิ่ม parameters สำหรับแต่ละแถว
-                                            parameters3.Add(new SqlParameter($"@RefdocNo{paramIndex}", RefdocNo + "|" + UserID));
-                                            parameters3.Add(new SqlParameter($"@Batch{paramIndex}", item.Batch));
-                                            parameters3.Add(new SqlParameter($"@EntryQnt{paramIndex}", (int)item.EntryQnt));
-                                            parameters3.Add(new SqlParameter($"@EntryUom{paramIndex}", item.EntryUom));
-                                            parameters3.Add(new SqlParameter($"@FacNo{paramIndex}", item.FacNo));
-                                            parameters3.Add(new SqlParameter($"@Material{paramIndex}", Slipno));
-                                            parameters3.Add(new SqlParameter($"@StgeLoc{paramIndex}", item.StgeLoc + "|" + item.MoveStloc));
-                                            parameters3.Add(new SqlParameter($"@MoveType{paramIndex}", item.MoveType));
-                                            parameters3.Add(new SqlParameter($"@Plant{paramIndex}", item.Plant + "|" + item.MovePlant));
-                                            parameters3.Add(new SqlParameter($"@Custid{paramIndex}", item.Custid));
-                                            parameters3.Add(new SqlParameter($"@Kanban{paramIndex}", item.Kanban));
-                                            parameters3.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                            parameters3.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                            parameters3.Add(new SqlParameter($"@EMessage{paramIndex}", "TransferStockDataToSAP_311 : " + item.Error));
+                                            sqlLog_TR_Error.Append("('" + RefdocNo + "|" + UserID + "' , " +
+                                                                    "'" + item.Batch + "', " +
+                                                                    "'" + (int)item.EntryQnt + "', " +
+                                                                    "'" + item.EntryUom + "', " +
+                                                                    "'" + item.FacNo + "'," +
+                                                                    "'" + Slipno + "|" + item.StgeLoc + "|" + item.MoveStloc + "', " +
+                                                                    "'" + item.MoveType +  "', " +
+                                                                    "'" + item.Plant + "|" + item.MovePlant + "', " +
+                                                                    "'" + item.Custid + "|" + item.Kanban + "', " +
+                                                                    "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                                                                    "'" + "TransferStockDataToSAP_311 : " + item.Error + "' ),");
 
                                             seterrorlog = true;
                                         }
@@ -476,135 +479,72 @@ namespace PostSap_GR_TR
                             string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
                             if (setlog == false)
                             {
-                                sql.Append($"(@PlantFrom{paramIndex}, @StorageFrom{paramIndex}, @PlantTo{paramIndex}, @StorageTo{paramIndex}, @Kanban{paramIndex}, @MvmntQty{paramIndex}, @SlipNo{paramIndex}, @Mat_Type{paramIndex}, @ValidateMessage{paramIndex}, @Type{paramIndex}, @CreateDate{paramIndex}, @Datatype{paramIndex}, @SapStatus{paramIndex}, @ConfirmDate{paramIndex}),");
-
-
-                                // Add parameters for each row
-                                parameters.Add(new SqlParameter($"@PlantFrom{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@StorageFrom{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@PlantTo{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@StorageTo{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@Kanban{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@MvmntQty{paramIndex}", 0));
-                                parameters.Add(new SqlParameter($"@SlipNo{paramIndex}", checkSlipNo));
-                                parameters.Add(new SqlParameter($"@Mat_Type{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@ValidateMessage{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@Type{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@CreateDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                parameters.Add(new SqlParameter($"@Datatype{paramIndex}", ""));
-                                parameters.Add(new SqlParameter($"@SapStatus{paramIndex}", "3"));
-                                parameters.Add(new SqlParameter($"@ConfirmDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
+                                sql.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
                             }
 
                             if (setsuccesslog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append($"(@RefdocNo{paramIndex}, @Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, " +
-                                               $"@Material{paramIndex}, @StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, " +
-                                               $"@Kanban{paramIndex}, @StockDate{paramIndex}, @UpdDate{paramIndex}, @EMessage{paramIndex}),");
-
-                                // เพิ่ม parameters สำหรับแต่ละแถว
-                                parameters3.Add(new SqlParameter($"@RefdocNo{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Batch{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@EntryQnt{paramIndex}", 0));
-                                parameters3.Add(new SqlParameter($"@EntryUom{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@FacNo{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Material{paramIndex}", checkSlipNo));
-                                parameters3.Add(new SqlParameter($"@StgeLoc{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@MoveType{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Plant{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Custid{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Kanban{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                parameters3.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                parameters3.Add(new SqlParameter($"@EMessage{paramIndex}", ""));
-
+                                sqlLog_TR.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
                             }
 
                             if (seterrorlog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append($"(@RefdocNo{paramIndex}, @Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, " +
-                                              $"@Material{paramIndex}, @StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, " +
-                                              $"@Kanban{paramIndex}, @StockDate{paramIndex}, @UpdDate{paramIndex}, @EMessage{paramIndex}),");
-
-                                // เพิ่ม parameters สำหรับแต่ละแถว
-                                parameters3.Add(new SqlParameter($"@RefdocNo{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Batch{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@EntryQnt{paramIndex}", 0));
-                                parameters3.Add(new SqlParameter($"@EntryUom{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@FacNo{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Material{paramIndex}", checkSlipNo));
-                                parameters3.Add(new SqlParameter($"@StgeLoc{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@MoveType{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Plant{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Custid{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@Kanban{paramIndex}", ""));
-                                parameters3.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                parameters3.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                parameters3.Add(new SqlParameter($"@EMessage{paramIndex}", ""));
+                                sqlLog_TR_Error.Append("('' , '', '', '', '','" + checkSlipNo + "', '','', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
 
                             }
 
                         }
                     }
 
-                    // Remove the last comma
+                  
                     sql.Length -= 1;
-
                     sql.Append(";");
 
-                    // ลบ comma ที่อยู่ท้ายสุดออก
                     sqlLog_TR.Length -= 1;
-
                     sqlLog_TR.Append(";");
 
-                    // ลบ comma ที่อยู่ท้ายสุดออก
                     sqlLog_TR_Error.Length -= 1;
-
                     sqlLog_TR_Error.Append(";");
 
+                    Console.WriteLine("loop dobe :" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                     using (SqlConnection conn = new SqlConnection(connString))
                     {
-                        conn.Open();  // เปิดการเชื่อมต่อเพียงครั้งเดียว
+                        conn.Open();  
 
-                        // คำสั่งแรก
                         using (SqlCommand cmd = new SqlCommand(sql.ToString(), conn))
                         {
-                            cmd.Parameters.AddRange(parameters.ToArray());
-                            cmd.ExecuteNonQuery();  // รันคำสั่งแรก
+                            cmd.ExecuteNonQuery();  
                         }
 
+                        Console.WriteLine("t1" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                         if (parameters2.ToArray().Length > 0)
                         {
-                            // คำสั่งที่สอง
                             using (SqlCommand cmd = new SqlCommand(sqlLog_TR.ToString(), conn))
                             {
-                                cmd.Parameters.AddRange(parameters2.ToArray());
-                                cmd.ExecuteNonQuery();  // รันคำสั่งที่สอง
+                                cmd.ExecuteNonQuery(); 
                             }
                         }
 
+                        Console.WriteLine("t2" +DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                         if (parameters3.ToArray().Length > 0)
                         {
-                            // คำสั่งที่สาม
                             using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error.ToString(), conn))
                             {
-                                cmd.Parameters.AddRange(parameters3.ToArray());
-                                cmd.ExecuteNonQuery();  // รันคำสั่งที่สาม
+                                cmd.ExecuteNonQuery(); 
                             }
                         }
+                        Console.WriteLine("t3" +DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
 
-
-                        conn.Close();  // ปิดการเชื่อมต่อหลังจากรันคำสั่งทั้งหมด
+                        conn.Close(); 
                     }
                 }
                 if (TRErrdata.Rows.Count > 0)
                 {
-                    //save log
+                   
                     List<SqlParameter> parametersError = new List<SqlParameter>();
-                    //save log success
                     List<SqlParameter> parameters2Error = new List<SqlParameter>();
-                    //save log error
                     List<SqlParameter> parameters3Error = new List<SqlParameter>();
+
                     paramIndex = 0;
                     checkSlipNo = "";
                     foreach (DataRow item in TRErrdata.Rows)
@@ -645,24 +585,6 @@ namespace PostSap_GR_TR
 
                             ws_res = sendSapTR.PostSapTRClass(Slipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
 
-                            sql.Append($"(@PlantFrom{paramIndex}, @StorageFrom{paramIndex}, @PlantTo{paramIndex}, @StorageTo{paramIndex}, @Kanban{paramIndex}, @MvmntQty{paramIndex}, @SlipNo{paramIndex}, @Mat_Type{paramIndex}, @ValidateMessage{paramIndex}, @Type{paramIndex}, @CreateDate{paramIndex}, @Datatype{paramIndex}, @SapStatus{paramIndex}, @ConfirmDate{paramIndex}),");
-
-
-
-                            // Add parameters for each row
-                            parametersError.Add(new SqlParameter($"@PlantFrom{paramIndex}", Plant));
-                            parametersError.Add(new SqlParameter($"@StorageFrom{paramIndex}", StgeLoc));
-                            parametersError.Add(new SqlParameter($"@PlantTo{paramIndex}", MovePlant));
-                            parametersError.Add(new SqlParameter($"@StorageTo{paramIndex}", MoveStloc));
-                            parametersError.Add(new SqlParameter($"@Kanban{paramIndex}", Kanban));
-                            parametersError.Add(new SqlParameter($"@MvmntQty{paramIndex}", EntryQnt));
-                            parametersError.Add(new SqlParameter($"@SlipNo{paramIndex}", checkSlipno));
-                            parametersError.Add(new SqlParameter($"@Mat_Type{paramIndex}", Mat_Type));
-                            parametersError.Add(new SqlParameter($"@ValidateMessage{paramIndex}", ValidateMessage));
-                            parametersError.Add(new SqlParameter($"@Type{paramIndex}", Type));
-                            parametersError.Add(new SqlParameter($"@CreateDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                            parametersError.Add(new SqlParameter($"@Datatype{paramIndex}", Datatype));
-
 
                             if (ws_res.ItDetail.Count() > 0)
                             {
@@ -670,65 +592,78 @@ namespace PostSap_GR_TR
                                 foreach (var item2 in ws_res.ItDetail)
                                 {
 
-                                    if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                                     if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                                     {
 
-
-                                        parametersError.Add(new SqlParameter($"@SapStatus{paramIndex}", "1"));
-                                        parametersError.Add(new SqlParameter($"@ConfirmDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
+                                        sql.Append("('" + Plant + "' , " +
+                                                    "'" + StgeLoc + "', " +
+                                                    "'" + MovePlant + "', " +
+                                                    "'" + MoveStloc + "', " +
+                                                    "'" + Kanban + "'," +
+                                                    "'" + EntryQnt + "', " +
+                                                    "'" + checkSlipno + "', " +
+                                                    "'" + Mat_Type + "', " +
+                                                    "'" + ValidateMessage + "', " +
+                                                    "'" + Type + "', " +
+                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
+                                                    "'" + Datatype + "', " +
+                                                    "'1', " +
+                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
 
                                         setlog = true;
 
-                                        sqlLog_TR.Append($"(@Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, @Material{paramIndex}, " +
-                                                $"@StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, @Kanban{paramIndex}, " +
-                                                $"@StockDate{paramIndex}, @UpdDate{paramIndex}, @DocMat{paramIndex}, @EMessage{paramIndex}),");
-
-                                        // Add parameters for each row
-                                        parameters2Error.Add(new SqlParameter($"@Batch{paramIndex}", item2.Batch));
-                                        parameters2Error.Add(new SqlParameter($"@EntryQnt{paramIndex}", (int)item2.EntryQnt));
-                                        parameters2Error.Add(new SqlParameter($"@EntryUom{paramIndex}", item2.EntryUom));
-                                        parameters2Error.Add(new SqlParameter($"@FacNo{paramIndex}", item2.FacNo));
-                                        parameters2Error.Add(new SqlParameter($"@Material{paramIndex}", checkSlipno));
-                                        parameters2Error.Add(new SqlParameter($"@StgeLoc{paramIndex}", item2.StgeLoc + "|" + item2.MoveStloc));
-                                        parameters2Error.Add(new SqlParameter($"@MoveType{paramIndex}", item2.MoveType));
-                                        parameters2Error.Add(new SqlParameter($"@Plant{paramIndex}", item2.Plant + "|" + item2.MovePlant));
-                                        parameters2Error.Add(new SqlParameter($"@Custid{paramIndex}", item2.Custid));
-                                        parameters2Error.Add(new SqlParameter($"@Kanban{paramIndex}", item2.Kanban));
-                                        parameters2Error.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                        parameters2Error.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                        parameters2Error.Add(new SqlParameter($"@DocMat{paramIndex}", ws_res.EMaterailDoc.MatDoc + "|" + UserID));
-                                        parameters2Error.Add(new SqlParameter($"@EMessage{paramIndex}", "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error));
+                                        sqlLog_TR.Append("('" + item2.Batch + "' , " +
+                                                        "'" + (int)item2.EntryQnt + "', " +
+                                                        "'" + item2.EntryUom + "', " +
+                                                        "'" + item2.FacNo + "', " +
+                                                        "'" + checkSlipno + "'," +
+                                                        "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                                                        "'" + item2.MoveType + "', " +
+                                                        "'" + item2.Plant + "|" + item2.MovePlant + "', " +
+                                                        "'" + item2.Custid + "', '" + item2.Kanban + "', " +
+                                                        "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                                                        "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
+                                                        "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error + "' ),");
 
                                         setsuccesslog = true;
+
                                     }
                                     else
                                     {
 
                                         if (item2.Error != "")
                                         {
-                                            parametersError.Add(new SqlParameter($"@SapStatus{paramIndex}", "0"));
-                                            parametersError.Add(new SqlParameter($"@ConfirmDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
+                                            
+                                            sql.Append("('" + Plant + "' , " +
+                                                        "'" + StgeLoc + "', " +
+                                                        "'" + MovePlant + "', " +
+                                                        "'" + MoveStloc + "', " +
+                                                        "'" + Kanban + "'," +
+                                                        "'" + EntryQnt + "', " +
+                                                        "'" + checkSlipno + "', " +
+                                                        "'" + Mat_Type + "', " +
+                                                        "'" + ValidateMessage + "', " +
+                                                        "'" + Type + "', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
+                                                        "'" + Datatype + "', " +
+                                                        "'1', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
 
-                                            sqlLog_TR_Error.Append($"(@RefdocNo{paramIndex}, @Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, " +
-                                              $"@Material{paramIndex}, @StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, " +
-                                              $"@Kanban{paramIndex}, @StockDate{paramIndex}, @UpdDate{paramIndex}, @DocMat{paramIndex}, @EMessage{paramIndex}),");
+                                            setlog = true;
 
-                                            // เพิ่ม parameters สำหรับแต่ละแถว
-                                            parameters3Error.Add(new SqlParameter($"@RefdocNo{paramIndex}", RefdocNo + "|" + UserID));
-                                            parameters3Error.Add(new SqlParameter($"@Batch{paramIndex}", item2.Batch));
-                                            parameters3Error.Add(new SqlParameter($"@EntryQnt{paramIndex}", (int)item2.EntryQnt));
-                                            parameters3Error.Add(new SqlParameter($"@EntryUom{paramIndex}", item2.EntryUom));
-                                            parameters3Error.Add(new SqlParameter($"@FacNo{paramIndex}", item2.FacNo));
-                                            parameters3Error.Add(new SqlParameter($"@Material{paramIndex}", Slipno));
-                                            parameters3Error.Add(new SqlParameter($"@StgeLoc{paramIndex}", item2.StgeLoc + "|" + item2.MoveStloc));
-                                            parameters3Error.Add(new SqlParameter($"@MoveType{paramIndex}", item2.MoveType));
-                                            parameters3Error.Add(new SqlParameter($"@Plant{paramIndex}", item2.Plant + "|" + item2.MovePlant));
-                                            parameters3Error.Add(new SqlParameter($"@Custid{paramIndex}", item2.Custid));
-                                            parameters3Error.Add(new SqlParameter($"@Kanban{paramIndex}", item2.Kanban));
-                                            parameters3Error.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                            parameters3Error.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                            parameters3Error.Add(new SqlParameter($"@DocMat{paramIndex}", ws_res.EMaterailDoc.MatDoc + "|" + UserID));
-                                            parameters3Error.Add(new SqlParameter($"@EMessage{paramIndex}", "TransferStockDataToSAP_311 : " + item2.Error));
+                                            sqlLog_TR_Error.Append("('" + RefdocNo + "|" + UserID + "' ," +
+                                                                    "'" + item2.Batch + "', " +
+                                                                    "'" + (int)item2.EntryQnt + "', " +
+                                                                    "'" + item2.EntryUom + "', " +
+                                                                    "'" + item2.FacNo + "'," +
+                                                                    "'" + Slipno + "|" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                                                                    "'" + item2.MoveType +  "', " +
+                                                                    "'" + item2.Plant + "|" + item2.MovePlant + "', " +
+                                                                    "'" + item2.Custid + "|" + item2.Kanban + "', " +
+                                                                    "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                                                                    "'" + "TransferStockDataToSAP_311 : " + item2.Error + "' ),");
 
                                             seterrorlog = true;
                                         }
@@ -744,130 +679,57 @@ namespace PostSap_GR_TR
                             string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
                             if (setlog == false)
                             {
-                                sql.Append($"(@PlantFrom{paramIndex}, @StorageFrom{paramIndex}, @PlantTo{paramIndex}, @StorageTo{paramIndex}, @Kanban{paramIndex}, @MvmntQty{paramIndex}, @SlipNo{paramIndex}, @Mat_Type{paramIndex}, @ValidateMessage{paramIndex}, @Type{paramIndex}, @CreateDate{paramIndex}, @Datatype{paramIndex}, @SapStatus{paramIndex}, @ConfirmDate{paramIndex}),");
-
-
-                                // Add parameters for each row
-                                parametersError.Add(new SqlParameter($"@PlantFrom{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@StorageFrom{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@PlantTo{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@StorageTo{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@Kanban{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@MvmntQty{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@SlipNo{paramIndex}", checkSlipNo));
-                                parametersError.Add(new SqlParameter($"@Mat_Type{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@ValidateMessage{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@Type{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@CreateDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                parametersError.Add(new SqlParameter($"@Datatype{paramIndex}", ""));
-                                parametersError.Add(new SqlParameter($"@SapStatus{paramIndex}", "3"));
-                                parametersError.Add(new SqlParameter($"@ConfirmDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-
+                                sql.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
                             }
 
                             if (setsuccesslog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append($"(@RefdocNo{paramIndex}, @Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, " +
-                                               $"@Material{paramIndex}, @StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, " +
-                                               $"@Kanban{paramIndex}, @StockDate{paramIndex}, @UpdDate{paramIndex}, @EMessage{paramIndex}),");
-
-                                // เพิ่ม parameters สำหรับแต่ละแถว
-                                parameters2Error.Add(new SqlParameter($"@RefdocNo{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@Batch{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@EntryQnt{paramIndex}", 0));
-                                parameters2Error.Add(new SqlParameter($"@EntryUom{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@FacNo{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@Material{paramIndex}", checkSlipNo));
-                                parameters2Error.Add(new SqlParameter($"@StgeLoc{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@MoveType{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@Plant{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@Custid{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@Kanban{paramIndex}", ""));
-                                parameters2Error.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                parameters2Error.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                parameters2Error.Add(new SqlParameter($"@EMessage{paramIndex}", ""));
-
+                                sqlLog_TR.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
                             }
 
-                            if (setlog == false && seterrorlog == false)
+                            if (seterrorlog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append($"(@RefdocNo{paramIndex}, @Batch{paramIndex}, @EntryQnt{paramIndex}, @EntryUom{paramIndex}, @FacNo{paramIndex}, " +
-                                              $"@Material{paramIndex}, @StgeLoc{paramIndex}, @MoveType{paramIndex}, @Plant{paramIndex}, @Custid{paramIndex}, " +
-                                              $"@Kanban{paramIndex}, @StockDate{paramIndex}, @UpdDate{paramIndex}, @EMessage{paramIndex}),");
-
-                                // เพิ่ม parameters สำหรับแต่ละแถว
-                                parameters3Error.Add(new SqlParameter($"@RefdocNo{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@Batch{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@EntryQnt{paramIndex}", 0));
-                                parameters3Error.Add(new SqlParameter($"@EntryUom{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@FacNo{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@Material{paramIndex}", checkSlipNo));
-                                parameters3Error.Add(new SqlParameter($"@StgeLoc{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@MoveType{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@Plant{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@Custid{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@Kanban{paramIndex}", ""));
-                                parameters3Error.Add(new SqlParameter($"@StockDate{paramIndex}", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"))));
-                                parameters3Error.Add(new SqlParameter($"@UpdDate{paramIndex}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")));
-                                parameters3Error.Add(new SqlParameter($"@EMessage{paramIndex}", ""));
-
+                                sqlLog_TR_Error.Append("('' , '', '', '', '','" + checkSlipNo + "', '','', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
                             }
-
                         }
                     }
 
-                    // Remove the last comma
-                    sql.Length -= 1;
+                    sql_redo.Length -= 1;
+                    sql_redo.Append(";");
 
-                    sql.Append(";");
+                    sqlLog_TR_redo.Length -= 1;
+                    sqlLog_TR_redo.Append(";");
 
-                    // ลบ comma ที่อยู่ท้ายสุดออก
-                    sqlLog_TR.Length -= 1;
-
-                    sqlLog_TR.Append(";");
-
-                    // ลบ comma ที่อยู่ท้ายสุดออก
-                    sqlLog_TR_Error.Length -= 1;
-
-                    sqlLog_TR_Error.Append(";");
-
-                    Console.WriteLine(sql.ToString());
-                    Console.WriteLine("#################");
-                    Console.WriteLine(sqlLog_TR.ToString());
+                    sqlLog_TR_Error_redo.Length -= 1;
+                    sqlLog_TR_Error_redo.Append(";");
 
                     using (SqlConnection conn = new SqlConnection(connString))
                     {
-                        conn.Open();  // เปิดการเชื่อมต่อเพียงครั้งเดียว
+                        conn.Open(); 
 
-                        // คำสั่งแรก
-                        using (SqlCommand cmd = new SqlCommand(sql.ToString(), conn))
+                        using (SqlCommand cmd = new SqlCommand(sql_redo.ToString(), conn))
                         {
-                            cmd.Parameters.AddRange(parametersError.ToArray());
-                            cmd.ExecuteNonQuery();  // รันคำสั่งแรก
+                            cmd.ExecuteNonQuery();  
                         }
 
                         if (parameters2Error.ToArray().Length > 0)
                         {
-                            // คำสั่งที่สอง
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR.ToString(), conn))
+                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_redo.ToString(), conn))
                             {
-                                cmd.Parameters.AddRange(parameters2Error.ToArray());
-                                cmd.ExecuteNonQuery();  // รันคำสั่งที่สอง
+                                cmd.ExecuteNonQuery();  
                             }
                         }
 
                         if (parameters3Error.ToArray().Length > 0)
                         {
 
-                            // คำสั่งที่สาม
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error.ToString(), conn))
+                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error_redo.ToString(), conn))
                             {
-                                cmd.Parameters.AddRange(parameters3Error.ToArray());
-                                cmd.ExecuteNonQuery();  // รันคำสั่งที่สาม
+                                cmd.ExecuteNonQuery();  
                             }
                         }
 
-                        conn.Close();  // ปิดการเชื่อมต่อหลังจากรันคำสั่งทั้งหมด
+                        conn.Close();  
                     }
                 }
                 Console.WriteLine("      End Process TR \n");
