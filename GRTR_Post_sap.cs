@@ -422,7 +422,7 @@ namespace PostSap_GR_TR
                                                         "'" + item.Plant + "|" + item.MovePlant + "', " +
                                                         "'" + item.Custid + "', " +
                                                         "'" + item.Kanban + "', " +
-                                                        "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
                                                         "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
                                                         "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
                                                         "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error + "' ),");
@@ -458,11 +458,13 @@ namespace PostSap_GR_TR
                                                                     "'" + (int)item.EntryQnt + "', " +
                                                                     "'" + item.EntryUom + "', " +
                                                                     "'" + item.FacNo + "'," +
-                                                                    "'" + Slipno + "|" + item.StgeLoc + "|" + item.MoveStloc + "', " +
+                                                                    "'" + Slipno + "', " +
+                                                                    "'" + item.StgeLoc + "|" + item.MoveStloc + "', " +
                                                                     "'" + item.MoveType +  "', " +
                                                                     "'" + item.Plant + "|" + item.MovePlant + "', " +
-                                                                    "'" + item.Custid + "|" + item.Kanban + "', " +
-                                                                    "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                                    "'" + item.Custid + "', " +
+                                                                    "'" + item.Kanban + "', " +
+                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
                                                                     "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
                                                                     "'" + "TransferStockDataToSAP_311 : " + item.Error + "' ),");
 
@@ -484,13 +486,12 @@ namespace PostSap_GR_TR
 
                             if (setsuccesslog == false && setlog == true)
                             {
-                                sqlLog_TR.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
+                                sqlLog_TR.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
                             }
 
                             if (seterrorlog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append("('' , '', '', '', '','" + checkSlipNo + "', '','', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
-
+                                sqlLog_TR_Error.Append("('', '', '', '', '','" + checkSlipNo + "', '','', '','', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
                             }
 
                         }
@@ -595,7 +596,7 @@ namespace PostSap_GR_TR
                                      if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                                     {
 
-                                        sql.Append("('" + Plant + "' , " +
+                                        sql_redo.Append("('" + Plant + "' , " +
                                                     "'" + StgeLoc + "', " +
                                                     "'" + MovePlant + "', " +
                                                     "'" + MoveStloc + "', " +
@@ -612,7 +613,7 @@ namespace PostSap_GR_TR
 
                                         setlog = true;
 
-                                        sqlLog_TR.Append("('" + item2.Batch + "' , " +
+                                        sqlLog_TR_redo.Append("('" + item2.Batch + "' , " +
                                                         "'" + (int)item2.EntryQnt + "', " +
                                                         "'" + item2.EntryUom + "', " +
                                                         "'" + item2.FacNo + "', " +
@@ -620,8 +621,9 @@ namespace PostSap_GR_TR
                                                         "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
                                                         "'" + item2.MoveType + "', " +
                                                         "'" + item2.Plant + "|" + item2.MovePlant + "', " +
-                                                        "'" + item2.Custid + "', '" + item2.Kanban + "', " +
-                                                        "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                        "'" + item2.Custid + "', " +
+                                                        "'" + item2.Kanban + "', " +
+                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
                                                         "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
                                                         "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
                                                         "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error + "' ),");
@@ -634,8 +636,8 @@ namespace PostSap_GR_TR
 
                                         if (item2.Error != "")
                                         {
-                                            
-                                            sql.Append("('" + Plant + "' , " +
+
+                                            sql_redo.Append("('" + Plant + "' , " +
                                                         "'" + StgeLoc + "', " +
                                                         "'" + MovePlant + "', " +
                                                         "'" + MoveStloc + "', " +
@@ -652,16 +654,18 @@ namespace PostSap_GR_TR
 
                                             setlog = true;
 
-                                            sqlLog_TR_Error.Append("('" + RefdocNo + "|" + UserID + "' ," +
+                                            sqlLog_TR_Error_redo.Append("('" + RefdocNo + "|" + UserID + "' , " +
                                                                     "'" + item2.Batch + "', " +
                                                                     "'" + (int)item2.EntryQnt + "', " +
                                                                     "'" + item2.EntryUom + "', " +
                                                                     "'" + item2.FacNo + "'," +
-                                                                    "'" + Slipno + "|" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                                                                    "'" + Slipno + "', " +
+                                                                    "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
                                                                     "'" + item2.MoveType +  "', " +
                                                                     "'" + item2.Plant + "|" + item2.MovePlant + "', " +
-                                                                    "'" + item2.Custid + "|" + item2.Kanban + "', " +
-                                                                    "'" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', " +
+                                                                    "'" + item2.Custid + "', " +
+                                                                    "'" + item2.Kanban + "', " +
+                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
                                                                     "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
                                                                     "'" + "TransferStockDataToSAP_311 : " + item2.Error + "' ),");
 
@@ -679,17 +683,17 @@ namespace PostSap_GR_TR
                             string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
                             if (setlog == false)
                             {
-                                sql.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                                sql_redo.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
                             }
 
                             if (setsuccesslog == false && setlog == true)
                             {
-                                sqlLog_TR.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
+                                sqlLog_TR_redo.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
                             }
 
                             if (seterrorlog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append("('' , '', '', '', '','" + checkSlipNo + "', '','', '','" + Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")) + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
+                                sqlLog_TR_Error_redo.Append("('', '', '', '', '','" + checkSlipNo + "', '','', '','', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
                             }
                         }
                     }
