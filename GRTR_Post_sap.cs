@@ -417,9 +417,9 @@ namespace PostSap_GR_TR
                                                         "'" + item.EntryUom + "', " +
                                                         "'" + item.FacNo + "', " +
                                                         "'" + checkSlipno + "'," +
-                                                        "'" + item.StgeLoc + "|" + item.MoveStloc + "', " +
+                                                        "'" + item.StgeLoc + "', " +
                                                         "'" + item.MoveType + "', " +
-                                                        "'" + item.Plant + "|" + item.MovePlant + "', " +
+                                                        "'" + item.Plant + "', " +
                                                         "'" + item.Custid + "', " +
                                                         "'" + item.Kanban + "', " +
                                                         "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
@@ -459,9 +459,9 @@ namespace PostSap_GR_TR
                                                                     "'" + item.EntryUom + "', " +
                                                                     "'" + item.FacNo + "'," +
                                                                     "'" + Slipno + "', " +
-                                                                    "'" + item.StgeLoc + "|" + item.MoveStloc + "', " +
-                                                                    "'" + item.MoveType +  "', " +
-                                                                    "'" + item.Plant + "|" + item.MovePlant + "', " +
+                                                                    "'" + item.StgeLoc + "', " +
+                                                                    "'" + item.MoveType + "', " +
+                                                                    "'" + item.Plant + "', " +
                                                                     "'" + item.Custid + "', " +
                                                                     "'" + item.Kanban + "', " +
                                                                     "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
@@ -618,9 +618,9 @@ namespace PostSap_GR_TR
                                                         "'" + item2.EntryUom + "', " +
                                                         "'" + item2.FacNo + "', " +
                                                         "'" + checkSlipno + "'," +
-                                                        "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                                                        "'" + item2.StgeLoc + "', " +
                                                         "'" + item2.MoveType + "', " +
-                                                        "'" + item2.Plant + "|" + item2.MovePlant + "', " +
+                                                        "'" + item2.Plant + "', " +
                                                         "'" + item2.Custid + "', " +
                                                         "'" + item2.Kanban + "', " +
                                                         "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
@@ -660,7 +660,7 @@ namespace PostSap_GR_TR
                                                                     "'" + item2.EntryUom + "', " +
                                                                     "'" + item2.FacNo + "'," +
                                                                     "'" + Slipno + "', " +
-                                                                    "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                                                                    "'" + item2.StgeLoc + "', " +
                                                                     "'" + item2.MoveType +  "', " +
                                                                     "'" + item2.Plant + "|" + item2.MovePlant + "', " +
                                                                     "'" + item2.Custid + "', " +
