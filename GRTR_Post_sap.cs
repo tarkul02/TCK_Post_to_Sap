@@ -39,8 +39,8 @@ namespace PostSap_GR_TR
             Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             GetAndUpdate_Batch_GR_TR_Log();
             Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-            Post_GR_to_Sap();
-            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+            //Post_GR_to_Sap();
+            //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             Post_TR_to_Sap();
             Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             Post_GI_Sap();
@@ -312,29 +312,69 @@ namespace PostSap_GR_TR
                     connString = setting.ConnectionString;
                 }
 
-                StringBuilder sql = new StringBuilder();
-                sql.Append("INSERT INTO " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] " +
-                    "(PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
 
-                StringBuilder sqlLog_TR = new StringBuilder();
-                sqlLog_TR.Append("INSERT INTO " + DBconfig + ".[T_LOG_GR_STOCK] " +
-                    "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, DocMat, EMessage) VALUES ");
+                // Create a DataTable
+                DataTable dataTable = new DataTable();
 
-                StringBuilder sqlLog_TR_Error = new StringBuilder();
-                sqlLog_TR_Error.Append("INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] " +
-                    "(RefdocNo, Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, EMessage) VALUES ");
+                // Add columns to the DataTable without specifying types
+                dataTable.Columns.Add("ID");
+                dataTable.Columns.Add("SlipNo");
+                dataTable.Columns.Add("Type");
+                dataTable.Columns.Add("CreateDate");
+                dataTable.Columns.Add("Datatype");
+                dataTable.Columns.Add("ValidateMessage");
+                dataTable.Columns.Add("PlantFrom");
+                dataTable.Columns.Add("StorageFrom");
+                dataTable.Columns.Add("PlantTo");
+                dataTable.Columns.Add("StorageTo");
+                dataTable.Columns.Add("PostDate");
+                dataTable.Columns.Add("POSTTIME");
+                dataTable.Columns.Add("Kanban");
+                dataTable.Columns.Add("MvmntQty");
+                dataTable.Columns.Add("Mat_Type");
+                dataTable.Columns.Add("SapStatus");
+                dataTable.Columns.Add("ConfirmDate");
 
-                StringBuilder sql_redo = new StringBuilder();
-                sql_redo.Append("INSERT INTO " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] " +
-                    "(PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
 
-                StringBuilder sqlLog_TR_redo = new StringBuilder();
-                sqlLog_TR_redo.Append("INSERT INTO " + DBconfig + ".[T_LOG_GR_STOCK] " +
-                    "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, DocMat, EMessage) VALUES ");
+                // Create a DataTable with the new name
+                DataTable dataTable2 = new DataTable();
 
-                StringBuilder sqlLog_TR_Error_redo = new StringBuilder();
-                sqlLog_TR_Error_redo.Append("INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] " +
-                    "(RefdocNo, Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, EMessage) VALUES ");
+                // Add columns to the DataTable without specifying types
+                dataTable2.Columns.Add("Id");
+                dataTable2.Columns.Add("DocMat");
+                dataTable2.Columns.Add("Batch");
+                dataTable2.Columns.Add("EntryQnt");
+                dataTable2.Columns.Add("EntryUom");
+                dataTable2.Columns.Add("FacNo");
+                dataTable2.Columns.Add("Material");
+                dataTable2.Columns.Add("StgeLoc");
+                dataTable2.Columns.Add("MoveType");
+                dataTable2.Columns.Add("Plant");
+                dataTable2.Columns.Add("Custid");
+                dataTable2.Columns.Add("Kanban");
+                dataTable2.Columns.Add("EMessage");
+                dataTable2.Columns.Add("StockDate");
+                dataTable2.Columns.Add("UpdDate");
+
+                // Create a DataTable with the new name
+                DataTable dataTable3 = new DataTable();
+
+                // Add columns to the DataTable without specifying types
+                dataTable3.Columns.Add("Id");
+                dataTable3.Columns.Add("RefDocNo");
+                dataTable3.Columns.Add("Batch");
+                dataTable3.Columns.Add("EntryQnt");
+                dataTable3.Columns.Add("EntryUom");
+                dataTable3.Columns.Add("FacNo");
+                dataTable3.Columns.Add("Material");
+                dataTable3.Columns.Add("StgeLoc");
+                dataTable3.Columns.Add("MoveType");
+                dataTable3.Columns.Add("Plant");
+                dataTable3.Columns.Add("Custid");
+                dataTable3.Columns.Add("Kanban");
+                dataTable3.Columns.Add("EMessage");
+                dataTable3.Columns.Add("StockDate");
+                dataTable3.Columns.Add("UpdDate");
 
 
 
@@ -384,95 +424,126 @@ namespace PostSap_GR_TR
                             Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
                             string ValidateMessage = Message != "" ? "Error : ( " + Message + ")" : "";
 
-                            ws_res = sendSapTR.PostSapTRClass(Slipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
+                            //ws_res = sendSapTR.PostSapTRClass(Slipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
+                            
+                            dataTable.Rows.Add(
+                                                checkSlipno,
+                                                Type,
+                                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"),
+                                                Datatype,
+                                                ValidateMessage,
+                                                Plant,
+                                                StgeLoc,
+                                                MovePlant,
+                                                MoveStloc,
+                                                "",
+                                                "",
+                                                Kanban,
+                                                EntryQnt,
+                                                Mat_Type,
+                                                "1",
+                                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")
+                                            );
 
-                            if (ws_res.ItDetail.Count() > 0)
-                            {
 
-                                foreach (var item in ws_res.ItDetail)
-                                {
+                            //if (ws_res.ItDetail.Count() > 0)
+                            //{
 
-                                    if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
-                                    {
+                            //    foreach (var item in ws_res.ItDetail)
+                            //    {
 
-                                        sql.Append("('" + Plant + "' , " +
-                                                    "'" + StgeLoc + "', " +
-                                                    "'" + MovePlant + "', " +
-                                                    "'" + MoveStloc + "', " +
-                                                    "'" + Kanban + "'," +
-                                                    "'" + EntryQnt + "', " +
-                                                    "'" + checkSlipno + "', " +
-                                                    "'" + Mat_Type + "', " +
-                                                    "'" + ValidateMessage + "', " +
-                                                    "'" + Type + "', " +
-                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
-                                                    "'" + Datatype + "', " +
-                                                    "'1', " +
-                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                            //        if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                            //        {
 
-                                        setlog = true;
+                            //            dataTable.Rows.Add(
+                            //                                checkSlipno,
+                            //                                Type,
+                            //                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"),
+                            //                                Datatype,
+                            //                                ValidateMessage,
+                            //                                Plant,
+                            //                                StgeLoc,
+                            //                                MovePlant,
+                            //                                MoveStloc,
+                            //                                "",
+                            //                                "",
+                            //                                Kanban,
+                            //                                EntryQnt,
+                            //                                Mat_Type,
+                            //                                "1",
+                            //                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")
+                            //                            );
 
-                                        sqlLog_TR.Append("('" + item.Batch + "' , " +
-                                                        "'" + (int)item.EntryQnt + "', " +
-                                                        "'" + item.EntryUom + "', " +
-                                                        "'" + item.FacNo + "', " +
-                                                        "'" + checkSlipno + "'," +
-                                                        "'" + item.StgeLoc + "|" + item.MoveStloc + "', " +
-                                                        "'" + item.MoveType + "', " +
-                                                        "'" + item.Plant + "|" + item.MovePlant + "', " +
-                                                        "'" + item.Custid + "', " +
-                                                        "'" + item.Kanban + "', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
-                                                        "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
-                                                        "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error + "' ),");
+                            //            setlog = true;
 
-                                        setsuccesslog = true;
+                            //            dataTable2.Rows.Add(
+                            //                                ws_res.EMaterailDoc.MatDoc + "|" + UserID,
+                            //                                item.Batch,
+                            //                                (int)item.EntryQnt,
+                            //                                item.EntryUom,
+                            //                                item.FacNo,
+                            //                                checkSlipno,
+                            //                                item.StgeLoc + "|" + item.MoveStloc,
+                            //                                item.MoveType,
+                            //                                item.Plant + "|" + item.MovePlant,
+                            //                                item.Custid,
+                            //                                item.Kanban,
+                            //                                "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error,
+                            //                                DateTime.Now.ToString("yyyy-MM-dd"),
+                            //                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
 
-                                    }
-                                    else
-                                    {
+                            //            setsuccesslog = true;
 
-                                        if (item.Error != "")
-                                        {
-                                            
-                                            sql.Append("('" + Plant + "' , " +
-                                                        "'" + StgeLoc + "', " +
-                                                        "'" + MovePlant + "', " +
-                                                        "'" + MoveStloc + "', " +
-                                                        "'" + Kanban + "'," +
-                                                        "'" + EntryQnt + "', " +
-                                                        "'" + checkSlipno + "', " +
-                                                        "'" + Mat_Type + "', " +
-                                                        "'" + ValidateMessage + "', " +
-                                                        "'" + Type + "', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
-                                                        "'" + Datatype + "', " +
-                                                        "'1', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                            //        }
+                            //        else
+                            //        {
 
-                                            setlog = true;
+                            //            if (item.Error != "")
+                            //            {
 
-                                            sqlLog_TR_Error.Append("('" + RefdocNo + "|" + UserID + "' , " +
-                                                                    "'" + item.Batch + "', " +
-                                                                    "'" + (int)item.EntryQnt + "', " +
-                                                                    "'" + item.EntryUom + "', " +
-                                                                    "'" + item.FacNo + "'," +
-                                                                    "'" + Slipno + "', " +
-                                                                    "'" + item.StgeLoc + "|" + item.MoveStloc + "', " +
-                                                                    "'" + item.MoveType + "', " +
-                                                                    "'" + item.Plant + "|" + item.MovePlant + "', " +
-                                                                    "'" + item.Custid + "', " +
-                                                                    "'" + item.Kanban + "', " +
-                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
-                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
-                                                                    "'" + "TransferStockDataToSAP_311 : " + item.Error + "' ),");
+                            //                dataTable.Rows.Add(
+                            //                                   checkSlipno,
+                            //                                   Type,
+                            //                                   DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"),
+                            //                                   Datatype,
+                            //                                   ValidateMessage,
+                            //                                   Plant,
+                            //                                   StgeLoc,
+                            //                                   MovePlant,
+                            //                                   MoveStloc,
+                            //                                   "",
+                            //                                   "",
+                            //                                   Kanban,
+                            //                                   EntryQnt,
+                            //                                   Mat_Type,
+                            //                                   "1",
+                            //                                   DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")
+                            //                                    );
 
-                                            seterrorlog = true;
-                                        }
-                                    }
-                                }
-                            }
+                            //                setlog = true;
+
+                            //                dataTable3.Rows.Add(
+                            //                                    RefdocNo + "|" + UserID,
+                            //                                    item.Batch,
+                            //                                    (int)item.EntryQnt,
+                            //                                    item.EntryUom,
+                            //                                    item.FacNo,
+                            //                                    Slipno,
+                            //                                    item.StgeLoc + "|" + item.MoveStloc,
+                            //                                    item.MoveType,
+                            //                                    item.Plant + "|" + item.MovePlant,
+                            //                                    item.Custid,
+                            //                                    item.Kanban,
+                            //                                    "TransferStockDataToSAP_311 : " + item.Error,
+                            //                                    DateTime.Now.ToString("yyyy-MM-dd"),
+                            //                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")
+                            //                                     );
+
+                            //                seterrorlog = true;
+                            //            }
+                            //        }
+                            //    }
+                            //}
 
                             paramIndex++;
                         }
@@ -481,262 +552,302 @@ namespace PostSap_GR_TR
                             string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
                             if (setlog == false)
                             {
-                                sql.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                                dataTable.Rows.Add(
+                                                    checkSlipNo,
+                                                    "",
+                                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"),
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")
+                                                );
                             }
 
                             if (setsuccesslog == false && setlog == true)
                             {
-                                sqlLog_TR.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
+                                dataTable2.Rows.Add(
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    checkSlipNo,
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    DateTime.Now.ToString("yyyy-MM-dd"),
+                                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                             }
 
                             if (seterrorlog == false && setlog == true)
                             {
-                                sqlLog_TR_Error.Append("('', '', '', '', '','" + checkSlipNo + "', '','', '','', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
+                                dataTable3.Rows.Add(
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    checkSlipNo,
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    "",
+                                                    DateTime.Now.ToString("yyyy-MM-dd"),
+                                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")
+                                                );
                             }
 
                         }
                     }
 
-                  
-                    sql.Length -= 1;
-                    sql.Append(";");
-
-                    sqlLog_TR.Length -= 1;
-                    sqlLog_TR.Append(";");
-
-                    sqlLog_TR_Error.Length -= 1;
-                    sqlLog_TR_Error.Append(";");
+               
 
                     Console.WriteLine("loop dobe :" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
                     using (SqlConnection conn = new SqlConnection(connString))
                     {
-                        conn.Open();  
+                        conn.Open();
 
-                        using (SqlCommand cmd = new SqlCommand(sql.ToString(), conn))
+                        using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                         {
-                            cmd.ExecuteNonQuery();  
+                            bulkCopy.DestinationTableName = DBconfig + ".[T_LogDatavalidate_TR_to_Sap]"; // Replace with the name of your target table
+                            // Perform the bulk copy
+                            bulkCopy.WriteToServer(dataTable);
                         }
 
-                        Console.WriteLine("t1" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                        if (parameters2.ToArray().Length > 0)
-                        {
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR.ToString(), conn))
-                            {
-                                cmd.ExecuteNonQuery(); 
-                            }
-                        }
+                        //Console.WriteLine("t1" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                        //if (parameters2.ToArray().Length > 0)
+                        //{
+                        //    using (SqlCommand cmd = new SqlCommand(sqlLog_TR.ToString(), conn))
+                        //    {
+                        //        cmd.ExecuteNonQuery(); 
+                        //    }
+                        //}
 
-                        Console.WriteLine("t2" +DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                        if (parameters3.ToArray().Length > 0)
-                        {
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error.ToString(), conn))
-                            {
-                                cmd.ExecuteNonQuery(); 
-                            }
-                        }
-                        Console.WriteLine("t3" +DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                        //Console.WriteLine("t2" +DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                        //if (parameters3.ToArray().Length > 0)
+                        //{
+                        //    using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error.ToString(), conn))
+                        //    {
+                        //        cmd.ExecuteNonQuery(); 
+                        //    }
+                        //}
+                        //Console.WriteLine("t3" +DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
 
                         conn.Close(); 
                     }
                 }
-                if (TRErrdata.Rows.Count > 0)
-                {
+                //if (TRErrdata.Rows.Count > 0)
+                //{
                    
-                    List<SqlParameter> parametersError = new List<SqlParameter>();
-                    List<SqlParameter> parameters2Error = new List<SqlParameter>();
-                    List<SqlParameter> parameters3Error = new List<SqlParameter>();
+                //    List<SqlParameter> parametersError = new List<SqlParameter>();
+                //    List<SqlParameter> parameters2Error = new List<SqlParameter>();
+                //    List<SqlParameter> parameters3Error = new List<SqlParameter>();
 
-                    paramIndex = 0;
-                    checkSlipNo = "";
-                    foreach (DataRow item in TRErrdata.Rows)
-                    {
-                        try
-                        {
-                            setlog = false;
-                            setsuccesslog = false;
-                            seterrorlog = false;
-                            checkSlipNo = "IT|" + item["SLIPNO"].ToString().Trim();
+                //    paramIndex = 0;
+                //    checkSlipNo = "";
+                //    foreach (DataRow item in TRErrdata.Rows)
+                //    {
+                //        try
+                //        {
+                //            setlog = false;
+                //            setsuccesslog = false;
+                //            seterrorlog = false;
+                //            checkSlipNo = "IT|" + item["SLIPNO"].ToString().Trim();
 
-                            string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
-                            string Datatype = "13";
-                            string Type = "TR_redo";
-                            string checkSlipno = item["SLIPNO"].ToString().Trim();
+                //            string Slipno = "IT|" + item["SLIPNO"].ToString().Trim();
+                //            string Datatype = "13";
+                //            string Type = "TR_redo";
+                //            string checkSlipno = item["SLIPNO"].ToString().Trim();
 
-                            string Plant = item["PlantFrom"].ToString();
-                            string StgeLoc = item["StorageFrom"].ToString();
-                            string EntryQnt = Convert.ToInt32(item["MvmntQty"].ToString()).ToString();
-                            string MovePlant = item["PlantTo"].ToString();
-                            string MoveStloc = item["StorageTo"].ToString();
-                            string Kanban = item["Kanban"].ToString();
-                            string PostDate = item["POSTDATE"].ToString();
-                            string Mat_Type = item["Mat_Type"].ToString();
+                //            string Plant = item["PlantFrom"].ToString();
+                //            string StgeLoc = item["StorageFrom"].ToString();
+                //            string EntryQnt = Convert.ToInt32(item["MvmntQty"].ToString()).ToString();
+                //            string MovePlant = item["PlantTo"].ToString();
+                //            string MoveStloc = item["StorageTo"].ToString();
+                //            string Kanban = item["Kanban"].ToString();
+                //            string PostDate = item["POSTDATE"].ToString();
+                //            string Mat_Type = item["Mat_Type"].ToString();
 
-                            var RefdocNo = "TR-" + DateTime.Now.ToString("yyMMddHHmm");
-                            string UserID = "";
-                            ws_fn_head.RefDocNo = RefdocNo;
-                            if (Slipno.Contains("|"))
-                            {
-                                UserID = Slipno.Split('|')[0];
-                                Slipno = Slipno.Split('|')[1];
-                            }
+                //            var RefdocNo = "TR-" + DateTime.Now.ToString("yyMMddHHmm");
+                //            string UserID = "";
+                //            ws_fn_head.RefDocNo = RefdocNo;
+                //            if (Slipno.Contains("|"))
+                //            {
+                //                UserID = Slipno.Split('|')[0];
+                //                Slipno = Slipno.Split('|')[1];
+                //            }
 
-                            string Message = "";
-                            Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
-                            string ValidateMessage = Message != "" ? "Error : ( " + Message + ")" : "";
+                //            string Message = "";
+                //            Message += Datatype.Length == 2 ? "" : "Datatype ,".ToString().Trim();
+                //            string ValidateMessage = Message != "" ? "Error : ( " + Message + ")" : "";
 
-                            ws_res = sendSapTR.PostSapTRClass(Slipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
+                //            ws_res = sendSapTR.PostSapTRClass(Slipno, Datatype, Type, Plant, StgeLoc, EntryQnt, MovePlant, MoveStloc, Kanban, PostDate, start_Time, Mat_Type);
 
 
-                            if (ws_res.ItDetail.Count() > 0)
-                            {
+                //            if (ws_res.ItDetail.Count() > 0)
+                //            {
 
-                                foreach (var item2 in ws_res.ItDetail)
-                                {
+                //                foreach (var item2 in ws_res.ItDetail)
+                //                {
 
-                                     if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
-                                    {
+                //                     if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                //                    {
 
-                                        sql_redo.Append("('" + Plant + "' , " +
-                                                    "'" + StgeLoc + "', " +
-                                                    "'" + MovePlant + "', " +
-                                                    "'" + MoveStloc + "', " +
-                                                    "'" + Kanban + "'," +
-                                                    "'" + EntryQnt + "', " +
-                                                    "'" + checkSlipno + "', " +
-                                                    "'" + Mat_Type + "', " +
-                                                    "'" + ValidateMessage + "', " +
-                                                    "'" + Type + "', " +
-                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
-                                                    "'" + Datatype + "', " +
-                                                    "'1', " +
-                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                //                        sql_redo.Append("('" + Plant + "' , " +
+                //                                    "'" + StgeLoc + "', " +
+                //                                    "'" + MovePlant + "', " +
+                //                                    "'" + MoveStloc + "', " +
+                //                                    "'" + Kanban + "'," +
+                //                                    "'" + EntryQnt + "', " +
+                //                                    "'" + checkSlipno + "', " +
+                //                                    "'" + Mat_Type + "', " +
+                //                                    "'" + ValidateMessage + "', " +
+                //                                    "'" + Type + "', " +
+                //                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
+                //                                    "'" + Datatype + "', " +
+                //                                    "'1', " +
+                //                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
 
-                                        setlog = true;
+                //                        setlog = true;
 
-                                        sqlLog_TR_redo.Append("('" + item2.Batch + "' , " +
-                                                        "'" + (int)item2.EntryQnt + "', " +
-                                                        "'" + item2.EntryUom + "', " +
-                                                        "'" + item2.FacNo + "', " +
-                                                        "'" + checkSlipno + "'," +
-                                                        "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
-                                                        "'" + item2.MoveType + "', " +
-                                                        "'" + item2.Plant + "|" + item2.MovePlant + "', " +
-                                                        "'" + item2.Custid + "', " +
-                                                        "'" + item2.Kanban + "', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
-                                                        "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
-                                                        "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error + "' ),");
+                //                        sqlLog_TR_redo.Append("('" + item2.Batch + "' , " +
+                //                                        "'" + (int)item2.EntryQnt + "', " +
+                //                                        "'" + item2.EntryUom + "', " +
+                //                                        "'" + item2.FacNo + "', " +
+                //                                        "'" + checkSlipno + "'," +
+                //                                        "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                //                                        "'" + item2.MoveType + "', " +
+                //                                        "'" + item2.Plant + "|" + item2.MovePlant + "', " +
+                //                                        "'" + item2.Custid + "', " +
+                //                                        "'" + item2.Kanban + "', " +
+                //                                        "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
+                //                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                //                                        "'" + ws_res.EMaterailDoc.MatDoc + "|" + UserID + "', " +
+                //                                        "'" + "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error + "' ),");
 
-                                        setsuccesslog = true;
+                //                        setsuccesslog = true;
 
-                                    }
-                                    else
-                                    {
+                //                    }
+                //                    else
+                //                    {
 
-                                        if (item2.Error != "")
-                                        {
+                //                        if (item2.Error != "")
+                //                        {
 
-                                            sql_redo.Append("('" + Plant + "' , " +
-                                                        "'" + StgeLoc + "', " +
-                                                        "'" + MovePlant + "', " +
-                                                        "'" + MoveStloc + "', " +
-                                                        "'" + Kanban + "'," +
-                                                        "'" + EntryQnt + "', " +
-                                                        "'" + checkSlipno + "', " +
-                                                        "'" + Mat_Type + "', " +
-                                                        "'" + ValidateMessage + "', " +
-                                                        "'" + Type + "', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
-                                                        "'" + Datatype + "', " +
-                                                        "'1', " +
-                                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                //                            sql_redo.Append("('" + Plant + "' , " +
+                //                                        "'" + StgeLoc + "', " +
+                //                                        "'" + MovePlant + "', " +
+                //                                        "'" + MoveStloc + "', " +
+                //                                        "'" + Kanban + "'," +
+                //                                        "'" + EntryQnt + "', " +
+                //                                        "'" + checkSlipno + "', " +
+                //                                        "'" + Mat_Type + "', " +
+                //                                        "'" + ValidateMessage + "', " +
+                //                                        "'" + Type + "', " +
+                //                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', " +
+                //                                        "'" + Datatype + "', " +
+                //                                        "'1', " +
+                //                                        "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
 
-                                            setlog = true;
+                //                            setlog = true;
 
-                                            sqlLog_TR_Error_redo.Append("('" + RefdocNo + "|" + UserID + "' , " +
-                                                                    "'" + item2.Batch + "', " +
-                                                                    "'" + (int)item2.EntryQnt + "', " +
-                                                                    "'" + item2.EntryUom + "', " +
-                                                                    "'" + item2.FacNo + "'," +
-                                                                    "'" + Slipno + "', " +
-                                                                    "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
-                                                                    "'" + item2.MoveType +  "', " +
-                                                                    "'" + item2.Plant + "|" + item2.MovePlant + "', " +
-                                                                    "'" + item2.Custid + "', " +
-                                                                    "'" + item2.Kanban + "', " +
-                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
-                                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
-                                                                    "'" + "TransferStockDataToSAP_311 : " + item2.Error + "' ),");
+                //                            sqlLog_TR_Error_redo.Append("('" + RefdocNo + "|" + UserID + "' , " +
+                //                                                    "'" + item2.Batch + "', " +
+                //                                                    "'" + (int)item2.EntryQnt + "', " +
+                //                                                    "'" + item2.EntryUom + "', " +
+                //                                                    "'" + item2.FacNo + "'," +
+                //                                                    "'" + Slipno + "', " +
+                //                                                    "'" + item2.StgeLoc + "|" + item2.MoveStloc + "', " +
+                //                                                    "'" + item2.MoveType +  "', " +
+                //                                                    "'" + item2.Plant + "|" + item2.MovePlant + "', " +
+                //                                                    "'" + item2.Custid + "', " +
+                //                                                    "'" + item2.Kanban + "', " +
+                //                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd") + "', " +
+                //                                                    "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'," +
+                //                                                    "'" + "TransferStockDataToSAP_311 : " + item2.Error + "' ),");
 
-                                            seterrorlog = true;
-                                        }
-                                    }
-                                }
-                            }
+                //                            seterrorlog = true;
+                //                        }
+                //                    }
+                //                }
+                //            }
 
-                            paramIndex++;
+                //            paramIndex++;
 
-                        }
-                        catch (Exception ex)
-                        {
-                            string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
-                            if (setlog == false)
-                            {
-                                sql_redo.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
-                            }
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
+                //            if (setlog == false)
+                //            {
+                //                sql_redo.Append("('' , '', '', '', '','', '" + checkSlipNo + "', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "', '', '1', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' ),");
+                //            }
 
-                            if (setsuccesslog == false && setlog == true)
-                            {
-                                sqlLog_TR_redo.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
-                            }
+                //            if (setsuccesslog == false && setlog == true)
+                //            {
+                //                sqlLog_TR_redo.Append("('' , '', '', '', '" + checkSlipNo + "', '', '', '', '', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','','' ),");
+                //            }
 
-                            if (seterrorlog == false && setlog == true)
-                            {
-                                sqlLog_TR_Error_redo.Append("('', '', '', '', '','" + checkSlipNo + "', '','', '','', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
-                            }
-                        }
-                    }
+                //            if (seterrorlog == false && setlog == true)
+                //            {
+                //                sqlLog_TR_Error_redo.Append("('', '', '', '', '','" + checkSlipNo + "', '','', '','', '','" + DateTime.Now.ToString("yyyy-MM-dd") + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "','' ),");
+                //            }
+                //        }
+                //    }
 
-                    sql_redo.Length -= 1;
-                    sql_redo.Append(";");
+                //    sql_redo.Length -= 1;
+                //    sql_redo.Append(";");
 
-                    sqlLog_TR_redo.Length -= 1;
-                    sqlLog_TR_redo.Append(";");
+                //    sqlLog_TR_redo.Length -= 1;
+                //    sqlLog_TR_redo.Append(";");
 
-                    sqlLog_TR_Error_redo.Length -= 1;
-                    sqlLog_TR_Error_redo.Append(";");
+                //    sqlLog_TR_Error_redo.Length -= 1;
+                //    sqlLog_TR_Error_redo.Append(";");
 
-                    using (SqlConnection conn = new SqlConnection(connString))
-                    {
-                        conn.Open(); 
+                //    using (SqlConnection conn = new SqlConnection(connString))
+                //    {
+                //        conn.Open(); 
 
-                        using (SqlCommand cmd = new SqlCommand(sql_redo.ToString(), conn))
-                        {
-                            cmd.ExecuteNonQuery();  
-                        }
+                //        using (SqlCommand cmd = new SqlCommand(sql_redo.ToString(), conn))
+                //        {
+                //            cmd.ExecuteNonQuery();  
+                //        }
 
-                        if (parameters2Error.ToArray().Length > 0)
-                        {
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_redo.ToString(), conn))
-                            {
-                                cmd.ExecuteNonQuery();  
-                            }
-                        }
+                //        if (parameters2Error.ToArray().Length > 0)
+                //        {
+                //            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_redo.ToString(), conn))
+                //            {
+                //                cmd.ExecuteNonQuery();  
+                //            }
+                //        }
 
-                        if (parameters3Error.ToArray().Length > 0)
-                        {
+                //        if (parameters3Error.ToArray().Length > 0)
+                //        {
 
-                            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error_redo.ToString(), conn))
-                            {
-                                cmd.ExecuteNonQuery();  
-                            }
-                        }
+                //            using (SqlCommand cmd = new SqlCommand(sqlLog_TR_Error_redo.ToString(), conn))
+                //            {
+                //                cmd.ExecuteNonQuery();  
+                //            }
+                //        }
 
-                        conn.Close();  
-                    }
-                }
-                Console.WriteLine("      End Process TR \n");
+                //        conn.Close();  
+                //    }
+                //}
+                //Console.WriteLine("      End Process TR \n");
             }
             catch (Exception ex)
             {
