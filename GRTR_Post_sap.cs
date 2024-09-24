@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using SapApiGRAndTR.Class;
 using PostSap_GR_TR.Models;
+using SapApiGI.Class;
 
 namespace PostSap_GR_TR
 {
@@ -42,10 +43,10 @@ namespace PostSap_GR_TR
             //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             //Post_GR_to_Sap();
             //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-            Post_TR_to_Sap();
-            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-            //Post_GI_Sap();
+            //Post_TR_to_Sap();
             //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+            Post_GI_Sap();
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             ////await GetErrorAndNotify();
             //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
             //await Task.Delay(3000);
@@ -392,57 +393,12 @@ namespace PostSap_GR_TR
                                 updateList.Rows.Add(Slipno, "No message", DBNull.Value);
                             }
 
-
-                            if (ws_res.ItDetail.Count() > 0)
-                            {
-
-                                foreach (var item in ws_res.ItDetail)
+                            if (ws_res.ItDetail != null) {
+                                if (ws_res.ItDetail.Count() > 0)
                                 {
-
-                                    if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                                    foreach (var item in ws_res.ItDetail)
                                     {
-
-                                        parameters.Add($"(" +
-                                            $"'{Plant}', " +
-                                            $"'{StgeLoc}', " +
-                                            $"'{MovePlant}', " +
-                                            $"'{MoveStloc}', " +
-                                            $"'{Kanban}', " +
-                                            $"'{EntryQnt}', " +
-                                            $"'{checkSlipno}', " +
-                                            $"'{Mat_Type}', " +
-                                            $"'{ValidateMessage}', " +
-                                            $"'{Type}', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
-                                            $"'{Datatype}', " +
-                                            $"'1', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}')");
-
-                                        setlog = true;
-
-                                        parameters.Add($"(" +
-                                            $"'{item.Batch}', " +
-                                            $"'{(int)item.EntryQnt}', " +
-                                            $"'{item.EntryUom}', " +
-                                            $"'{item.FacNo}', " +
-                                            $"'{checkSlipno}'," +
-                                            $"'{item.StgeLoc + "|" + item.MoveStloc}', " +
-                                            $"'{item.MoveType}', " +
-                                            $"'{item.Plant + "|" + item.MovePlant}', " +
-                                            $"'{item.Custid}', " +
-                                            $"'{item.Kanban}', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
-                                            $"'{ws_res.EMaterailDoc.MatDoc + "|" + UserID}', " +
-                                            $"'{"TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error}')");
-
-                                        setsuccesslog = true;
-
-                                    }
-                                    else
-                                    {
-
-                                        if (item.Error != "")
+                                        if (string.IsNullOrEmpty(item.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                                         {
 
                                             parameters.Add($"(" +
@@ -464,22 +420,66 @@ namespace PostSap_GR_TR
                                             setlog = true;
 
                                             parameters.Add($"(" +
-                                                $"'{RefdocNo + "|" + UserID}', " +
                                                 $"'{item.Batch}', " +
                                                 $"'{(int)item.EntryQnt}', " +
                                                 $"'{item.EntryUom}', " +
                                                 $"'{item.FacNo}', " +
-                                                $"'{Slipno}', " +
+                                                $"'{checkSlipno}'," +
                                                 $"'{item.StgeLoc + "|" + item.MoveStloc}', " +
                                                 $"'{item.MoveType}', " +
                                                 $"'{item.Plant + "|" + item.MovePlant}', " +
                                                 $"'{item.Custid}', " +
                                                 $"'{item.Kanban}', " +
-                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
                                                 $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
-                                                $"'{"TransferStockDataToSAP_311: " + item.Error}')");
+                                                $"'{ws_res.EMaterailDoc.MatDoc + "|" + UserID}', " +
+                                                $"'{"TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item.Error}')");
 
-                                            seterrorlog = true;
+                                            setsuccesslog = true;
+
+                                        }
+                                        else
+                                        {
+
+                                            if (item.Error != "")
+                                            {
+
+                                                parameters.Add($"(" +
+                                                    $"'{Plant}', " +
+                                                    $"'{StgeLoc}', " +
+                                                    $"'{MovePlant}', " +
+                                                    $"'{MoveStloc}', " +
+                                                    $"'{Kanban}', " +
+                                                    $"'{EntryQnt}', " +
+                                                    $"'{checkSlipno}', " +
+                                                    $"'{Mat_Type}', " +
+                                                    $"'{ValidateMessage}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{Datatype}', " +
+                                                    $"'1', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}')");
+
+                                                setlog = true;
+
+                                                parameters.Add($"(" +
+                                                    $"'{RefdocNo + "|" + UserID}', " +
+                                                    $"'{item.Batch}', " +
+                                                    $"'{(int)item.EntryQnt}', " +
+                                                    $"'{item.EntryUom}', " +
+                                                    $"'{item.FacNo}', " +
+                                                    $"'{Slipno}', " +
+                                                    $"'{item.StgeLoc + "|" + item.MoveStloc}', " +
+                                                    $"'{item.MoveType}', " +
+                                                    $"'{item.Plant + "|" + item.MovePlant}', " +
+                                                    $"'{item.Custid}', " +
+                                                    $"'{item.Kanban}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{"TransferStockDataToSAP_311: " + item.Error}')");
+
+                                                seterrorlog = true;
+                                            }
                                         }
                                     }
                                 }
@@ -515,10 +515,10 @@ namespace PostSap_GR_TR
 
                         // **1. สร้างตารางชั่วคราวในฐานข้อมูล**
                         string createTempTableSql = $@"
-                                        IF OBJECT_ID('[Barcode_DEV].[dbo].[T_barcode_trans_Temp]') IS NOT NULL
-                                            DROP TABLE  [Barcode_DEV].[dbo].[T_barcode_trans_Temp];
+                                        IF OBJECT_ID(' {DBconfig}.[T_barcode_Temp]') IS NOT NULL
+                                            DROP TABLE   {DBconfig}.[T_barcode_Temp];
 
-                                        CREATE TABLE [Barcode_DEV].[dbo].[T_barcode_trans_Temp] (
+                                        CREATE TABLE  {DBconfig}.[T_barcode_Temp] (
                                             SLIPNO NVARCHAR(50),
                                             REFDOCSAP NVARCHAR(50),
                                             CONFIRM_DATE datetime
@@ -532,7 +532,7 @@ namespace PostSap_GR_TR
                         // **2. ใช้ SqlBulkCopy เพื่อคัดลอกข้อมูลไปยังตารางชั่วคราว**
                         using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
                         {
-                            bulkCopy.DestinationTableName = "[Barcode_DEV].[dbo].[T_barcode_trans_Temp]";
+                            bulkCopy.DestinationTableName =  DBconfig+ ".[T_barcode_Temp]";
                             bulkCopy.WriteToServer(updateList);
                         }
 
@@ -543,16 +543,18 @@ namespace PostSap_GR_TR
                                 SET t.REFDOCSAP = tmp.REFDOCSAP,
                                 t.CONFIRM_DATE = tmp.CONFIRM_DATE
                                 FROM {DBconfig}.[T_barcode_trans] t
-                                INNER JOIN[Barcode_DEV].[dbo].[T_barcode_trans_Temp] tmp
+                                INNER JOIN {DBconfig}.[T_barcode_Temp] tmp
                                 ON t.SLIPNO = tmp.SLIPNO;
 
-                                DROP TABLE[Barcode_DEV].[dbo].[T_barcode_trans_Temp]; ";
+                                DROP TABLE {DBconfig}.[T_barcode_Temp]; ";
 
 
                         using (SqlCommand cmd = new SqlCommand(updateSql, connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
+
+                        connection.Close();
                     }
 
                     using (SqlConnection conn = new SqlConnection(connString))
@@ -561,40 +563,42 @@ namespace PostSap_GR_TR
                         StringBuilder sqlBuilder = new StringBuilder();
                         StringBuilder sqlBuilder2 = new StringBuilder();
                         StringBuilder sqlBuilder3 = new StringBuilder();
-                        int batchSize = 10;
+                        int batchSize = 1000;
 
-                        for (int i = 0; i < parameters.Count; i++)
-                        {
-                            if (i % batchSize == 0)
+                        if (parameters.Count > 0) {
+                            for (int i = 0; i < parameters.Count; i++)
                             {
-                                if (i != 0)
+                                if (i % batchSize == 0)
                                 {
-                                    sqlBuilder.Append(";");
-                                    using (SqlCommand command = new SqlCommand(sqlBuilder.ToString(), conn))
+                                    if (i != 0)
                                     {
-                                        command.ExecuteNonQuery();
+                                        sqlBuilder.Append(";");
+                                        using (SqlCommand command = new SqlCommand(sqlBuilder.ToString(), conn))
+                                        {
+                                            command.ExecuteNonQuery();
+                                        }
+                                        sqlBuilder.Clear();
                                     }
-                                    sqlBuilder.Clear();
+
+                                    sqlBuilder.Append("INSERT INTO  " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] (PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
                                 }
 
-                                sqlBuilder.Append("INSERT INTO  " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] (PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
+                                sqlBuilder.Append(parameters[i]);
+
+                                if ((i + 1) % batchSize != 0 && i != parameters.Count - 1)
+                                {
+                                    sqlBuilder.Append(", ");
+                                }
                             }
 
-                            sqlBuilder.Append(parameters[i]);
-
-                            if ((i + 1) % batchSize != 0 && i != parameters.Count - 1)
+                            // Execute the remaining batch
+                            if (sqlBuilder.Length > 0)
                             {
-                                sqlBuilder.Append(", ");
-                            }
-                        }
-
-                        // Execute the remaining batch
-                        if (sqlBuilder.Length > 0)
-                        {
-                            sqlBuilder.Append(";");
-                            using (SqlCommand command = new SqlCommand(sqlBuilder.ToString(), conn))
-                            {
-                                command.ExecuteNonQuery();
+                                sqlBuilder.Append(";");
+                                using (SqlCommand command = new SqlCommand(sqlBuilder.ToString(), conn))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
                             }
                         }
 
@@ -742,56 +746,13 @@ namespace PostSap_GR_TR
                                 updateList.Rows.Add(Slipno, "No message", DBNull.Value);
                             }
 
-                            if (ws_res.ItDetail.Count() > 0)
-                            {
+                            if (ws_res.ItDetail != null) {
 
-                                foreach (var item2 in ws_res.ItDetail)
+                                if (ws_res.ItDetail.Count() > 0)
                                 {
-
-                                    if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                                    foreach (var item2 in ws_res.ItDetail)
                                     {
-
-                                        parametersError.Add($"(" +
-                                            $"'{Plant}', " +
-                                            $"'{StgeLoc}', " +
-                                            $"'{MovePlant}', " +
-                                            $"'{MoveStloc}', " +
-                                            $"'{Kanban}', " +
-                                            $"'{EntryQnt}', " +
-                                            $"'{checkSlipno}', " +
-                                            $"'{Mat_Type}', " +
-                                            $"'{ValidateMessage}', " +
-                                            $"'{Type}', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
-                                            $"'{Datatype}', " +
-                                            $"'1', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}')");
-
-                                        setlog = true;
-
-                                        parameters2Error.Add($"(" +
-                                            $"'{item2.Batch}', " +
-                                            $"'{(int)item2.EntryQnt}', " +
-                                            $"'{item2.EntryUom}', " +
-                                            $"'{item2.FacNo}', " +
-                                            $"'{checkSlipno}'," +
-                                            $"'{item2.StgeLoc + "|" + item2.MoveStloc}', " +
-                                            $"'{item2.MoveType}', " +
-                                            $"'{item2.Plant + "|" + item2.MovePlant}', " +
-                                            $"'{item2.Custid}', " +
-                                            $"'{item2.Kanban}', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
-                                            $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
-                                            $"'{ws_res.EMaterailDoc.MatDoc + "|" + UserID}', " +
-                                            $"'{"TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error}')");
-
-                                        setsuccesslog = true;
-
-                                    }
-                                    else
-                                    {
-
-                                        if (item2.Error != "")
+                                        if (string.IsNullOrEmpty(item2.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
                                         {
 
                                             parametersError.Add($"(" +
@@ -812,23 +773,65 @@ namespace PostSap_GR_TR
 
                                             setlog = true;
 
-                                            parameters3Error.Add($"(" +
-                                                $"'{RefdocNo + "|" + UserID}', " +
+                                            parameters2Error.Add($"(" +
                                                 $"'{item2.Batch}', " +
                                                 $"'{(int)item2.EntryQnt}', " +
                                                 $"'{item2.EntryUom}', " +
                                                 $"'{item2.FacNo}', " +
-                                                $"'{Slipno}', " +
+                                                $"'{checkSlipno}'," +
                                                 $"'{item2.StgeLoc + "|" + item2.MoveStloc}', " +
                                                 $"'{item2.MoveType}', " +
                                                 $"'{item2.Plant + "|" + item2.MovePlant}', " +
                                                 $"'{item2.Custid}', " +
                                                 $"'{item2.Kanban}', " +
-                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
                                                 $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
-                                                $"'{"TransferStockDataToSAP_311: " + item2.Error}')");
+                                                $"'{ws_res.EMaterailDoc.MatDoc + "|" + UserID}', " +
+                                                $"'{"TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + item2.Error}')");
 
-                                            seterrorlog = true;
+                                            setsuccesslog = true;
+
+                                        }
+                                        else
+                                        {
+                                            if (item2.Error != "")
+                                            {
+                                                parametersError.Add($"(" +
+                                                    $"'{Plant}', " +
+                                                    $"'{StgeLoc}', " +
+                                                    $"'{MovePlant}', " +
+                                                    $"'{MoveStloc}', " +
+                                                    $"'{Kanban}', " +
+                                                    $"'{EntryQnt}', " +
+                                                    $"'{checkSlipno}', " +
+                                                    $"'{Mat_Type}', " +
+                                                    $"'{ValidateMessage}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{Datatype}', " +
+                                                    $"'1', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}')");
+
+                                                setlog = true;
+
+                                                parameters3Error.Add($"(" +
+                                                    $"'{RefdocNo + "|" + UserID}', " +
+                                                    $"'{item2.Batch}', " +
+                                                    $"'{(int)item2.EntryQnt}', " +
+                                                    $"'{item2.EntryUom}', " +
+                                                    $"'{item2.FacNo}', " +
+                                                    $"'{Slipno}', " +
+                                                    $"'{item2.StgeLoc + "|" + item2.MoveStloc}', " +
+                                                    $"'{item2.MoveType}', " +
+                                                    $"'{item2.Plant + "|" + item2.MovePlant}', " +
+                                                    $"'{item2.Custid}', " +
+                                                    $"'{item2.Kanban}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{"TransferStockDataToSAP_311: " + item2.Error}')");
+
+                                                seterrorlog = true;
+                                            }
                                         }
                                     }
                                 }
@@ -864,10 +867,10 @@ namespace PostSap_GR_TR
 
                         // **1. สร้างตารางชั่วคราวในฐานข้อมูล**
                         string createTempTableSql = $@"
-                             IF OBJECT_ID('[Barcode_DEV].[dbo].[T_barcode_trans_Temp]') IS NOT NULL
-                                 DROP TABLE  [Barcode_DEV].[dbo].[T_barcode_trans_Temp];
+                             IF OBJECT_ID('{DBconfig}.[T_barcode_Temp]') IS NOT NULL
+                                 DROP TABLE  '{DBconfig}.[T_barcode_Temp];
 
-                             CREATE TABLE [Barcode_DEV].[dbo].[T_barcode_trans_Temp] (
+                             CREATE TABLE '{DBconfig}.[T_barcode_Temp] (
                                  SLIPNO NVARCHAR(50),
                                  REFDOCSAP NVARCHAR(50),
                                  CONFIRM_DATE datetime
@@ -881,7 +884,7 @@ namespace PostSap_GR_TR
                         // **2. ใช้ SqlBulkCopy เพื่อคัดลอกข้อมูลไปยังตารางชั่วคราว**
                         using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
                         {
-                            bulkCopy.DestinationTableName = "[Barcode_DEV].[dbo].[T_barcode_trans_Temp]";
+                            bulkCopy.DestinationTableName =  DBconfig + ".[T_barcode_Temp]";
                             bulkCopy.WriteToServer(updateListError);
                         }
 
@@ -892,16 +895,18 @@ namespace PostSap_GR_TR
                                  SET t.REFDOCSAP = tmp.REFDOCSAP,
                                  t.CONFIRM_DATE = tmp.CONFIRM_DATE
                                  FROM {DBconfig}.[T_barcode_trans] t
-                                 INNER JOIN[Barcode_DEV].[dbo].[T_barcode_trans_Temp] tmp
+                                 INNER JOIN {DBconfig}.[T_barcode_Temp] tmp
                                  ON t.SLIPNO = tmp.SLIPNO;
 
-                                 DROP TABLE[Barcode_DEV].[dbo].[T_barcode_trans_Temp]; ";
+                                 DROP TABLE {DBconfig}.[T_barcode_Temp]; ";
 
 
                         using (SqlCommand cmd = new SqlCommand(updateSql, connection))
                         {
                             cmd.ExecuteNonQuery();
                         }
+
+                        connection.Close();
                     }
 
                     using (SqlConnection conn = new SqlConnection(connString))
@@ -912,38 +917,41 @@ namespace PostSap_GR_TR
                         StringBuilder sqlBuilder3Error = new StringBuilder();
                         int batchSize = 1000;
 
-                        for (int i = 0; i < parametersError.Count; i++)
-                        {
-                            if (i % batchSize == 0)
+                        if (parametersError.Count > 0) {
+
+                            for (int i = 0; i < parametersError.Count; i++)
                             {
-                                if (i != 0)
+                                if (i % batchSize == 0)
                                 {
-                                    sqlBuilderError.Append(";");
-                                    using (SqlCommand command = new SqlCommand(sqlBuilderError.ToString(), conn))
+                                    if (i != 0)
                                     {
-                                        command.ExecuteNonQuery();
+                                        sqlBuilderError.Append(";");
+                                        using (SqlCommand command = new SqlCommand(sqlBuilderError.ToString(), conn))
+                                        {
+                                            command.ExecuteNonQuery();
+                                        }
+                                        sqlBuilderError.Clear();
                                     }
-                                    sqlBuilderError.Clear();
+
+                                    sqlBuilderError.Append("INSERT INTO  " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] (PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
                                 }
 
-                                sqlBuilderError.Append("INSERT INTO  " + DBconfig + ".[T_LogDatavalidate_TR_to_Sap] (PlantFrom, StorageFrom, PlantTo, StorageTo, Kanban, MvmntQty, SlipNo, Mat_Type, ValidateMessage, Type, CreateDate, Datatype ,SapStatus ,ConfirmDate) VALUES ");
+                                sqlBuilderError.Append(parametersError[i]);
+
+                                if ((i + 1) % batchSize != 0 && i != parametersError.Count - 1)
+                                {
+                                    sqlBuilderError.Append(", ");
+                                }
                             }
 
-                            sqlBuilderError.Append(parametersError[i]);
-
-                            if ((i + 1) % batchSize != 0 && i != parametersError.Count - 1)
+                            // Execute the remaining batch
+                            if (sqlBuilderError.Length > 0)
                             {
-                                sqlBuilderError.Append(", ");
-                            }
-                        }
-
-                        // Execute the remaining batch
-                        if (sqlBuilderError.Length > 0)
-                        {
-                            sqlBuilderError.Append(";");
-                            using (SqlCommand command = new SqlCommand(sqlBuilderError.ToString(), conn))
-                            {
-                                command.ExecuteNonQuery();
+                                sqlBuilderError.Append(";");
+                                using (SqlCommand command = new SqlCommand(sqlBuilderError.ToString(), conn))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
                             }
                         }
 
@@ -1052,40 +1060,918 @@ namespace PostSap_GR_TR
                 DataTable GIdata = Condb.GetQuery(sqlGetGI);
                 DataTable GIErrdata = Condb.GetQuery(sqlGetGI_redo);
 
+                var ws_res = new ZConfirmPickingGoodsIssueResponse();
+
+                DataTable updateListGI = new DataTable();
+                updateListGI.Columns.Add("ORDERNO");
+                updateListGI.Columns.Add("REFDOCSAP");
+                updateListGI.Columns.Add("CONFIRM_DATE");
+
+                DataTable updateListGIError = new DataTable();
+                updateListGIError.Columns.Add("ORDERNO");
+                updateListGIError.Columns.Add("REFDOCSAP");
+                updateListGIError.Columns.Add("CONFIRM_DATE");
+
+                List<string> parameters = new List<string>();
+                List<string> parameters2 = new List<string>();
+                List<string> parameters3 = new List<string>();
+
+                ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings["BarcodeEntities"];
+                string connString = "";
+                if (setting != null)
+                {
+                    connString = setting.ConnectionString;
+                }
+
                 Class.ServicePostSapGI sendSapGI = new Class.ServicePostSapGI();
+                string checkOrder = "";
+
                 if (GIdata.Rows.Count > 0)
                 {
                     foreach (DataRow item in GIdata.Rows)
                     {
-                        string OrderNo = item["ORDERNO"].ToString().Trim();
-                        string PoAndDo = item["ORDERNO"].ToString().Trim();
-                        string SLoc = item["SLoc"].ToString().Trim();
-                        string Type = "GI";
-                        string checkPoAndDO = OrderNo.Substring(0, 2);
-                        checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
-                        string DOandPO = checkPoAndDO;
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type, SLoc);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID, SLoc);
+                        try
+                        {
+                            setlog = false;
+                            setsuccesslog = false;
+                            seterrorlog = false;
+
+                            string OrderNo = item["ORDERNO"].ToString().Trim();
+                            string PoAndDo = item["ORDERNO"].ToString().Trim();
+                            checkOrder = item["ORDERNO"].ToString().Trim();
+                            string SLoc = item["SLoc"].ToString().Trim();
+                            string Type = "GI";
+                            string checkPoAndDO = OrderNo.Substring(0, 2);
+                            checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                            string DOandPO = checkPoAndDO;
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            //var getID = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type, SLoc);
+                            
+                            ws_res = sendSapGI.PostSapGIClass(PoAndDo, DOandPO, SLoc);
+
+                            var RefdocNo = "GI-" + DateTime.Now.ToString("yyMMddHHmm");
+
+
+                            if (ws_res.eMaterailDoc != null || ws_res.EMessage != null)
+                            {
+
+                                if (ws_res.eMaterailDoc.Count() > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(ws_res.eMaterailDoc[0].MatDoc))
+                                    {
+                                        updateListGI.Rows.Add(item["ORDERNO"].ToString().Trim(), ws_res.EMessage, DateTime.Now);
+                                    }
+                                    else
+                                    {
+                                        updateListGI.Rows.Add(item["ORDERNO"].ToString().Trim(), ws_res.EMessage, DBNull.Value);
+                                    }
+                                }
+                                else
+                                {
+                                    updateListGI.Rows.Add(item["ORDERNO"].ToString().Trim(), ws_res.EMessage, DBNull.Value);
+                                }
+
+                                //Console.WriteLine("ws_res.EMessage :" + ws_res.EMessage);
+                                string[] datalast = null;
+                                if (ws_res.EMessage != null)
+                                {
+                                    if (ws_res.EMessage.Contains("saved"))
+                                    {
+                                        string txtClean = ws_res.EMessage.Replace(" ", "");
+                                        int lengthStart = txtClean.IndexOf("Delivery");
+                                        int lengthEnd = txtClean.IndexOf("has");
+                                        int start = lengthStart + 8;
+                                        int end = lengthEnd - start;
+                                        string data = txtClean.Substring(start, end);
+                                        datalast = data.Split(',');
+                                    }
+                                }
+
+                                datalast = datalast == null ? new string[] { "1" } : datalast;
+
+                                int index = 0;
+
+                                if (ws_res.eMaterailDoc.Count() > 0)
+                                {
+                                    foreach (var doc in ws_res.eMaterailDoc)
+                                    {
+                                        //Console.WriteLine("doc :" + doc.DoNo);
+
+                                        if (ws_res.EMessage.Contains("saved") && index <= datalast.Length)
+                                        {
+                                            parameters.Add($"(" +
+                                                    $"'{OrderNo}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{checkPoAndDO}', " +
+                                                    $"'', " +
+                                                    $"'1', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                    $"'{SLoc}')");
+                                            setlog = true;
+
+                                            parameters2.Add($"(" +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{PoAndDo}'," +
+                                                    $"'{SLoc}', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{doc.MatDoc + "|IT"}', " +
+                                                    $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE: " + ws_res.EMessage}'," +
+                                                    $"'{doc.DoNo}')");
+
+                                            seterrorlog = true;
+                                        }
+                                        else
+                                        {
+                                            parameters.Add($"(" +
+                                                    $"'{OrderNo}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{checkPoAndDO}', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                    $"'{SLoc}')");
+
+                                            setlog = true;
+
+                                            parameters3.Add($"(" +
+                                                    $"'{RefdocNo}', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{PoAndDo}', " +
+                                                    $"'{SLoc}', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage}')");
+
+                                            seterrorlog = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+
+                                    if (ws_res.EMessage.Contains("saved"))
+                                    {
+                                        parameters.Add($"(" +
+                                                  $"'{OrderNo}', " +
+                                                  $"'{Type}', " +
+                                                  $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                  $"'{checkPoAndDO}', " +
+                                                  $"'', " +
+                                                  $"'1', " +
+                                                  $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                  $"'{SLoc}')");
+                                        setlog = true;
+
+                                        parameters2.Add($"(" +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{PoAndDo}'," +
+                                                $"'{SLoc}', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'', " +
+                                                $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE: " + ws_res.EMessage}'," +
+                                                $"'')");
+
+                                        seterrorlog = true;
+                                    }
+                                    else
+                                    {
+                                        parameters.Add($"(" +
+                                                    $"'{OrderNo}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{checkPoAndDO}', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                    $"'{SLoc}')");
+
+                                        setlog = true;
+
+                                        parameters3.Add($"(" +
+                                                $"'{RefdocNo}', " +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{PoAndDo}', " +
+                                                $"'{SLoc}', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage}')");
+
+                                        seterrorlog = true;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                            string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
+                            if (setlog == false)
+                            {
+                                parameters.Add($"(" +
+                                                    $"'{checkOrder}', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                    $"'')");
+                            }
+
+                            if (setsuccesslog == false && setlog == true)
+                            {
+                                parameters2.Add($"(" +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{checkOrder}'," +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'', " +
+                                                    $"''," +
+                                                    $"'')");
+                            }
+
+                            if (seterrorlog == false && setlog == true)
+                            {
+                                parameters3.Add($"(" +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{checkOrder}', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'')");
+                            }
+
+                        }
+                        
+                    }
+
+                    using (SqlConnection connection = new SqlConnection(connString))
+                    {
+                        connection.Open();
+
+                        // **1. สร้างตารางชั่วคราวในฐานข้อมูล**
+                        string createTempTableSql = $@"
+                                        IF OBJECT_ID('{DBconfig}.[T_barcode_Temp]') IS NOT NULL
+                                            DROP TABLE  {DBconfig}.[T_barcode_Temp];
+
+                                        CREATE TABLE {DBconfig}.[T_barcode_Temp] (
+                                            ORDERNO NVARCHAR(50),
+                                            REFDOCSAP NVARCHAR(50),
+                                            CONFIRM_DATE datetime
+                                        );";
+
+                        using (SqlCommand cmd = new SqlCommand(createTempTableSql, connection))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // **2. ใช้ SqlBulkCopy เพื่อคัดลอกข้อมูลไปยังตารางชั่วคราว**
+                        using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
+                        {
+                            bulkCopy.DestinationTableName = DBconfig + ".[T_barcode_Temp]";
+                            bulkCopy.WriteToServer(updateListGI);
+                        }
+
+                        // **3. อัปเดตข้อมูลจากตารางชั่วคราว**
+
+                        string updateSql = $@"
+                                UPDATE t
+                                SET t.REFDOCSAP = tmp.REFDOCSAP,
+                                t.CONFIRM_DATE = tmp.CONFIRM_DATE
+                                FROM {DBconfig}.[T_barcode_trans] t
+                                INNER JOIN {DBconfig}.[T_barcode_Temp] tmp
+                                ON t.ORDERNO = tmp.ORDERNO;
+
+                                DROP TABLE {DBconfig}.[T_barcode_Temp]; ";
+
+
+                        using (SqlCommand cmd = new SqlCommand(updateSql, connection))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        connection.Close();
+                    }
+
+                    using (SqlConnection conn = new SqlConnection(connString))
+                    {
+                        conn.Open();
+                        StringBuilder sqlBuilder = new StringBuilder();
+                        StringBuilder sqlBuilder2 = new StringBuilder();
+                        StringBuilder sqlBuilder3 = new StringBuilder();
+                        int batchSize = 1000;
+
+                        for (int i = 0; i < parameters.Count; i++)
+                        {
+                            if (i % batchSize == 0)
+                            {
+                                if (i != 0)
+                                {
+                                    sqlBuilder.Append(";");
+                                    using (SqlCommand command = new SqlCommand(sqlBuilder.ToString(), conn))
+                                    {
+                                        command.ExecuteNonQuery();
+                                    }
+                                    sqlBuilder.Clear();
+                                }
+                                                                                                                                  
+                                sqlBuilder.Append("INSERT INTO  " + DBconfig + ".[T_LogDatavalidate_GI_to_Sap] (OrderNo, Type, CreateDate, Datatype, ValidateMessage, SapStatus, ConfirmDate, SLoc) VALUES ");
+                            }
+
+                            sqlBuilder.Append(parameters[i]);
+
+                            if ((i + 1) % batchSize != 0 && i != parameters.Count - 1)
+                            {
+                                sqlBuilder.Append(", ");
+                            }
+                        }
+
+                        // Execute the remaining batch
+                        if (sqlBuilder.Length > 0)
+                        {
+                            sqlBuilder.Append(";");
+                            using (SqlCommand command = new SqlCommand(sqlBuilder.ToString(), conn))
+                            {
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        if (parameters2.Count > 0)
+                        {
+
+                            for (int i = 0; i < parameters2.Count; i++)
+                            {
+                                if (i % batchSize == 0)
+                                {
+                                    if (i != 0)
+                                    {
+                                        sqlBuilder2.Append(";");
+                                        using (SqlCommand command = new SqlCommand(sqlBuilder2.ToString(), conn))
+                                        {
+                                            command.ExecuteNonQuery();
+                                        }
+                                        sqlBuilder2.Clear();
+                                    }
+
+                                    sqlBuilder2.Append("INSERT INTO " + DBconfig + ".[T_LOG_GI_STOCK] (Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, DocMat, EMessage,DoNo) VALUES ");
+
+                                }
+
+                                sqlBuilder2.Append(parameters2[i]);
+
+                                if ((i + 1) % batchSize != 0 && i != parameters2.Count - 1)
+                                {
+                                    sqlBuilder2.Append(", ");
+                                }
+                            }
+
+                            // Execute the remaining batch
+                            if (sqlBuilder2.Length > 0)
+                            {
+                                sqlBuilder2.Append(";");
+                                using (SqlCommand command = new SqlCommand(sqlBuilder2.ToString(), conn))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+
+                        if (parameters3.Count > 0)
+                        {
+                            for (int i = 0; i < parameters3.Count; i++)
+                            {
+                                if (i % batchSize == 0)
+                                {
+                                    if (i != 0)
+                                    {
+                                        sqlBuilder3.Append(";");
+                                        using (SqlCommand command = new SqlCommand(sqlBuilder3.ToString(), conn))
+                                        {
+                                            command.ExecuteNonQuery();
+                                        }
+                                        sqlBuilder3.Clear();
+                                    }
+
+                                    sqlBuilder3.Append("INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] (RefdocNo, Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, EMessage) VALUES ");
+
+                                }
+
+                                sqlBuilder3.Append(parameters3[i]);
+
+                                if ((i + 1) % batchSize != 0 && i != parameters3.Count - 1)
+                                {
+                                    sqlBuilder3.Append(", ");
+                                }
+                            }
+
+                            // Execute the remaining batch
+                            if (sqlBuilder3.Length > 0)
+                            {
+                                sqlBuilder3.Append(";");
+                                using (SqlCommand command = new SqlCommand(sqlBuilder3.ToString(), conn))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                        conn.Close();
                     }
                 }
 
+
                 if (GIErrdata.Rows.Count > 0)
                 {
-                    foreach (DataRow item in GIErrdata.Rows)
+                    List<string> parametersError = new List<string>();
+                    List<string> parameters2Error = new List<string>();
+                    List<string> parameters3Error = new List<string>();
+
+                    foreach (DataRow item in GIdata.Rows)
                     {
-                        string OrderNo = item["ORDERNO"].ToString().Trim();
-                        string PoAndDo = item["ORDERNO"].ToString().Trim();
-                        string SLoc = item["SLoc"].ToString().Trim();
-                        string Type = "GI_redo";
-                        string checkPoAndDO = OrderNo.Substring(0, 2);
-                        checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
-                        string DOandPO = checkPoAndDO;
-                        Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
-                        var getID = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type, SLoc);
-                        sendSapGI.PostSapGIClass(PoAndDo, DOandPO, getID, SLoc);
+                        try
+                        {
+                            setlog = false;
+                            setsuccesslog = false;
+                            seterrorlog = false;
+
+                            string OrderNo = item["ORDERNO"].ToString().Trim();
+                            string PoAndDo = item["ORDERNO"].ToString().Trim();
+                            string SLoc = item["SLoc"].ToString().Trim();
+                            string Type = "GI_redo";
+                            string checkPoAndDO = OrderNo.Substring(0, 2);
+                            checkPoAndDO = checkPoAndDO == "31" ? "DO" : "PO";
+                            string DOandPO = checkPoAndDO;
+                            Class.Validate_GRTR Validate_GRTR = new Class.Validate_GRTR();
+                            //var getID = Validate_GRTR.GetAndUpdate_saveLogData_GI_to_Sap(OrderNo, checkPoAndDO, Type, SLoc);
+
+                            ws_res = sendSapGI.PostSapGIClass(PoAndDo, DOandPO, SLoc);
+
+                            var RefdocNo = "GI-" + DateTime.Now.ToString("yyMMddHHmm");
+
+
+                            if (ws_res.eMaterailDoc != null || ws_res.EMessage != null)
+                            {
+
+                                if (ws_res.eMaterailDoc.Count() > 0)
+                                {
+                                    if (!string.IsNullOrEmpty(ws_res.eMaterailDoc[0].MatDoc))
+                                    {
+                                        updateListGIError.Rows.Add(item["ORDERNO"].ToString().Trim(), ws_res.EMessage, DateTime.Now);
+                                    }
+                                    else
+                                    {
+                                        updateListGIError.Rows.Add(item["ORDERNO"].ToString().Trim(), ws_res.EMessage, DBNull.Value);
+                                    }
+                                }
+                                else
+                                {
+                                    updateListGIError.Rows.Add(item["ORDERNO"].ToString().Trim(), ws_res.EMessage, DBNull.Value);
+                                }
+
+                                //Console.WriteLine("ws_res.EMessage :" + ws_res.EMessage);
+                                string[] datalast = null;
+                                if (ws_res.EMessage != null)
+                                {
+                                    if (ws_res.EMessage.Contains("saved"))
+                                    {
+                                        string txtClean = ws_res.EMessage.Replace(" ", "");
+                                        int lengthStart = txtClean.IndexOf("Delivery");
+                                        int lengthEnd = txtClean.IndexOf("has");
+                                        int start = lengthStart + 8;
+                                        int end = lengthEnd - start;
+                                        string data = txtClean.Substring(start, end);
+                                        datalast = data.Split(',');
+                                    }
+                                }
+
+                                datalast = datalast == null ? new string[] { "1" } : datalast;
+
+                                int index = 0;
+
+                                if (ws_res.eMaterailDoc.Count() > 0)
+                                {
+                                    foreach (var doc in ws_res.eMaterailDoc)
+                                    {
+                                        //Console.WriteLine("doc :" + doc.DoNo);
+
+                                        if (ws_res.EMessage.Contains("saved") && index <= datalast.Length)
+                                        {
+                                            parametersError.Add($"(" +
+                                                    $"'{OrderNo}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{checkPoAndDO}', " +
+                                                    $"'', " +
+                                                    $"'1', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                    $"'{SLoc}')");
+                                            setlog = true;
+
+                                            parameters2Error.Add($"(" +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{PoAndDo}'," +
+                                                    $"'{SLoc}', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{doc.MatDoc + "|IT"}', " +
+                                                    $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE: " + ws_res.EMessage}'," +
+                                                    $"'{doc.DoNo}')");
+
+                                            seterrorlog = true;
+                                        }
+                                        else
+                                        {
+                                            parametersError.Add($"(" +
+                                                    $"'{OrderNo}', " +
+                                                    $"'{Type}', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{checkPoAndDO}', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                    $"'{SLoc}')");
+
+                                            setlog = true;
+
+                                            parameters3Error.Add($"(" +
+                                                    $"'{RefdocNo}', " +
+                                                    $"'', " +
+                                                    $"'0', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{PoAndDo}', " +
+                                                    $"'{SLoc}', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'', " +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                    $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                    $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage}')");
+
+                                            seterrorlog = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+
+                                    if (ws_res.EMessage.Contains("saved"))
+                                    {
+                                        parametersError.Add($"(" +
+                                                  $"'{OrderNo}', " +
+                                                  $"'{Type}', " +
+                                                  $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                  $"'{checkPoAndDO}', " +
+                                                  $"'', " +
+                                                  $"'1', " +
+                                                  $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                  $"'{SLoc}')");
+                                        setlog = true;
+
+                                        parameters2Error.Add($"(" +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{PoAndDo}'," +
+                                                $"'{SLoc}', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'', " +
+                                                $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE: " + ws_res.EMessage}'," +
+                                                $"'')");
+
+                                        seterrorlog = true;
+                                    }
+                                    else
+                                    {
+                                        parametersError.Add($"(" +
+                                                $"'{OrderNo}', " +
+                                                $"'{Type}', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'{checkPoAndDO}', " +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                $"'{SLoc}')");
+
+                                        setlog = true;
+
+                                        parameters3Error.Add($"(" +
+                                                $"'{RefdocNo}', " +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{PoAndDo}', " +
+                                                $"'{SLoc}', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'{"Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage}')");
+
+                                        seterrorlog = true;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                            string Message = checktable + "Unexpected error Post_TR_to_Sap : " + ex.Message;
+                            if (setlog == false)
+                            {
+                                parametersError.Add($"(" +
+                                                $"'{checkOrder}', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}'," +
+                                                $"'')");
+                            }
+
+                            if (setsuccesslog == false && setlog == true)
+                            {
+                                parameters2Error.Add($"(" +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{checkOrder}'," +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'', " +
+                                                $"''," +
+                                                $"'')");
+                            }
+
+                            if (seterrorlog == false && setlog == true)
+                            {
+                                parameters3Error.Add($"(" +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'0', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{checkOrder}', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'', " +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd")}'," +
+                                                $"'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff")}', " +
+                                                $"'')");
+                            }
+
+                        }
+
+                    }
+
+                    using (SqlConnection connection = new SqlConnection(connString))
+                    {
+                        connection.Open();
+
+                        // **1. สร้างตารางชั่วคราวในฐานข้อมูล**
+                        string createTempTableSql = $@"
+                                        IF OBJECT_ID('{DBconfig}.[T_barcode_Temp]') IS NOT NULL
+                                            DROP TABLE  {DBconfig}.[T_barcode_Temp];
+
+                                        CREATE TABLE {DBconfig}.[T_barcode_Temp] (
+                                            ORDERNO NVARCHAR(50),
+                                            REFDOCSAP NVARCHAR(50),
+                                            CONFIRM_DATE datetime
+                                        );";
+
+                        using (SqlCommand cmd = new SqlCommand(createTempTableSql, connection))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // **2. ใช้ SqlBulkCopy เพื่อคัดลอกข้อมูลไปยังตารางชั่วคราว**
+                        using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
+                        {
+                            bulkCopy.DestinationTableName = DBconfig + ".[T_barcode_Temp]";
+                            bulkCopy.WriteToServer(updateListGIError);
+                        }
+
+                        // **3. อัปเดตข้อมูลจากตารางชั่วคราว**
+
+                        string updateSql = $@"
+                                UPDATE t
+                                SET t.REFDOCSAP = tmp.REFDOCSAP,
+                                t.CONFIRM_DATE = tmp.CONFIRM_DATE
+                                FROM {DBconfig}.[T_barcode_trans] t
+                                INNER JOIN {DBconfig}.[T_barcode_Temp] tmp
+                                ON t.ORDERNO = tmp.ORDERNO;
+
+                                DROP TABLE {DBconfig}.[T_barcode_Temp]; ";
+
+
+                        using (SqlCommand cmd = new SqlCommand(updateSql, connection))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        connection.Close();
+                    }
+
+                    using (SqlConnection conn = new SqlConnection(connString))
+                    {
+                        conn.Open();
+                        StringBuilder sqlBuilderError = new StringBuilder();
+                        StringBuilder sqlBuilder2Error = new StringBuilder();
+                        StringBuilder sqlBuilder3Error = new StringBuilder();
+                        int batchSize = 1000;
+
+                        for (int i = 0; i < parametersError.Count; i++)
+                        {
+                            if (i % batchSize == 0)
+                            {
+                                if (i != 0)
+                                {
+                                    sqlBuilderError.Append(";");
+                                    using (SqlCommand command = new SqlCommand(sqlBuilderError.ToString(), conn))
+                                    {
+                                        command.ExecuteNonQuery();
+                                    }
+                                    sqlBuilderError.Clear();
+                                }
+
+                                sqlBuilderError.Append("INSERT INTO  " + DBconfig + ".[T_LogDatavalidate_GI_to_Sap] (OrderNo, Type, CreateDate, Datatype, ValidateMessage, SapStatus, ConfirmDate, SLoc) VALUES ");
+                            }
+
+                            sqlBuilderError.Append(parametersError[i]);
+
+                            if ((i + 1) % batchSize != 0 && i != parametersError.Count - 1)
+                            {
+                                sqlBuilderError.Append(", ");
+                            }
+                        }
+
+                        // Execute the remaining batch
+                        if (sqlBuilderError.Length > 0)
+                        {
+                            sqlBuilderError.Append(";");
+                            using (SqlCommand command = new SqlCommand(sqlBuilderError.ToString(), conn))
+                            {
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        if (parameters2.Count > 0)
+                        {
+
+                            for (int i = 0; i < parameters2Error.Count; i++)
+                            {
+                                if (i % batchSize == 0)
+                                {
+                                    if (i != 0)
+                                    {
+                                        sqlBuilder2Error.Append(";");
+                                        using (SqlCommand command = new SqlCommand(sqlBuilder2Error.ToString(), conn))
+                                        {
+                                            command.ExecuteNonQuery();
+                                        }
+                                        sqlBuilder2Error.Clear();
+                                    }
+
+                                    sqlBuilder2Error.Append("INSERT INTO " + DBconfig + ".[T_LOG_GI_STOCK] (Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, DocMat, EMessage,DoNo) VALUES ");
+
+                                }
+
+                                sqlBuilder2Error.Append(parameters2Error[i]);
+
+                                if ((i + 1) % batchSize != 0 && i != parameters2Error.Count - 1)
+                                {
+                                    sqlBuilder2Error.Append(", ");
+                                }
+                            }
+
+                            // Execute the remaining batch
+                            if (sqlBuilder2Error.Length > 0)
+                            {
+                                sqlBuilder2Error.Append(";");
+                                using (SqlCommand command = new SqlCommand(sqlBuilder2Error.ToString(), conn))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+
+                        if (parameters3.Count > 0)
+                        {
+                            for (int i = 0; i < parameters3Error.Count; i++)
+                            {
+                                if (i % batchSize == 0)
+                                {
+                                    if (i != 0)
+                                    {
+                                        sqlBuilder3Error.Append(";");
+                                        using (SqlCommand command = new SqlCommand(sqlBuilder3Error.ToString(), conn))
+                                        {
+                                            command.ExecuteNonQuery();
+                                        }
+                                        sqlBuilder3Error.Clear();
+                                    }
+
+                                    sqlBuilder3Error.Append("INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] (RefdocNo, Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban, StockDate, UpdDate, EMessage) VALUES ");
+
+                                }
+
+                                sqlBuilder3Error.Append(parameters3Error[i]);
+
+                                if ((i + 1) % batchSize != 0 && i != parameters3Error.Count - 1)
+                                {
+                                    sqlBuilder3Error.Append(", ");
+                                }
+                            }
+
+                            // Execute the remaining batch
+                            if (sqlBuilder3Error.Length > 0)
+                            {
+                                sqlBuilder3Error.Append(";");
+                                using (SqlCommand command = new SqlCommand(sqlBuilder3Error.ToString(), conn))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                        conn.Close();
                     }
                 }
+
                 Console.WriteLine("      End Process GI \n");
                 Console.WriteLine("      #################################################### \n");
             }

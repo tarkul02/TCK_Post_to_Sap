@@ -113,7 +113,7 @@ namespace PostSap_GR_TR.Class
 
         //end เช็ค data to json
 
-        public void PostSapGIClass(string PoAndDo, string DOandPO, string getID, string SLoc)
+        public ZConfirmPickingGoodsIssueResponse PostSapGIClass(string PoAndDo, string DOandPO, string SLoc)
         {
 
             var ws_service = new Z_CONFIRM_PICKING_GOODS_ISSUE_SRV();
@@ -162,206 +162,209 @@ namespace PostSap_GR_TR.Class
 
             //Console.WriteLine("############################################################");
 
-            string dataUpdateList = "UPDATE " + DBconfig + ".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE ,CONFIRM_DOC = @CONFIRM_DOC  where ORDERNO = '" + PoAndDo + "' and MENUID = 'DO13'";
+            //string dataUpdateList = "UPDATE " + DBconfig + ".[T_barcode_trans] set REFDOCSAP = @REFDOCSAP , CONFIRM_DATE = @CONFIRM_DATE ,CONFIRM_DOC = @CONFIRM_DOC  where ORDERNO = '" + PoAndDo + "' and MENUID = 'DO13'";
 
-            if (ws_res.eMaterailDoc.Count() > 0)
-            {
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    if (!string.IsNullOrEmpty(ws_res.eMaterailDoc[0].MatDoc))
-                    {
-                        cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
-                        cmd.Parameters.AddWithValue("@CONFIRM_DOC", "");
-                        //cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.eMaterailDoc[0].DocYear + "|" + ws_res.eMaterailDoc[0].MatDoc);
-                        cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
-                    }
-                    else
-                    {
-                        cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
-                        cmd.Parameters.AddWithValue("@CONFIRM_DOC", "");
-                        //cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.eMaterailDoc[0].DocYear + "|" + ws_res.eMaterailDoc[0].MatDoc);
-                        cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
-                    }
-                    conn.Open();
-                    int resultseccess = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-            }
-            else {
-                using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
-                {
-                    cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
-                    cmd.Parameters.AddWithValue("@CONFIRM_DOC", "");
-                    //cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.eMaterailDoc[0].DocYear + "|" + ws_res.eMaterailDoc[0].MatDoc);
-                    cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
+            //if (ws_res.eMaterailDoc.Count() > 0)
+            //{
+            //    using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+            //    {
+            //        if (!string.IsNullOrEmpty(ws_res.eMaterailDoc[0].MatDoc))
+            //        {
+            //            cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+            //            cmd.Parameters.AddWithValue("@CONFIRM_DOC", "");
+            //            //cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.eMaterailDoc[0].DocYear + "|" + ws_res.eMaterailDoc[0].MatDoc);
+            //            cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
+            //        }
+            //        else
+            //        {
+            //            cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+            //            cmd.Parameters.AddWithValue("@CONFIRM_DOC", "");
+            //            //cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.eMaterailDoc[0].DocYear + "|" + ws_res.eMaterailDoc[0].MatDoc);
+            //            cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
+            //        }
+            //        conn.Open();
+            //        int resultseccess = cmd.ExecuteNonQuery();
+            //        conn.Close();
+            //    }
+            //}
+            //else {
+            //    using (SqlCommand cmd = new SqlCommand(dataUpdateList, conn))
+            //    {
+            //        cmd.Parameters.AddWithValue("@REFDOCSAP", ws_res.EMessage);
+            //        cmd.Parameters.AddWithValue("@CONFIRM_DOC", "");
+            //        //cmd.Parameters.AddWithValue("@CONFIRM_DOC", ws_res.eMaterailDoc[0].DocYear + "|" + ws_res.eMaterailDoc[0].MatDoc);
+            //        cmd.Parameters.AddWithValue("@CONFIRM_DATE", DateTime.Now);
                     
-                    conn.Open();
-                    int resultseccess = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+            //        conn.Open();
+            //        int resultseccess = cmd.ExecuteNonQuery();
+            //        conn.Close();
+            //    }
 
-            }
-
-            string sqlLog_Gi = "INSERT INTO " + DBconfig + ".[T_LOG_GI_STOCK] "
-            + "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage,DoNo) " +
-            "VALUES "
-            + "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage ,@DoNo)";
+            //}
 
 
-            string sqlErrorLog_Gi = "INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] "
-            + "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
-            "VALUES "
-            + "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
+            //string sqlLog_Gi = "INSERT INTO " + DBconfig + ".[T_LOG_GI_STOCK] "
+            //+ "(Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate ,DocMat ,EMessage,DoNo) " +
+            //"VALUES "
+            //+ "(@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate, @DocMat , @EMessage ,@DoNo)";
 
-            string UpdateStatusSap = "UPDATE " + DBconfig + ".[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
-            //Console.WriteLine("ws_res.EMessage :" + ws_res.EMessage);
-            string[] datalast = null;
-            if (ws_res.EMessage.Contains("saved")) {
-                string txtClean = ws_res.EMessage.Replace(" ", "");
-                int lengthStart = txtClean.IndexOf("Delivery");
-                int lengthEnd = txtClean.IndexOf("has");
-                int start = lengthStart + 8;
-                int end = lengthEnd - start;
-                string data = txtClean.Substring(start, end);
-                datalast = data.Split(',');
-            }
+            //string sqlErrorLog_Gi = "INSERT INTO " + DBconfig + ".[T_LOG_STOCK_ERROR] "
+            //+ "(RefDocNo ,Batch, EntryQnt, EntryUom, FacNo, Material, StgeLoc, MoveType, Plant, Custid, Kanban ,StockDate , UpdDate  ,EMessage) " +
+            //"VALUES "
+            //+ "(@RefDocNo ,@Batch, @EntryQnt, @EntryUom, @FacNo, @Material, @StgeLoc, @MoveType, @Plant, @Custid, @Kanban, @StockDate, @UpdDate , @EMessage)";
 
-            datalast = datalast == null ? new string[] { "1" } : datalast;
+            //string UpdateStatusSap = "UPDATE " + DBconfig + ".[T_LogDatavalidate_GI_to_Sap] SET SapStatus = @SapStatus , ConfirmDate = @ConfirmDate  where ID = '" + getID + "'";
 
-            int index = 0;
-            if (ws_res.eMaterailDoc.Count() > 0)
-            {
-                foreach (var doc in ws_res.eMaterailDoc)
-                {
-                    //Console.WriteLine("doc :" + doc.DoNo);
+            ////Console.WriteLine("ws_res.EMessage :" + ws_res.EMessage);
+            //string[] datalast = null;
+            //if (ws_res.EMessage.Contains("saved")) {
+            //    string txtClean = ws_res.EMessage.Replace(" ", "");
+            //    int lengthStart = txtClean.IndexOf("Delivery");
+            //    int lengthEnd = txtClean.IndexOf("has");
+            //    int start = lengthStart + 8;
+            //    int end = lengthEnd - start;
+            //    string data = txtClean.Substring(start, end);
+            //    datalast = data.Split(',');
+            //}
 
-                    index++;
+            //datalast = datalast == null ? new string[] { "1" } : datalast;
+
+            //int index = 0;
+            //if (ws_res.eMaterailDoc.Count() > 0)
+            //{
+            //    foreach (var doc in ws_res.eMaterailDoc)
+            //    {
+            //        //Console.WriteLine("doc :" + doc.DoNo);
+
+            //        index++;
                     
-                    if (ws_res.EMessage.Contains("saved") && index <= datalast.Length)
-                    {
-                        using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@SapStatus", 1);
-                            cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
-                            conn.Open();
-                            int resultsap = cmd.ExecuteNonQuery();
-                            conn.Close();
-                        }
-                        using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@Batch", "");
-                            cmd.Parameters.AddWithValue("@EntryQnt", 0);
-                            cmd.Parameters.AddWithValue("@EntryUom", "");
-                            cmd.Parameters.AddWithValue("@FacNo", "");
-                            cmd.Parameters.AddWithValue("@Material", PoAndDo);
-                            cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
-                            cmd.Parameters.AddWithValue("@MoveType", "");
-                            cmd.Parameters.AddWithValue("@Plant", "");
+            //        if (ws_res.EMessage.Contains("saved") && index <= datalast.Length)
+            //        {
+            //            using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+            //            {
+            //                cmd.Parameters.AddWithValue("@SapStatus", 1);
+            //                cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
+            //                conn.Open();
+            //                int resultsap = cmd.ExecuteNonQuery();
+            //                conn.Close();
+            //            }
+            //            using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
+            //            {
+            //                cmd.Parameters.AddWithValue("@Batch", "");
+            //                cmd.Parameters.AddWithValue("@EntryQnt", 0);
+            //                cmd.Parameters.AddWithValue("@EntryUom", "");
+            //                cmd.Parameters.AddWithValue("@FacNo", "");
+            //                cmd.Parameters.AddWithValue("@Material", PoAndDo);
+            //                cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
+            //                cmd.Parameters.AddWithValue("@MoveType", "");
+            //                cmd.Parameters.AddWithValue("@Plant", "");
 
-                            cmd.Parameters.AddWithValue("@Custid", "");
-                            cmd.Parameters.AddWithValue("@Kanban", "");
-                            cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                            cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@DocMat", doc.MatDoc + "|IT");
-                            cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
-                            cmd.Parameters.AddWithValue("@DoNo", doc.DoNo);
-                            conn.Open();
+            //                cmd.Parameters.AddWithValue("@Custid", "");
+            //                cmd.Parameters.AddWithValue("@Kanban", "");
+            //                cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+            //                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+            //                cmd.Parameters.AddWithValue("@DocMat", doc.MatDoc + "|IT");
+            //                cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
+            //                cmd.Parameters.AddWithValue("@DoNo", doc.DoNo);
+            //                conn.Open();
 
-                            int resultseccess = cmd.ExecuteNonQuery();
-                            conn.Close();
-                        }
-                    }
-                    else
-                    {
-                        using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gi, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);
-                            cmd.Parameters.AddWithValue("@Batch", "");
-                            cmd.Parameters.AddWithValue("@EntryQnt", 0);
-                            cmd.Parameters.AddWithValue("@EntryUom", "");
-                            cmd.Parameters.AddWithValue("@FacNo", "");
-                            cmd.Parameters.AddWithValue("@Material", PoAndDo);
-                            cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
-                            cmd.Parameters.AddWithValue("@MoveType", "");
-                            cmd.Parameters.AddWithValue("@Plant", "");
+            //                int resultseccess = cmd.ExecuteNonQuery();
+            //                conn.Close();
+            //            }
+            //        }
+            //        else
+            //        {
+            //            using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gi, conn))
+            //            {
+            //                cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);
+            //                cmd.Parameters.AddWithValue("@Batch", "");
+            //                cmd.Parameters.AddWithValue("@EntryQnt", 0);
+            //                cmd.Parameters.AddWithValue("@EntryUom", "");
+            //                cmd.Parameters.AddWithValue("@FacNo", "");
+            //                cmd.Parameters.AddWithValue("@Material", PoAndDo);
+            //                cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
+            //                cmd.Parameters.AddWithValue("@MoveType", "");
+            //                cmd.Parameters.AddWithValue("@Plant", "");
 
-                            cmd.Parameters.AddWithValue("@Custid", "");
-                            cmd.Parameters.AddWithValue("@Kanban", "");
-                            cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                            cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@DocMat", doc.MatDoc);
-                            cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
-                            conn.Open();
-                            int resultError = cmd.ExecuteNonQuery();
-                            conn.Close();
-                        }
-                    }
+            //                cmd.Parameters.AddWithValue("@Custid", "");
+            //                cmd.Parameters.AddWithValue("@Kanban", "");
+            //                cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+            //                cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+            //                cmd.Parameters.AddWithValue("@DocMat", doc.MatDoc);
+            //                cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
+            //                conn.Open();
+            //                int resultError = cmd.ExecuteNonQuery();
+            //                conn.Close();
+            //            }
+            //        }
                     
-                }
+            //    }
 
-            }else{
+            //}else{
 
-                if (ws_res.EMessage.Contains("saved"))
-                {
-                    using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@SapStatus", 1);
-                        cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
-                        conn.Open();
-                        int resultsap = cmd.ExecuteNonQuery();
-                        conn.Close();
-                    }
-                    using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@Batch", "");
-                        cmd.Parameters.AddWithValue("@EntryQnt", 0);
-                        cmd.Parameters.AddWithValue("@EntryUom", "");
-                        cmd.Parameters.AddWithValue("@FacNo", "");
-                        cmd.Parameters.AddWithValue("@Material", PoAndDo);
-                        cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
-                        cmd.Parameters.AddWithValue("@MoveType", "");
-                        cmd.Parameters.AddWithValue("@Plant", "");
+            //    if (ws_res.EMessage.Contains("saved"))
+            //    {
+            //        using (SqlCommand cmd = new SqlCommand(UpdateStatusSap, conn))
+            //        {
+            //            cmd.Parameters.AddWithValue("@SapStatus", 1);
+            //            cmd.Parameters.AddWithValue("@ConfirmDate", DateTime.Now);
+            //            conn.Open();
+            //            int resultsap = cmd.ExecuteNonQuery();
+            //            conn.Close();
+            //        }
+            //        using (SqlCommand cmd = new SqlCommand(sqlLog_Gi, conn))
+            //        {
+            //            cmd.Parameters.AddWithValue("@Batch", "");
+            //            cmd.Parameters.AddWithValue("@EntryQnt", 0);
+            //            cmd.Parameters.AddWithValue("@EntryUom", "");
+            //            cmd.Parameters.AddWithValue("@FacNo", "");
+            //            cmd.Parameters.AddWithValue("@Material", PoAndDo);
+            //            cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
+            //            cmd.Parameters.AddWithValue("@MoveType", "");
+            //            cmd.Parameters.AddWithValue("@Plant", "");
 
-                        cmd.Parameters.AddWithValue("@Custid", "");
-                        cmd.Parameters.AddWithValue("@Kanban", "");
-                        cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                        cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@DocMat", "");
-                        cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
-                        cmd.Parameters.AddWithValue("@DoNo", "");
-                        conn.Open();
+            //            cmd.Parameters.AddWithValue("@Custid", "");
+            //            cmd.Parameters.AddWithValue("@Kanban", "");
+            //            cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+            //            cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+            //            cmd.Parameters.AddWithValue("@DocMat", "");
+            //            cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
+            //            cmd.Parameters.AddWithValue("@DoNo", "");
+            //            conn.Open();
 
-                        int resultseccess = cmd.ExecuteNonQuery();
-                        conn.Close();
-                    }
-                }
-                else
-                {
-                    using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gi, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);
-                        cmd.Parameters.AddWithValue("@Batch", "");
-                        cmd.Parameters.AddWithValue("@EntryQnt", 0);
-                        cmd.Parameters.AddWithValue("@EntryUom", "");
-                        cmd.Parameters.AddWithValue("@FacNo", "");
-                        cmd.Parameters.AddWithValue("@Material", PoAndDo);
-                        cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
-                        cmd.Parameters.AddWithValue("@MoveType", "");
-                        cmd.Parameters.AddWithValue("@Plant", "");
+            //            int resultseccess = cmd.ExecuteNonQuery();
+            //            conn.Close();
+            //        }
+            //    }
+            //    else
+            //    {
+            //        using (SqlCommand cmd = new SqlCommand(sqlErrorLog_Gi, conn))
+            //        {
+            //            cmd.Parameters.AddWithValue("@RefdocNo", RefdocNo);
+            //            cmd.Parameters.AddWithValue("@Batch", "");
+            //            cmd.Parameters.AddWithValue("@EntryQnt", 0);
+            //            cmd.Parameters.AddWithValue("@EntryUom", "");
+            //            cmd.Parameters.AddWithValue("@FacNo", "");
+            //            cmd.Parameters.AddWithValue("@Material", PoAndDo);
+            //            cmd.Parameters.AddWithValue("@StgeLoc", SLoc);
+            //            cmd.Parameters.AddWithValue("@MoveType", "");
+            //            cmd.Parameters.AddWithValue("@Plant", "");
 
-                        cmd.Parameters.AddWithValue("@Custid", "");
-                        cmd.Parameters.AddWithValue("@Kanban", "");
-                        cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
-                        cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@DocMat", "");
-                        cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
-                        conn.Open();
-                        int resultError = cmd.ExecuteNonQuery();
-                        conn.Close();
-                    }
-                }
-            }
+            //            cmd.Parameters.AddWithValue("@Custid", "");
+            //            cmd.Parameters.AddWithValue("@Kanban", "");
+            //            cmd.Parameters.AddWithValue("@StockDate", Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd")));
+            //            cmd.Parameters.AddWithValue("@UpdDate", DateTime.Now);
+            //            cmd.Parameters.AddWithValue("@DocMat", "");
+            //            cmd.Parameters.AddWithValue("@EMessage", "Z_CONFIRM_PICKING_GOODS_ISSUE : " + ws_res.EMessage);
+            //            conn.Open();
+            //            int resultError = cmd.ExecuteNonQuery();
+            //            conn.Close();
+            //        }
+            //    }
+            //}
+
+            return ws_res;
         }
     }
 }
