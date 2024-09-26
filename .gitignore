@@ -2,4 +2,9 @@
 
 # dependencies
 
+bin/
+obj/
+.vs
+
+
 

@@ -1,0 +1,10 @@
+tck_notify_barcode
+TaCIqrKiktdYILv8GEhlICwaMAWZJ5xUx7j22gnWVbw
+
+
+v_sap_batch_gr_redo 
+เพิ่ม ID , EMessage ,  RefDocNo
+
+
+v_sap_batch_tr_redo 
+เพิ่ม ID 

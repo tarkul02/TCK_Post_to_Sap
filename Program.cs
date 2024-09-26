@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
 
-
-namespace SAP_Batch_GR_TR
+namespace PostSap_GR_TR
 {
     class Program
     {
@@ -20,7 +11,7 @@ namespace SAP_Batch_GR_TR
         static void Main(string[] args)
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(true);
             Application.Run(new GRTR_Post_sap());
             Application.Exit();
         }

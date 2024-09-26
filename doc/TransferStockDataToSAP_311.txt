@@ -1,0 +1,273 @@
+        [WebMethod]
+        public Results TransferStockDataToSAP_311(string SlipNo, string DataType)
+        {
+            var ws_service = new PRD_Z_GOODSMVT_CREATE1.Z_GOODSMVT_CREATE1_SRV();
+            var ws_res = new PRD_Z_GOODSMVT_CREATE1.ZGoodsmvtCreate1Response();
+            var ws_fn_head = new PRD_Z_GOODSMVT_CREATE1.ZsgmHeader();
+            var ws_fn_det = new PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1();
+            var GmCode = new PRD_Z_GOODSMVT_CREATE1.Bapi2017GmCode();
+            var RefdocNo = "TR-" + DateTime.Now.ToString("yyMMddHHmm");
+            Results res = new Results();
+            var db = new TKC_MASTER_SAPEntities();
+            List<PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1> DetailToSap = new List<PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1>();
+            var getpostdate = false;
+            string UserID = "";
+            ws_fn_head.RefDocNo = RefdocNo;
+            if (SlipNo.Contains("|")) 
+            {
+                UserID = SlipNo.Split('|')[0];
+                SlipNo = SlipNo.Split('|')[1];
+            }
+            int SlipNolength = SlipNo.Length;
+            if (SlipNolength > 25)
+            {
+                ws_fn_head.HeaderTxt = SlipNo.Substring(0, 25);
+            }
+            else
+            {
+                ws_fn_head.HeaderTxt = SlipNo;
+            }
+            ws_fn_head.BillOfLading = "";
+            ws_fn_head.GrGiSlipNo = "";
+            GmCode.GmCode = "04";
+
+
+
+            try
+            {
+                var constr = "Data Source=tkcserv06;User ID=tkcdba;Password=tkcdba;";
+                SqlConnection conn = new SqlConnection(constr);
+                var listms = new List<T_TR_TO_SAP_MASTER>();
+                var dtms = new DataTable();
+                using (var da = new SqlDataAdapter("select t.* from [TKC_MASTER_SAP].[dbo].[T_TR_TO_SAP_MASTER] t ", constr))
+                {
+                    da.Fill(dtms);
+                }
+                if (dtms.Rows.Count > 0)
+                {
+                    foreach (DataRow dataRow in dtms.Rows)
+                    {
+                        var addlist = new T_TR_TO_SAP_MASTER();
+                        addlist.DataType = dataRow["DataType"].ToString();
+                        addlist.DataName = dataRow["DataName"].ToString();
+                        addlist.TableName = dataRow["TableName"].ToString();
+                        addlist.DBType = dataRow["DBType"].ToString();
+                        addlist.DBServer = dataRow["DBServer"].ToString();
+                        addlist.DBUser = dataRow["DataName"].ToString();
+                        addlist.DBPassword = dataRow["DataName"].ToString();
+                        listms.Add(addlist);
+                    }
+                }
+
+                foreach (var item in listms)
+                {
+                    if (item.DataType == DataType)
+                    {
+                        var dt = new DataTable();
+                        if (item.DBType == "Oracle")
+                        {
+                            OracleDatabase ConnectOracle = new OracleDatabase();
+                            ConnectOracle.ConnectDatabase(item.DBServer);
+                            string sql = "select t.* from " + item.TableName + " t where t.SLIPNO = '" + SlipNo + "' and MAT_TYPE <> 'ZRM'";
+                            var ds = ConnectOracle.OracleGet(sql, item.TableName);
+                            dt = ds.Tables[item.TableName];
+                        }
+                        else if (item.DBType == "SQL Server")
+                        {
+                            var constring = "Data Source=" + item.DBServer + ";User ID=" + item.DBUser + ";Password=" + item.DBPassword + ";";
+                            SqlConnection connect = new SqlConnection(constring);
+                            using (var da = new SqlDataAdapter("select t.* from " + item.TableName + " t where t.SLIPNO = '" + SlipNo + "' and MAT_TYPE <> 'ZRM'", constr))
+                            {
+                                da.Fill(dt);
+                            }
+                        }
+                        if (dt.Rows.Count > 0)
+                        {
+                            foreach (DataRow dataRow in dt.Rows)
+                            {
+                                PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1 tmp = new PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1();
+                                if (getpostdate == false)
+                                {
+                                    if (DataType == "11")
+                                    {
+                                        ws_fn_head.PstngDate = DateTime.Now.ToString("yyyyMMdd");
+                                        ws_fn_head.DocDate = DateTime.Now.ToString("yyyyMMdd");
+                                    }
+                                    else
+                                    { 
+                                        ws_fn_head.PstngDate = Convert.ToDateTime(dataRow["POSTDATE"].ToString()).ToString("yyyyMMdd");
+                                        ws_fn_head.DocDate = Convert.ToDateTime(dataRow["POSTDATE"].ToString()).ToString("yyyyMMdd");
+                                        getpostdate = true;
+                                    }
+                                }
+                                tmp.Material = "";
+                                tmp.Plant = dataRow["PlantFrom"].ToString();
+                                tmp.StgeLoc = dataRow["StorageFrom"].ToString();
+                                tmp.Batch = "DUMMYBATCH";
+                                tmp.MoveType = "311";
+                                tmp.EntryQnt = Convert.ToInt32(dataRow["MvmntQty"].ToString());
+                                tmp.EntryUom = "Pcs";
+                                tmp.ItemText = "";
+                                tmp.GrRcpt = "";
+                                tmp.UnloadPt = "";
+                                tmp.FacNo = "";
+                                tmp.RefDocYr = "";
+                                tmp.RefDoc = "";
+                                tmp.RefDocIt = "";
+                                tmp.MovePlant = dataRow["PlantTo"].ToString();
+                                tmp.MoveStloc = dataRow["StorageTo"].ToString();
+                                tmp.MoveBatch = "DUMMYBATCH";
+                                tmp.SoldTo = "";
+                                tmp.Custid = "";
+                                tmp.Kanban = dataRow["Kanban"].ToString();
+                                tmp.Amount = "";
+                                DetailToSap.Add(tmp);
+                            }
+                            List<PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1> result = new List<PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1>();
+                            result = DetailToSap.GroupBy(l => l.Kanban)
+                                              .Select(cl => new PRD_Z_GOODSMVT_CREATE1.ZsgmDetail1
+                                              {
+                                                  Batch = cl.First().Batch,
+                                                  Material = cl.First().Material,
+                                                  EntryQnt = cl.Sum(c => c.EntryQnt),
+                                                  EntryUom = cl.First().EntryUom,
+                                                  FacNo = cl.First().FacNo,
+                                                  StgeLoc = cl.First().StgeLoc,
+                                                  MoveStloc = cl.First().MoveStloc,
+                                                  MoveType = cl.First().MoveType,
+                                                  MovePlant = cl.First().MovePlant,
+                                                  MoveBatch = cl.First().MoveBatch,
+                                                  Plant = cl.First().Plant,
+                                                  SoldTo = cl.First().SoldTo,
+                                                  Custid = cl.First().Custid,
+                                                  Kanban = cl.First().Kanban,
+                                              }).OrderBy(l => l.Kanban).ToList();
+
+                            PRD_Z_GOODSMVT_CREATE1.ZGoodsmvtCreate1 ws_fn_partosap = new PRD_Z_GOODSMVT_CREATE1.ZGoodsmvtCreate1();
+                            ws_fn_partosap.IsHeader = ws_fn_head;
+                            ws_fn_partosap.ItDetail = result.ToArray();
+                            ws_fn_partosap.IGoodsmvtCode = GmCode;
+
+                            ws_res = ws_service.ZGoodsmvtCreate1(ws_fn_partosap);
+                            BarcodeEntities UpdateBarcode = new BarcodeEntities();
+                            var UpdateList = UpdateBarcode.T_barcode_trans.Where(x => x.SLIPNO == SlipNo).ToList();
+                            List<T_LOG_GR_STOCK> Log_Gr = new List<T_LOG_GR_STOCK>();
+                            List<T_LOG_STOCK_ERROR> Log_Error = new List<T_LOG_STOCK_ERROR>();
+                            foreach (var upd in UpdateList)
+                            {
+                                if (ws_res.EMessage.Contains("was create"))
+                                {
+                                    upd.REFDOCSAP = ws_res.EMessage;
+                                    upd.CONFIRM_DATE = DateTime.Now;
+                                }
+                                else
+                                {
+                                    upd.REFDOCSAP = ws_res.EMessage;
+                                }
+                            }
+
+                            if (ws_res.ItDetail.Count() > 0)
+                            {
+                                foreach (var upd in ws_res.ItDetail)
+                                {
+                                    if (string.IsNullOrEmpty(upd.Error) && !string.IsNullOrEmpty(ws_res.EMaterailDoc.MatDoc))
+                                    {
+                                        T_LOG_GR_STOCK _STOCK = new T_LOG_GR_STOCK();
+                                        _STOCK.Batch = upd.Batch;
+                                        _STOCK.EntryQnt = (int)upd.EntryQnt;
+                                        _STOCK.EntryUom = upd.EntryUom;
+                                        _STOCK.FacNo = upd.FacNo;
+                                        _STOCK.Material = SlipNo;
+                                        _STOCK.StgeLoc = upd.StgeLoc + "|" + upd.MoveStloc;
+                                        _STOCK.MoveType = upd.MoveType ;
+                                        _STOCK.Plant = upd.Plant + "|" + upd.MovePlant;
+                                        _STOCK.Custid = upd.Custid; //tmp.CUSTID;
+                                        _STOCK.Kanban = upd.Kanban;
+                                        _STOCK.StockDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"));
+                                        _STOCK.UpdDate = DateTime.Now;
+                                        _STOCK.DocMat = ws_res.EMaterailDoc.MatDoc +"|" + UserID;
+                                        _STOCK.EMessage = "TransferStockDataToSAP_311 : " + ws_res.EMaterailDoc.MatDoc + "|" + ws_res.EMaterailDoc.DocYear + "|" + ws_res.EMessage + "|" + upd.Error;
+
+                                        Log_Gr.Add(_STOCK);
+                                    }
+                                    else
+                                    {
+                                        if (upd.Error != "")
+                                        {
+                                            T_LOG_STOCK_ERROR errorLog = new T_LOG_STOCK_ERROR();
+                                            errorLog.RefDocNo = RefdocNo + "|" + UserID;
+                                            errorLog.Batch = upd.Batch;
+                                            errorLog.Material = SlipNo;
+                                            errorLog.EntryQnt = (int)upd.EntryQnt;
+                                            errorLog.EntryUom = upd.EntryUom;
+                                            errorLog.FacNo = upd.FacNo;
+                                            errorLog.StgeLoc = upd.StgeLoc + "|" + upd.MoveStloc;
+                                            errorLog.MoveType = upd.MoveType;
+                                            errorLog.Plant = upd.Plant + "|"+ upd.MovePlant;
+                                            errorLog.Custid = upd.Custid;
+                                            errorLog.Kanban = upd.Kanban;
+                                            errorLog.StockDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"));
+                                            errorLog.UpdDate = DateTime.Now;
+                                            errorLog.EMessage = "TransferStockDataToSAP_311 : " + upd.Error;
+
+                                            Log_Error.Add(errorLog);
+                                        }
+                                    }
+                                }
+
+                                if (Log_Gr.Count > 0)
+                                {
+                                    UpdateBarcode.T_LOG_GR_STOCK.AddRange(Log_Gr);
+                                    UpdateBarcode.SaveChanges();
+                                }
+                                if (Log_Error.Count > 0)
+                                {
+                                    UpdateBarcode.T_LOG_STOCK_ERROR.AddRange(Log_Error);
+                                    UpdateBarcode.SaveChanges();
+                                }
+                            }
+
+                            var Matdoc = "";
+                            var Errmsg = "";
+                            if (ws_res.EMaterailDoc.MatDoc == "")
+                            {
+                                Matdoc = "No MatDoc";
+                            }
+                            else
+                            {
+                                Matdoc = ws_res.EMaterailDoc.MatDoc;
+                            }
+                            foreach (var upd in ws_res.ItDetail)
+                            {
+                                if (upd.Error != "")
+                                {
+                                    Errmsg += upd.Kanban + ": " + upd.Error + "\n";
+                                }
+                            }
+                            lineMaster("\n" + "MatDoc : " + Matdoc + "\n" + " SlipNo : " + SlipNo + "\n" + Errmsg);
+                            res.status = true;
+                            res.message = "Transfer : success ";
+                            res.message2 = "\nmatdoc :" + Matdoc;
+                            res.message3 = "\nError massage : \n" + Errmsg;
+                        }
+                        else
+                        {
+                            var getDataname = listms.Where(x => x.DataType == DataType).FirstOrDefault();
+                            lineMaster("No data of FG in datatype: " + getDataname.DataName + " SlipNo: " + SlipNo );
+                            res.status = true;
+                            res.message = "No data of FG in datatype: " + getDataname.DataName + " SlipNo: " + SlipNo;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                res.status = false;
+                res.message = "Web service status : False";
+                res.message3 = e.Message.ToString();
+            }
+            return res;
+        }
+
+
+        [WebMethod]
